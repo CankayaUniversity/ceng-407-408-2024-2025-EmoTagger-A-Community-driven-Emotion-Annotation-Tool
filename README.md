@@ -34,3 +34,10 @@ Abdül Kadir GÖRÜR
 PROJECTWEBSITE:
 https://emotagger.com.tr/
 
+
+
+
+
+Project Design FigmaLinkOfProject:
+[Figma Of Project](https://www.figma.com/design/5Lo0Q6GxEHEMog2CO1Iin0/ceng407project?node-id=2-1194&t=hOEuBxwTTNekag7L-1)
+
