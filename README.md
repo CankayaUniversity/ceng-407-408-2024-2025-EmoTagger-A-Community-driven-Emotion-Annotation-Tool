@@ -12,10 +12,10 @@ The next phase of the project involves developing a website and mobile applicati
 | Team Members    | Student Numbers   | Github |
 |-----------------|-----------|-------------|
 | Hamza Basil Waheed |  201911500      | [Hamza1799](https://github.com/Hamza1799)      |
-| Kübra Begüm Üleş  | 201611059      | [begumules](https://github.com/begumules)  |
-| Samed Tuğkan Çinko   | 201811020       |[tugkancinko](https://github.com/tugkancinko)     |
-| Selin Uzunoğlu  | 202011401      | [selinuzunoglu](https://github.com/selinuzunoglu)  |
-| Serhat Yıldız        | 202211404       | [pato7y](https://github.com/pato7y)   |
+| Kübra Begüm ÜLEŞ  | 201611059      | [begumules](https://github.com/begumules)  |
+| Samed Tuğkan ÇİNKO   | 201811020       |[tugkancinko](https://github.com/tugkancinko)     |
+| Selin UZUNOĞLU  | 202011401      | [selinuzunoglu](https://github.com/selinuzunoglu)  |
+| Serhat YILDIZ        | 202211404       | [pato7y](https://github.com/pato7y)   |
 | Taha Emre KARATAŞ        | 202011025    |[boominn](https://github.com/boominn)    |
 
 ## Advisor:
