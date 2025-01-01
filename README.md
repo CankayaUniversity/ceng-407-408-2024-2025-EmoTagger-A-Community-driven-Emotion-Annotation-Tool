@@ -8,24 +8,15 @@ This project involves the development of a music survey application that gathers
 
 The next phase of the project involves developing a website and mobile applications to make these survey-based analyses accessible to a wider audience and to enrich user experience. Through these platforms, individuals will be able to experience music from various emotional perspectives and share their musical experiences within a community. This study aims to deepen the understanding of the connection between musical preferences and emotional responses, offering new insights into the psychological impact of music based on extensive data.
 
-Team Members
-Hamza Basil Waheed 201911500
-
-Kübra Begüm Üleş 201611059
-
-Samed Tuğkan Çinko 201811020
-
-Selin Uzunoğlu 202011401
-
-Serhat Yıldız 202211404
-
-Taha Emre KARATAŞ 202011025
-
-Work Plan
-
-![image](https://github.com/user-attachments/assets/3a9ca7c8-4be7-45ce-b2e8-33a6df84be85)
-
-
+# Team Members
+| Team Members    | Student Numbers   | Github |
+|-----------------|-----------|-------------|
+| Hamza Basil Waheed |  201911500      | [Bağlantı Metni]([https://www.ornekadres.com](https://github.com/Hamza1799))      |
+| Kübra Begüm Üleş  | 201611059      | -  |
+| Samed Tuğkan Çinko   | 201811020       | -     |
+| Selin Uzunoğlu  | 202011401      | -  |
+| Serhat Yıldız        | 202211404       | -      |
+| Taha Emre KARATAŞ        | 202011025       | -     |
 
 
 Advisor:
