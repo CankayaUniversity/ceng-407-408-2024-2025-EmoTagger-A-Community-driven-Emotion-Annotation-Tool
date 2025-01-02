@@ -23,5 +23,6 @@ The next phase of the project involves developing a website and mobile applicati
 
 ## Project Website:
 + https://emotagger.com.tr/
++ http://emotagger.com.tr/
 
 
