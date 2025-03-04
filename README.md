@@ -25,14 +25,7 @@ Name Surname | Student Number |
 [Serhat Yıldız](https://github.com/pato7y) | 202211404 |
 [Samed Tuğkan Çinko ](https://github.com/tugkancinko) | 201811020 | 
 [Taha Emre KARATAŞ](https://github.com/boominn) | 202011025 | 
-Name Surname | Student Number |   Github       |
--- | -- | -- |
-| Hamza Basil WAHEED |  201911500      | [Hamza1799](https://github.com/Hamza1799)      |
-| Kübra Begüm ÜLEŞ  | 201611059      | [begumules](https://github.com/begumules)  |
-| Samed Tuğkan ÇİNKO   | 201811020       |[tugkancinko](https://github.com/tugkancinko)     |
-| Selin UZUNOĞLU  | 202011401      | [selinuzunoglu](https://github.com/selinuzunoglu)  |
-| Serhat YILDIZ        | 202211404       | [pato7y](https://github.com/pato7y)   |
-| Taha Emre KARATAŞ        | 202011025    |[boominn](https://github.com/boominn)    | 
+
 
 
 <p></p></body></html><!--EndFragment-->
