@@ -2,8 +2,6 @@
 <div align="center"> <h1>EmoTagger A Community Driven Emotion Annotation Tool </h1> </div>
 
 
-Project Description
-
 Music, as a universal medium of communication, has played a profound role in human history by deeply resonating with individuals’ emotional worlds. With the advancement of technology, digital music platforms have transformed the way people interact with music, offering an opportunity to explore the emotional connections they establish with songs. Today, approaches to analyzing music's impact on individuals' moods have gained importance, especially in research that aims to better understand listener psychology and preferences.
 ## Project Description
 
@@ -39,16 +37,12 @@ Name Surname | Student Number |
 
 
 
-## Advisor:
-+ [Abdül Kadir GÖRÜR](https://github.com/abdulkadirgorur)
-
 
 ### Advisor:
 [Abdül Kadir GÖRÜR](https://github.com/abdulkadirgorur)
 
 
 
-### ProjectWebsite:
 ## ProjectWebsite:
 [EMOTAGGERWEBSITE](https://emotagger.com.tr/)
 
