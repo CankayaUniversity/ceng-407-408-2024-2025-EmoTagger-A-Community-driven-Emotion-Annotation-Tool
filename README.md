@@ -1,4 +1,4 @@
-#  Welcome to the <div align="center"> <h1>EmoTagger A Community Driven Emotion Annotation Tool </h1> </div>
+#  Welcome to the <div align="center"> EmoTagger A Community Driven Emotion Annotation Tool  </div>
 
 
 
