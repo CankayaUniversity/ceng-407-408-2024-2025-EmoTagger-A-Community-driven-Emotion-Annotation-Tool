@@ -32,30 +32,10 @@ Name Surname | Student Number |
 </body>
 </html>
 
-## Project Documents:
-
-[Project Report](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Project%20Report.pdf)
 
 # [Work Plan](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/tree/main/Documents/WorkPlan)
 
 ![Ekran Görüntüsü (299)](https://github.com/user-attachments/assets/84f9984b-731a-436a-b5f3-890e180727dd)
-
-### Project Documents:
-
-[ProjectDocuments](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/tree/main/Documents)
-[Project Literature Review](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Literature%20Review.pdf)
-
-[Project Work Plan](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Work%20Plan.xlsx)
-[Project Work Plan](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Work%20Plan.png)
-
-[Project Literature Review](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/LiteratureReview/Ceng407literatureReviewupdated.pdf)
-[Project Software Requirement Specification (SRS) ](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Software%20Requirements%20Specification.pdf)
-
-[Project Software Design Document (SDD)](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/Software%20Design%20Document.pdf)
-
-[Project Software Requirement Specification (SRS) ](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/CENG407SRSDOCUMENT/CENG407SRS_7.pdf)
-
-[Project Software Design Document (SDD)](https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/CENG407SDD_DOCUMENT/ceng407SDD_2.pdf)
 
 
 
