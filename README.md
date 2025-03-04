@@ -1,9 +1,8 @@
 #  Welcome to the ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool 
 <div align="center"> <h1>EmoTagger A Community Driven Emotion Annotation Tool </h1> </div>
 
-## ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool
+
 Project Description
-<div align="center"> <h2> Welcome to ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool wiki! </h2> </div>
 
 Music, as a universal medium of communication, has played a profound role in human history by deeply resonating with individuals’ emotional worlds. With the advancement of technology, digital music platforms have transformed the way people interact with music, offering an opportunity to explore the emotional connections they establish with songs. Today, approaches to analyzing music's impact on individuals' moods have gained importance, especially in research that aims to better understand listener psychology and preferences.
 ## Project Description
