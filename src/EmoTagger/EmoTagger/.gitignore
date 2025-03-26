@@ -1,0 +1,57 @@
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files and IDE settings
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+.vs/
+
+# Ignore log files
+*.log
+
+# Ignore runtime and package files
+*.pdb
+*.cache
+*.db
+*.pid
+*.tar
+*.bak
+*.swp
+*.gz
+
+# Ignore environment files (for sensitive variables)
+.env
+
+# Ignore NuGet packages folder (if not restoring them globally)
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+
+# Ignore application host settings and lock files
+*.lock.json
+appsettings.Local.json
+appsettings.*.log
+
+# Ignore compiled code and generated files
+*.dll
+*.exe
+*.so
+*.dylib
+*.class
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Visual Studio auto-generated files
+*.sqlproj.user
+*.csproj.user
+*.csproj.DotSettings.user
+
+# Ignore additional temp files or unnecessary cache
+~$*
