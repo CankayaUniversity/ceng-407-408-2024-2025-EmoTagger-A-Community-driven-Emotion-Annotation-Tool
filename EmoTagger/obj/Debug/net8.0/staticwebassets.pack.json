@@ -3809,10 +3809,6 @@
       "PackagePath": "staticwebassets\\vendor\\uppy\\uppy.min.js"
     },
     {
-      "Id": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\wwwroot\\vue\\.env",
-      "PackagePath": "staticwebassets\\vue\\.env"
-    },
-    {
       "Id": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\wwwroot\\vue\\.eslintignore",
       "PackagePath": "staticwebassets\\vue\\.eslintignore"
     },

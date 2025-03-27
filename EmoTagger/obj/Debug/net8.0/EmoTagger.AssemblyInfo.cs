@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EmoTagger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1180e6016e7630e63dfd1f719694a3f2fd599f42")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("EmoTagger")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EmoTagger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

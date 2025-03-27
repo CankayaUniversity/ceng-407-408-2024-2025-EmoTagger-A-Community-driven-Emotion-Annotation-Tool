@@ -1,30 +1,24 @@
 ﻿<!doctype html>
 <html lang="en" dir="ltr">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title data-setting="app_name" data-rightJoin="Responsive Bootstrap 5 Admin Dashboard Template">Muzik Responsive Bootstrap 5 Admin Dashboard Template</title>
-        <meta name="description" content="Muzik is a revolutionary Bootstrap Admin Dashboard Template and UI Components Library. The Admin Dashboard Template and UI Component features 8 modules.">
-        <meta name="keywords" content="premium, admin, dashboard, template, bootstrap 5, clean ui, muzik, admin dashboard,responsive dashboard, optimized dashboard,">
-        <meta name="author" content="Iqonic Design">
-        <meta name="DC.title" content="Muzik Responsive Bootstrap 5 Admin Dashboard Template">
+        <!-- Required Meta Tags -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
-        <!-- loader Start -->
+        <!-- Loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
-                <div class="loader-body ">
-                    <img src="../assets/images/loader.gif" alt="loader" class=" img-fluid ">
+                <div class="loader-body">
+                    <img src="../assets/images/loader.gif" alt="loader" class="img-fluid">
                 </div>
             </div>
         </div>
-        <!-- loader END -->
+        <!-- Loader End -->
 
         <div class="sidebar-body pt-0 data-scrollbar">
-            <div class="sidebar-list">
-            </div>
-            <div class="sidebar-footer">
-            </div>
+            <div class="sidebar-list"></div>
+            <div class="sidebar-footer"></div>
         </div>
 
         <main class="main-content">
@@ -46,12 +40,10 @@
                                                     <h3 class="mb-3">Eliana D’cruz Playlist</h3>
                                                     <p class="mb-3">Search for your favorite music, create a playlist and save it.</p>
                                                     <div class="d-flex align-items-center mb-4">
-                                                        <h6 class="ps-3 fw-bold me-3 border-start">15 Tracks</h6>
-                                                        <h6 class="ps-3 fw-bold border-start">03:00 Duration</h6>
+                                                        <h6 class="ps-3 fw-bold me-3 border-start">Tracks: <span id="trackCount">0</span></h6>
                                                     </div>
                                                     <div class="d-flex align-items-center">
-                                                        <a href="javascript:void(0);" class="btn btn-primary">Play Musics</a>
-                                                        <a href="javascript:void(0);" class="btn btn-outline-secondary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal">Add Music</a>
+                                                        <a href="javascript:void(0);" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#searchModal">Add Music</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -85,10 +77,8 @@
                                     <table class="table mb-0">
                                         <thead>
                                             <tr>
-                                                <th scope="col">No.</th>
                                                 <th scope="col">Artist</th>
                                                 <th scope="col">Album</th>
-                                                <th scope="col">Time</th>
                                                 <th scope="col">Action</th>
                                             </tr>
                                         </thead>
@@ -105,44 +95,61 @@
         </main>
 
         <script>
+            var trackCount = 0;  // Tracks sayısını tutan değişken
+
             // Arama işlemi
             document.getElementById('searchTerm').addEventListener('input', function() {
                 var searchTerm = this.value;
-                // Burada şarkı arama API'si ile veri getireceksiniz
-                // Örnek olarak hardcoded bir liste ekliyorum
-                var searchResults = [
-                    { id: 1, name: "Song 1", artist: "Artist 1", album: "Album 1", time: "03:20" },
-                    { id: 2, name: "Song 2", artist: "Artist 2", album: "Album 2", time: "02:50" },
-                ];
-                var results = searchResults.filter(song => song.name.toLowerCase().includes(searchTerm.toLowerCase()));
-                var resultsHtml = results.map(song => `
-                    <li class="list-group-item" style="cursor: pointer;" onclick="selectMusic(${song.id}, '${song.name}', '${song.artist}', '${song.album}', '${song.time}')">
-                        ${song.name} - ${song.artist}
-                    </li>
-                `).join('');
-                document.getElementById('searchResults').innerHTML = resultsHtml;
+
+                // AJAX ile arama
+                $.ajax({
+                    url: '@Url.Action("SearchMusic", "Music")',
+                    type: 'GET',
+                    data: { searchTerm: searchTerm },
+                    success: function(response) {
+                        var resultsHtml = response.map(function(song) {
+                            return `
+                                <li class="list-group-item" style="cursor: pointer;" onclick="selectMusic(${song.musicId}, '${song.title}', '${song.artist}', '${song.filename}')">
+                                    ${song.title} - ${song.artist}
+                                </li>
+                            `;
+                        }).join('');
+                        document.getElementById('searchResults').innerHTML = resultsHtml;
+                    }
+                });
             });
 
             // Şarkı seçme işlemi
-            function selectMusic(id, name, artist, album, time) {
+            function selectMusic(id, title, artist, filename) {
                 var row = document.createElement('tr');
                 row.innerHTML = `
-                    <td></td>
                     <td>${artist}</td>
-                    <td>${album}</td>
-                    <td>${time}</td>
-                    <td><button class="btn btn-danger" onclick="removeMusic(this)">Remove</button></td>
+                    <td>${title}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="saveMusic(this)">Save</button>
+                        <button class="btn btn-danger" onclick="removeMusic(this)">Delete</button>
+                    </td>
                 `;
                 document.getElementById('playlistTableBody').appendChild(row);
 
-                // Modal'ı kapat
+                trackCount++;  // Track sayısını artır
+                document.getElementById('trackCount').innerText = trackCount;  // Sayıyı güncelle
+
                 var modal = new bootstrap.Modal(document.getElementById('searchModal'));
                 modal.hide();
+            }
+
+            // Şarkıyı kaydetme
+            function saveMusic(button) {
+                alert('Music Saved!');
             }
 
             // Şarkı çıkarma işlemi
             function removeMusic(button) {
                 button.closest('tr').remove();
+
+                trackCount--;  // Track sayısını azalt
+                document.getElementById('trackCount').innerText = trackCount;  // Sayıyı güncelle
             }
         </script>
     </body>

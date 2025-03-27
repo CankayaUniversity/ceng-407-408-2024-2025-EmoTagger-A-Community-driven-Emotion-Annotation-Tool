@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "J+XqbxBPdak0KeDcYb13/OFLaewDcdh2awkhv2MCJlA=",
+  "Hash": "MNRfmXVrpTF02BlgGa83Z9ZDrfqxFqsNwqmOc/c7jZU=",
   "Source": "EmoTagger",
   "BasePath": "_content/EmoTagger",
   "Mode": "Default",
@@ -18122,25 +18122,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\vendor\\uppy\\uppy.min.js"
-    },
-    {
-      "Identity": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\wwwroot\\vue\\.env",
-      "SourceId": "EmoTagger",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\wwwroot\\",
-      "BasePath": "_content/EmoTagger",
-      "RelativePath": "vue/.env",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\vue\\.env"
     },
     {
       "Identity": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\wwwroot\\vue\\.eslintignore",

@@ -1,5 +1,6 @@
 ﻿using EmoTagger.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmoTagger.Controllers
 {
@@ -11,6 +12,16 @@ namespace EmoTagger.Controllers
         {
             _context = context;
         }
+
+        [HttpGet]
+    public async Task<IActionResult> SearchMusic(string searchTerm)
+    {
+        var musics = await _context.Music
+            .Where(m => m.title.Contains(searchTerm) || m.artist.Contains(searchTerm))
+            .ToListAsync();
+
+        return Json(musics);
+    }
 
         public IActionResult Player()
         {
