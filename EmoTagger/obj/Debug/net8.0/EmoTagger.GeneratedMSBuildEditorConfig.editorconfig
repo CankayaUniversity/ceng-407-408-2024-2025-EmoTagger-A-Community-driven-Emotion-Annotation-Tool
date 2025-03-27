@@ -17,87 +17,87 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = EmoTagger
 build_property.RootNamespace = EmoTagger
-build_property.ProjectDir = c:\Users\emrek\Desktop\EmoTagger\EmoTagger\
+build_property.ProjectDir = C:\Users\emrek\Desktop\EmoTagger Code\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\EmoTagger\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = c:\Users\emrek\Desktop\EmoTagger\EmoTagger
+build_property.MSBuildProjectDirectory = C:\Users\emrek\Desktop\EmoTagger Code\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\EmoTagger
 build_property._RazorSourceGeneratorDebug = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Favorites.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Favorites.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEZhdm9yaXRlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Index.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Leaderboard.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Leaderboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXExlYWRlcmJvYXJkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/ListeningHistory.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/ListeningHistory.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXExpc3RlbmluZ0hpc3RvcnkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/ListenTag.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/ListenTag.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXExpc3RlblRhZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Login.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXExvZ2luLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Playlist.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Playlist.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXFBsYXlsaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Profile.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXFByb2ZpbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Register.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXFJlZ2lzdGVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Settings.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Settings.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXFNldHRpbmdzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Dashboard/Success.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Dashboard/Success.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXFN1Y2Nlc3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Home/Index.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Home/Privacy.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Shared/Components/NowPlaying/Default.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Shared/Components/NowPlaying/Default.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTm93UGxheWluZ1xEZWZhdWx0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Shared/Error.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/_ViewImports.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/_ViewStart.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/emrek/Desktop/EmoTagger/EmoTagger/Views/Shared/_Layout.cshtml]
+[C:/Users/emrek/Desktop/EmoTagger Code/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/EmoTagger/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-zj4z4t5va6

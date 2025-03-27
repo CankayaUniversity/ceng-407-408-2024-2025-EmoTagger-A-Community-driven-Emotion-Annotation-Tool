@@ -5,15 +5,15 @@ using EmoTagger.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// **PostgreSQL baðlantýsýný ekleyelim**
+// **PostgreSQL baï¿½lantï¿½sï¿½nï¿½ ekleyelim**
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// **Session ve Cache için Gerekli Servisleri Ekleyelim**
-builder.Services.AddDistributedMemoryCache(); // **Session için Gerekli**
+// **Session ve Cache iï¿½in Gerekli Servisleri Ekleyelim**
+builder.Services.AddDistributedMemoryCache(); // **Session iï¿½in Gerekli**
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // **30 Dakika Oturum Süresi**
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // **30 Dakika Oturum Sï¿½resi**
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -23,16 +23,16 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// **Middleware yapýlandýrmasý**
+// **Middleware yapï¿½landï¿½rmasï¿½**
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseDeveloperExceptionPage();
 
-app.UseSession(); // **Session Middleware'ini Etkinleþtir**
+app.UseSession(); // **Session Middleware'ini Etkinleï¿½tir**
 app.UseAuthorization();
 
-// **Varsayýlan Route Yapýsý**
+// **Varsayï¿½lan Route Yapï¿½sï¿½**
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(

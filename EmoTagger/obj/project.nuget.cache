@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1WHXJiyQ/SQO9rLB9ZNJ3utI44ex3FYQxTkjKZlmxw294sDMM0g22H7oCacqSTuwbCj/GdQ3B5HMoT/wT49s+w==",
+  "dgSpecHash": "Dca4d3nr6PfHRFIfAYGn7PFWq8ag8PiV05MTcYUCd6xSQuDhMpatz8Fy3RSLfDO3pWWG3MJAZNNmQd+mf/Sy5A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\emrek\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj",
+  "projectFilePath": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\EmoTagger.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\emrek\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\emrek\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

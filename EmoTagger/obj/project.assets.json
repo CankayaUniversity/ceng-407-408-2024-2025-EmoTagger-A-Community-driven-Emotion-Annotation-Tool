@@ -2952,11 +2952,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\emrek\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj",
+      "projectUniqueName": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\EmoTagger.csproj",
       "projectName": "EmoTagger",
-      "projectPath": "C:\\Users\\emrek\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj",
+      "projectPath": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\EmoTagger.csproj",
       "packagesPath": "C:\\Users\\emrek\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\emrek\\Desktop\\EmoTagger\\EmoTagger\\obj\\",
+      "outputPath": "C:\\Users\\emrek\\Desktop\\EmoTagger Code\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\emrek\\AppData\\Roaming\\NuGet\\NuGet.Config"
