@@ -1,0 +1,50 @@
+[
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "AddToPlaylist",
+    "RelativePath": "Playlist/Add",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "EmoTagger.Controllers.PlaylistController\u002BPlaylistRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "RemoveFromPlaylist",
+    "RelativePath": "Playlist/Remove",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "EmoTagger.Controllers.PlaylistController\u002BPlaylistRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "GetPlaylistByUser",
+    "RelativePath": "Playlist/User/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
