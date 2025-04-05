@@ -1,0 +1,20 @@
+# Backend
+*.cs linguist-language=C#
+*.cshtml linguist-language=HTML
+
+# Frontend
+*.js linguist-language=JavaScript
+*.css linguist-language=CSS
+*.html linguist-language=HTML
+
+# Config & Markup
+*.json linguist-language=JSON
+*.xml linguist-language=XML
+
+# Assets
+*.mp3 linguist-language=Binary
+
+# Ignore build folders for linguist
+bin/* linguist-vendored
+obj/* linguist-vendored
+.vs/* linguist-vendored
