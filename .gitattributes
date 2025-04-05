@@ -7,14 +7,14 @@
 *.css linguist-language=CSS
 *.html linguist-language=HTML
 
-# Config & Markup
+# Config & Data
 *.json linguist-language=JSON
 *.xml linguist-language=XML
 
-# Assets
+# Assets (müzik dosyaları gibi)
 *.mp3 linguist-language=Binary
 
-# Ignore build folders for linguist
-bin/* linguist-vendored
-obj/* linguist-vendored
-.vs/* linguist-vendored
+# Derleme klasörlerini dışla (analize dahil edilmesin)
+bin/** linguist-vendored
+obj/** linguist-vendored
+.vs/** linguist-vendored
