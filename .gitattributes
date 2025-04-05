@@ -1,20 +1,18 @@
-# Backend
+# Backend (C# + Razor)
 *.cs linguist-language=C#
 *.cshtml linguist-language=HTML
 
 # Frontend
 *.js linguist-language=JavaScript
 *.css linguist-language=CSS
-*.html linguist-language=HTML
 
-# Config & Data
+# Config / Metadata
 *.json linguist-language=JSON
-*.xml linguist-language=XML
 
-# Assets (müzik dosyaları gibi)
+# Binary dosyalar (analize dahil edilmesin)
 *.mp3 linguist-language=Binary
 
-# Derleme klasörlerini dışla (analize dahil edilmesin)
+# Derleme klasörleri
 bin/** linguist-vendored
 obj/** linguist-vendored
 .vs/** linguist-vendored
