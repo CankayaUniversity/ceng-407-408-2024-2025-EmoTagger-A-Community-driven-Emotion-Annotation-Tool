@@ -1,0 +1,552 @@
+﻿.view-more-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.view-more-btn {
+    background: linear-gradient(45deg, #FF416C, #FF4B2B);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+}
+
+    .view-more-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(255, 75, 43, 0.5);
+        background: linear-gradient(45deg, #FF4B2B, #FF416C);
+    }
+
+    .view-more-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 10px rgba(255, 75, 43, 0.4);
+    }
+body {
+    background-color: var(--background);
+    color: var(--text);
+    transition: background-color 0.3s, color 0.3s;
+}
+:root {
+    /* Mood Tag Colors */
+    --tag-sad: #3f37c9;
+    --tag-happy: #ffbe0b;
+    --tag-melancholy: #9d4edd;
+    --tag-energetic: #ff006e;
+    --tag-relaxing: #4cc9f0;
+    --tag-romantic: #f72585;
+}
+
+/* Mood Tag Buttons Styling */
+.tag-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.tag-btn {
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+    .tag-btn.sad {
+        background-color: var(--tag-sad);
+    }
+
+    .tag-btn.happy {
+        background-color: var(--tag-happy);
+        color: black;
+    }
+
+    .tag-btn.melancholy {
+        background-color: var(--tag-melancholy);
+    }
+
+    .tag-btn.energetic {
+        background-color: var(--tag-energetic);
+    }
+
+    .tag-btn.relaxing {
+        background-color: var(--tag-relaxing);
+        color: black;
+    }
+
+    .tag-btn.romantic {
+        background-color: var(--tag-romantic);
+    }
+
+    .tag-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        filter: brightness(1.1);
+    }
+
+    .tag-btn.selected {
+        border: 2px solid white;
+        position: relative;
+        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+        .tag-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+        }
+
+
+.rainbow-bg {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .rainbow-bg {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.rainbow-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #ff006e, #3a86ff, #8338ec, #ffbe0b, #fb5607);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    opacity: 0.7;
+    z-index: -1;
+    filter: blur(10px);
+    transition: opacity 0.3s ease;
+}
+
+[data-theme="light"] .rainbow-bg::before {
+    opacity: 0.5;
+    background: linear-gradient(45deg, #4f46e5, #0ea5e9, #8b5cf6, #f59e0b, #f43f5e);
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.now-playing-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.song-info {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
+    backdrop-filter: blur(5px);
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 1rem;
+}
+
+.music-note-animation {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.music-note {
+    font-size: 4rem;
+    color: rgba(255,255,255,0.7);
+    animation: rotate 8s linear infinite;
+    position: absolute;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.music-note-pulse {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+.song-details {
+    flex: 1;
+}
+
+.song-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #ffffff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.song-artist {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.tag-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="light"] .tag-section {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.tag-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text);
+    transition: color 0.3s ease;
+}
+
+.tag-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.tag-btn {
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .tag-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.1);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .tag-btn:hover::before {
+        transform: translateX(0);
+    }
+
+    .tag-btn:hover {
+        transform: translateY(-3px);
+    }
+
+    .tag-btn.sad {
+        background-color: var(--tag-sad);
+    }
+
+        .tag-btn.sad::before {
+            content: "😢 ";
+        }
+
+    .tag-btn.happy {
+        background-color: var(--tag-happy);
+        color: #333;
+    }
+
+        .tag-btn.happy::before {
+            content: "😊 ";
+        }
+
+    .tag-btn.melancholy {
+        background-color: var(--tag-melancholy);
+    }
+
+        .tag-btn.melancholy::before {
+            content: "😔 ";
+        }
+
+    .tag-btn.energetic {
+        background-color: var(--tag-energetic);
+    }
+
+        .tag-btn.energetic::before {
+            content: "⚡ ";
+        }
+
+    .tag-btn.relaxing {
+        background-color: var(--tag-relaxing);
+        color: #333;
+    }
+
+        .tag-btn.relaxing::before {
+            content: "😌 ";
+        }
+
+    .tag-btn.romantic {
+        background-color: var(--tag-romantic);
+    }
+
+        .tag-btn.romantic::before {
+            content: "❤️ ";
+        }
+
+    .tag-btn.selected {
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+        .tag-btn.selected::after {
+            content: ' ✓';
+        }
+
+.history-section {
+    margin-top: 3rem;
+}
+
+.history-tabs {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.history-tab {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    background-color: var(--card-bg);
+    transition: all 0.3s ease;
+    color: var(--text);
+}
+
+    .history-tab:first-child {
+        border-top-left-radius: 0.5rem;
+        border-bottom-left-radius: 0.5rem;
+    }
+
+    .history-tab:last-child {
+        border-top-right-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+    }
+
+    .history-tab.active {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+    }
+
+.history-content {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: background-color 0.3s ease;
+}
+
+.history-table {
+    width: 100%;
+    color: var(--text);
+    transition: color 0.3s ease;
+}
+
+    .history-table th {
+        padding: 0.75rem;
+        background-color: rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+    }
+
+[data-theme="dark"] .history-table th {
+    background-color: rgba(0,0,0,0.3);
+}
+
+.history-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.history-table tr:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+    .tag-badge.sad {
+        background-color: var(--tag-sad);
+    }
+
+        .tag-badge.sad::before {
+            content: "😢 ";
+        }
+
+    .tag-badge.happy {
+        background-color: var(--tag-happy);
+        color: #333;
+    }
+
+        .tag-badge.happy::before {
+            content: "😊 ";
+        }
+
+    .tag-badge.melancholy {
+        background-color: var(--tag-melancholy);
+    }
+
+        .tag-badge.melancholy::before {
+            content: "😔 ";
+        }
+
+    .tag-badge.energetic {
+        background-color: var(--tag-energetic);
+    }
+
+        .tag-badge.energetic::before {
+            content: "⚡ ";
+        }
+
+    .tag-badge.relaxing {
+        background-color: var(--tag-relaxing);
+        color: #333;
+    }
+
+        .tag-badge.relaxing::before {
+            content: "😌 ";
+        }
+
+    .tag-badge.romantic {
+        background-color: var(--tag-romantic);
+    }
+
+        .tag-badge.romantic::before {
+            content: "❤️ ";
+        }
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .song-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .tag-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .tag-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .history-tabs {
+        flex-direction: column;
+    }
+
+    .history-tab {
+        border-radius: 0;
+        margin-bottom: 0.25rem;
+    }
+}
