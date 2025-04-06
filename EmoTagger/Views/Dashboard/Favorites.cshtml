@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "Favorilerim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="~/css/myfav.css">
+<div class="container mt-4">
+    <h1 class="mb-4">Favorilerim</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Şarkı</th>
+                                    <th>Sanatçı</th>
+                                    <th>Eklenme Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="favoritesList">
+                                <!-- Favoriler buraya eklenecek -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFavorites();
+    });
+
+    function loadFavorites() {
+        fetch('/Dashboard/GetFavorites')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('favoritesList');
+                tableBody.innerHTML = '';
+
+                if (data.favorites && data.favorites.length > 0) {
+                    data.favorites.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${decodeHtmlEntities(item.title || 'Bilinmeyen Şarkı')}</td>
+                            <td>${decodeHtmlEntities(item.artist || 'Bilinmeyen Sanatçı')}</td>
+                            <td>${new Date(item.addedAt).toLocaleString('tr-TR')}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="removeFavorite(${item.id})">
+                                    <i class="fas fa-trash"></i> Kaldır
+                                </button>
+                                <button class="btn btn-sm btn-primary" onclick="playFavorite(${item.id})">
+                                    <i class="fas fa-play"></i> Çal
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Henüz favoriniz bulunmuyor.</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Favoriler yüklenirken hata:', error);
+                document.getElementById('favoritesList').innerHTML =
+                    '<tr><td colspan="4" class="text-center">Favoriler yüklenirken bir hata oluştu.</td></tr>';
+            });
+    }
+
+    function removeFavorite(id) {
+        if (confirm('Bu şarkıyı favorilerden kaldırmak istediğinize emin misiniz?')) {
+            fetch('/Dashboard/RemoveFavorite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ musicId: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadFavorites();
+                } else {
+                    alert(data.message || 'Favoriden kaldırma başarısız oldu!');
+                }
+            })
+            .catch(error => {
+                console.error('Favoriden kaldırma hatası:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+    }
+
+    function playFavorite(id) {
+        // Müzik Player sayfasına yönlendir ve seçili şarkıyı çal
+        window.location.href = `/Dashboard/Play?id=${id}`;
+    }
+
+    // HTML entity'leri decode etmek için yardımcı fonksiyon
+    function decodeHtmlEntities(text) {
+        if (!text) return '';
+        const textArea = document.createElement('textarea');
+        textArea.innerHTML = text;
+        return textArea.value;
+    }
+        function toggleFavorite() {
+        const musicId = window.currentMusicId;
+        if (!musicId) {
+            alert('Şu anda çalan bir müzik yok!');
+            return;
+        }
+
+        const heartIcon = document.querySelector('.heart-icon i');
+        const isFavorite = heartIcon.classList.contains('favorite');
+
+        fetch('/Dashboard/ToggleFavorite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ musicId: parseInt(musicId), remove: isFavorite })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.isFavorite) {
+                    heartIcon.classList.add('favorite');
+                    heartIcon.style.color = '#ff3366';
+                } else {
+                    heartIcon.classList.remove('favorite');
+                    heartIcon.style.color = '';
+                }
+                alert(data.isFavorite ? 'Favorilere eklendi!' : 'Favorilerden çıkarıldı!');
+            } else {
+                alert(data.message || 'İşlem başarısız oldu!');
+            }
+        })
+        .catch(error => {
+            console.error('Favori işlemi hatası:', error);
+            alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+        });
+    }
+
+    // Favorileri kontrol et ve UI'ı güncelle
+    function checkFavoriteStatus() {
+        const musicId = window.currentMusicId;
+        if (!musicId) return;
+
+        fetch(`/Dashboard/CheckFavorite?musicId=${musicId}`)
+            .then(response => response.json())
+            .then(data => {
+                const heartIcon = document.querySelector('.heart-icon i');
+                if (heartIcon) {
+                    if (data.isFavorite) {
+                        heartIcon.classList.add('favorite');
+                        heartIcon.style.color = '#ff3366';
+                    } else {
+                        heartIcon.classList.remove('favorite');
+                        heartIcon.style.color = '';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Favori kontrolü hatası:', error);
+            });
+    }
+
+    // Şarkı değiştiğinde favorileri kontrol et
+    document.addEventListener('songChanged', function() {
+        setTimeout(checkFavoriteStatus, 500);
+    });
+
+    // Sayfa yüklendiğinde mevcut şarkı için kontrol et
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(checkFavoriteStatus, 1000);
+    });
+        // Sayfa yüklendiğinde session kontrolü yap
+    document.addEventListener('DOMContentLoaded', function() {
+        // Session kontrolü
+        fetch('/Dashboard/CheckSession')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isLoggedIn) {
+                    // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
+                    window.location.href = '/Dashboard/Login';
+                } else {
+                    // Giriş yapmışsa favorileri yükle
+                    loadFavorites();
+                }
+            })
+            .catch(error => {
+                console.error('Session kontrolü hatası:', error);
+            });
+    });
+</script>
