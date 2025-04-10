@@ -1,8 +1,273 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";  // Eğer `_Layout.cshtml` kullanıyorsan!
+﻿@model EmoTagger.Models.ProfileViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Profilim";
 }
-<!doctype html>
-<html lang="en" dir="ltr">
 
+<link rel="stylesheet" href="~/css/profile.css">
 
-</html>
+<div class="profile-container">
+    <div class="profile-grid">
+        <!-- Sol Sütun: Kullanıcı Resmi ve Hızlı Bilgiler -->
+        <div class="left-column">
+            <div class="profile-card">
+                <div class="profile-image-container">
+                    <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "/assets/images/default-profile.png" : Model.ProfileImageUrl)" alt="Profil Resmi" class="profile-image">
+                    <h3 class="profile-name">@($"{Model.FirstName} {Model.LastName}")</h3>
+                    <p class="profile-email">@Model.Email</p>
+
+                    <form method="post" enctype="multipart/form-data" asp-controller="Dashboard" asp-action="UploadProfilePicture" id="uploadForm">
+                        <input type="file" id="profileImage" name="profileImage" accept="image/*" style="display: none;" />
+                        <label for="profileImage" class="btn-upload">
+                            Profil Resmini Değiştir
+                        </label>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Müzik İstatistikleri Kartı -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h4>Müzik İstatistikleri</h4>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 15px;">
+                        <h5>En Çok Dinlenen Türler</h5>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                            <span>Pop</span>
+                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
+                                <div style="width: 75%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
+                            </div>
+                            <span>75%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                            <span>Rock</span>
+                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
+                                <div style="width: 60%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
+                            </div>
+                            <span>60%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                            <span>R&B</span>
+                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
+                                <div style="width: 45%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
+                            </div>
+                            <span>45%</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h5>Aktivite</h5>
+                        <p><strong>Çalınan şarkılar: </strong> 428</p>
+                        <p><strong>Oluşturulan çalma listeleri: </strong> 12</p>
+                        <p><strong>Favoriler: </strong> 86 şarkı</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Sütun: Profil, Müzik Geçmişi ve Arkadaşlar için Sekmeler -->
+        <div class="right-column">
+            <div class="profile-card">
+                <div class="profile-tabs">
+                    <button class="tab-link active" data-tab="profile-info">Profil Bilgisi</button>
+                    <button class="tab-link" data-tab="music-history">Müzik Geçmişi</button>
+                    <button class="tab-link" data-tab="friends">Arkadaşlar</button>
+                </div>
+
+                <div class="card-body">
+                    <!-- Profil Bilgisi Sekmesi -->
+                    <div id="profile-info" class="tab-content active">
+                        <h4>Hesap Bilgileri</h4>
+                        <form method="post" asp-controller="Dashboard" asp-action="UpdateProfile">
+                            <!-- GİZLİ GÖNDERİLEN ALANLAR -->
+                            <input type="hidden" name="Email" value="@Model.Email" />
+                            <input type="hidden" name="ProfileImageUrl" value="@Model.ProfileImageUrl" />
+
+                            <div class="form-group">
+                                <label class="form-label">Ad</label>
+                                <input type="text" name="FirstName" class="form-control" value="@Model.FirstName" readonly />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Soyad</label>
+                                <input type="text" name="LastName" class="form-control" value="@Model.LastName" readonly />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Telefon</label>
+                                <input type="text" name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" readonly />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ülke</label>
+                                <input type="text" name="Country" class="form-control" value="@Model.Country" readonly />
+                            </div>
+
+                            <div style="text-align: right;">
+                                <button type="button" id="editBtn" class="btn btn-primary">Profili Düzenle</button>
+                                <button type="submit" id="saveBtn" class="btn btn-success" style="display:none;">Değişiklikleri Kaydet</button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <!-- Müzik Geçmişi Sekmesi -->
+                    <div id="music-history" class="tab-content">
+                        <h4>Son Çalınanlar</h4>
+                        <div class="music-history">
+                            <div class="music-item">
+                                <img src="/assets/images/album-covers/album1.jpg" alt="Albüm kapağı" class="music-artwork">
+                                <div class="music-info">
+                                    <div class="music-title">Blinding Lights</div>
+                                    <div class="music-artist">The Weeknd</div>
+                                </div>
+                                <div class="music-play-count">
+                                    42 çalma
+                                </div>
+                            </div>
+
+                            <div class="music-item">
+                                <img src="/assets/images/album-covers/album2.jpg" alt="Albüm kapağı" class="music-artwork">
+                                <div class="music-info">
+                                    <div class="music-title">Dance Monkey</div>
+                                    <div class="music-artist">Tones and I</div>
+                                </div>
+                                <div class="music-play-count">
+                                    38 çalma
+                                </div>
+                            </div>
+
+                            <div class="music-item">
+                                <img src="/assets/images/album-covers/album3.jpg" alt="Albüm kapağı" class="music-artwork">
+                                <div class="music-info">
+                                    <div class="music-title">Watermelon Sugar</div>
+                                    <div class="music-artist">Harry Styles</div>
+                                </div>
+                                <div class="music-play-count">
+                                    29 çalma
+                                </div>
+                            </div>
+
+                            <div class="music-item">
+                                <img src="/assets/images/album-covers/album4.jpg" alt="Albüm kapağı" class="music-artwork">
+                                <div class="music-info">
+                                    <div class="music-title">Levitating</div>
+                                    <div class="music-artist">Dua Lipa ft. DaBaby</div>
+                                </div>
+                                <div class="music-play-count">
+                                    23 çalma
+                                </div>
+                            </div>
+
+                            <div class="music-item">
+                                <img src="/assets/images/album-covers/album5.jpg" alt="Albüm kapağı" class="music-artwork">
+                                <div class="music-info">
+                                    <div class="music-title">Save Your Tears</div>
+                                    <div class="music-artist">The Weeknd</div>
+                                </div>
+                                <div class="music-play-count">
+                                    18 çalma
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Arkadaşlar Sekmesi -->
+                    <div id="friends" class="tab-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h4>Arkadaşlar</h4>
+                            <button class="btn btn-primary">Arkadaş Ekle</button>
+                        </div>
+
+                        <div class="friends-list">
+                            <div class="friend-card">
+                                <img src="/assets/images/users/user1.jpg" alt="Arkadaş" class="friend-image">
+                                <div class="friend-info">
+                                    <div class="friend-name">Emma Thompson</div>
+                                    <div class="friend-status">Çevrimiçi</div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="friend-card">
+                                <img src="/assets/images/users/user2.jpg" alt="Arkadaş" class="friend-image">
+                                <div class="friend-info">
+                                    <div class="friend-name">James Wilson</div>
+                                    <div class="friend-status">Çevrimdışı</div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="friend-card">
+                                <img src="/assets/images/users/user3.jpg" alt="Arkadaş" class="friend-image">
+                                <div class="friend-info">
+                                    <div class="friend-name">Olivia Parker</div>
+                                    <div class="friend-status">Şimdi dinliyor</div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="friend-card">
+                                <img src="/assets/images/users/user4.jpg" alt="Arkadaş" class="friend-image">
+                                <div class="friend-info">
+                                    <div class="friend-name">Noah Martinez</div>
+                                    <div class="friend-status">Çevrimiçi</div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editBtn = document.getElementById("editBtn");
+        const saveBtn = document.getElementById("saveBtn");
+        const inputs = document.querySelectorAll(".form-control");
+        let isFormEdited = false;
+
+        if (editBtn && saveBtn && inputs.length > 0) {
+            editBtn.addEventListener("click", function () {
+                inputs.forEach(input => input.removeAttribute("readonly"));
+                editBtn.style.display = "none";
+                saveBtn.style.display = "inline-block";
+            });
+
+            inputs.forEach(input => {
+                input.addEventListener("input", () => {
+                    isFormEdited = true;
+                });
+            });
+        }
+
+        // Sayfadan çıkarken uyar
+        window.addEventListener("beforeunload", function (e) {
+            if (isFormEdited) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    });
+</script>
+

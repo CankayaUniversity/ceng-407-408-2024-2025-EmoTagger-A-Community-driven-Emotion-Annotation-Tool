@@ -371,7 +371,8 @@ Index Of Script
     })
   }
   /*------------DOMContentLoaded--------------*/
-  document.addEventListener('DOMContentLoaded', (event) => {
+  
+  , (event) => {
     resizePlugins()
     loaderInit()
   });

@@ -39,6 +39,9 @@ namespace EmoTagger.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [NotMapped]
+        [Required(ErrorMessage = "Şifre tekrarı zorunludur.")]
+        [Compare("Password", ErrorMessage = "Şifreler uyuşmuyor!")]
+        [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
 
         [Column("reset_token")]
@@ -47,6 +50,9 @@ namespace EmoTagger.Models
         [Column("reset_token_expiry")]
         public DateTime? ResetTokenExpiry { get; set; }
 
+        [Column("profile_image_url")]
+        [StringLength(255)]
+        public string? ProfileImageUrl { get; set; }
         // Yeni eklenen ilişkisel özellikler
         public virtual ICollection<Music> Musics { get; set; }
      

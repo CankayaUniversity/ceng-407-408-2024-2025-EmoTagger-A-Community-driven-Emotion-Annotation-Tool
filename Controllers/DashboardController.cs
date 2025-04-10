@@ -4,6 +4,7 @@ using EmoTagger.Services;
 using EmoTagger.ViewComponents;
 using EmoTagger.Views.Dashboard;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -19,12 +20,15 @@ namespace EmoTagger.Controllers
         private readonly ApplicationDbContext _context;
         private readonly EmailService _emailService;
         private readonly ILogger<DashboardController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public DashboardController(
      ApplicationDbContext context,
+     IWebHostEnvironment webHostEnvironment,
      EmailService emailService,
      ILogger<DashboardController> logger)
         {
+            _webHostEnvironment = webHostEnvironment;
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -74,6 +78,7 @@ namespace EmoTagger.Controllers
                 return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
             }
         }
+
 
         [HttpGet]
         public IActionResult CheckSession()
@@ -387,6 +392,7 @@ namespace EmoTagger.Controllers
 
             HttpContext.Session.SetString("UserName", user.FirstName); // FirstName kullan
             HttpContext.Session.SetString("UserEmail", user.Email);
+            HttpContext.Session.SetString("UserProfileImage", user.ProfileImageUrl ?? "/assets/images/default-profile.png");
 
             return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
@@ -415,13 +421,18 @@ namespace EmoTagger.Controllers
 
         // 🛡️ Kullanıcı Kayıt İşlemi
         [HttpPost]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register([FromBody] User user)
         {
             if (!ModelState.IsValid)
             {
-                return Json(new { success = false, message = "Lütfen tüm alanları eksiksiz doldurun!" });
-            }
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { Property = x.Key, Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToList() })
+                    .ToList();
 
+                Console.WriteLine("Model doğrulama hataları: " + string.Join(", ", errors));
+                return Json(new { success = false, message = "Lütfen tüm alanları eksiksiz doldurun!", errors = errors });
+            }
             if (_context.Users.Any(u => u.Email == user.Email))
             {
                 return Json(new { success = false, message = "Bu e-posta zaten kayıtlı!" });
@@ -479,13 +490,9 @@ namespace EmoTagger.Controllers
             return View();
         }
 
-       
-        // 🛡️ Profil Sayfası
-        public IActionResult Profile()
-        {
-            return View();
-        }
 
+
+       
         // ⚙️ Ayarlar
         public IActionResult Settings()
         {
@@ -499,11 +506,193 @@ namespace EmoTagger.Controllers
             var musicList = _context.Musics.ToList(); // Music tablon
             return View(musicList); // View'e model olarak gönder
         }
-
-
-
-        // 🛑 Çıkış Yap
+        // Controller içinde
         [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            // Oturumdaki kullanıcı e-postasını al
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return RedirectToAction("Login", "Dashboard");
+            }
+
+            // Veritabanından kullanıcıyı sorgula
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // ProfileViewModel oluştur
+            var profileViewModel = new ProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Country = user.Country,
+                // Profil resmini veritabanından al, yoksa varsayılan resmi kullan
+                ProfileImageUrl = user.ProfileImageUrl ?? "/assets/images/default-profile.png"
+            };
+
+            return View(profileViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Geçersiz giriş!";
+                return View("Profile", model);
+            }
+
+            // Gelen verileri kontrol için logla
+            System.Diagnostics.Debug.WriteLine($"GELEN VERİ: {model.FirstName}, {model.LastName}, {model.Email}, {model.PhoneNumber}, {model.Country}");
+
+            // Kullanıcıyı e-posta ile bul
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Kullanıcı bulunamadı!";
+                return RedirectToAction("Login", "Dashboard");
+            }
+
+            // Güncelle
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Country = model.Country;
+
+            // Profil resmi güncellemesi
+            if (!string.IsNullOrEmpty(model.ProfileImageUrl))
+            {
+                user.ProfileImageUrl = model.ProfileImageUrl;
+            }
+
+            // Kaydet
+            var result = await _context.SaveChangesAsync();
+            System.Diagnostics.Debug.WriteLine("SaveChanges sonucu: " + result);
+
+            if (result > 0)
+            {
+                TempData["SuccessMessage"] = "Profil başarıyla güncellendi!";
+            }
+            else
+            {
+                TempData["WarningMessage"] = "Değişiklik yapılmadı.";
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile profileImage)
+        {
+            if (profileImage == null || profileImage.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Dosya seçilmedi.";
+                return RedirectToAction("Profile");
+            }
+
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return RedirectToAction("Login", "Dashboard");
+            }
+
+            // Dosya türünü kontrol et
+            var extension = Path.GetExtension(profileImage.FileName).ToLower();
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                TempData["ErrorMessage"] = "Sadece resim dosyaları kabul edilmektedir (.jpg, .jpeg, .png, .gif).";
+                return RedirectToAction("Profile");
+            }
+
+            try
+            {
+                // Veritabanından kullanıcıyı bul
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+                if (user == null)
+                {
+                    TempData["ErrorMessage"] = "Kullanıcı bulunamadı.";
+                    return RedirectToAction("Profile");
+                }
+
+                // Önceki resmi hatırla
+                var oldImageUrl = user.ProfileImageUrl;
+                System.Diagnostics.Debug.WriteLine($"Önceki profil resmi: {oldImageUrl}");
+
+                // Benzersiz dosya adı oluştur
+                var fileName = $"{Guid.NewGuid()}{extension}";
+
+                // Yükleme klasörü yolunu al
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "profiles");
+
+                // Klasör yoksa oluştur
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                // Dosyayı kaydet
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await profileImage.CopyToAsync(fileStream);
+                }
+
+                // Dosya yolunu oluştur
+                var fileUrl = $"/uploads/profiles/{fileName}";
+
+                // Kullanıcının profil resmini veritabanında güncelle
+                user.ProfileImageUrl = fileUrl;
+
+                // Değişiklikleri kaydet ve etkilenen satır sayısını al
+                var result = await _context.SaveChangesAsync();
+
+                // Debug için
+                System.Diagnostics.Debug.WriteLine($"Etkilenen satır sayısı: {result}");
+                System.Diagnostics.Debug.WriteLine($"Yeni profil resmi: {fileUrl}");
+
+                if (result > 0)
+                {
+                    TempData["SuccessMessage"] = "Profil resmi başarıyla güncellendi!";
+
+                    // Eğer önceki resim varsayılan değilse ve mevcut disk üzerinde ise, silebiliriz
+            
+                }
+                else
+                {
+                    TempData["WarningMessage"] = "Profil resmi güncellenemedi. Hiçbir değişiklik kaydedilmedi.";
+                }
+            }
+            catch (Exception ex)
+            {
+                var innerErrorMsg = ex.InnerException?.Message ?? "İç hata yok";
+                TempData["ErrorMessage"] = $"Resim yüklenirken hata oluştu: {ex.Message} - {innerErrorMsg}";
+
+                // Debug için
+                System.Diagnostics.Debug.WriteLine($"UploadProfilePicture hatası: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"İç hata: {innerErrorMsg}");
+            }
+
+            return RedirectToAction("Profile");
+        }
+    
+// 🛑 Çıkış Yap
+[HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
@@ -511,7 +700,7 @@ namespace EmoTagger.Controllers
         }
         public async Task<IActionResult> Index()
         {
-
+     
 
             return View();
         }

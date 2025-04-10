@@ -30,6 +30,7 @@
     <Compile Remove="Models\ListenTagModel.cs" />
     <Compile Remove="Models\LogPlayedRequest.cs" />
     <Compile Remove="Models\NowPlayingViewModel.cs" />
+    <Compile Remove="Models\Playlist.cs" />
     <Compile Remove="Models\RecentlyTagged.cs" />
     <Compile Remove="Models\Tag.cs" />
     <Compile Remove="Models\TagTrackDto.cs" />

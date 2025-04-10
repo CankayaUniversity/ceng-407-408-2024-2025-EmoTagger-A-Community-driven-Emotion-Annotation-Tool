@@ -557,7 +557,8 @@ else
             const currentIndex = parseInt(trackData.dataset.currentIndex || 0);
             const allTracks = trackData.querySelectorAll('.track-item');
 
-            if (!isNaN(currentIndex) && allTracks && allTracks.length > 0 && allTracks[currentIndex]) {
+            if (!isNaN(current
+            ) && allTracks && allTracks.length > 0 && allTracks[currentIndex]) {
                 const currentTrack = allTracks[currentIndex];
                 const trackId = currentTrack.dataset.id;
                 const trackTitle = currentTrack.dataset.title || '';

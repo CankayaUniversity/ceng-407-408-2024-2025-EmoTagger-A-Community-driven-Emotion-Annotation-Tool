@@ -1813,6 +1813,10 @@
       "PackagePath": "staticwebassets\\css\\favorites.css"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\layout.css",
+      "PackagePath": "staticwebassets\\css\\layout.css"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\leaderboard.css",
       "PackagePath": "staticwebassets\\css\\leaderboard.css"
     },
@@ -1863,6 +1867,14 @@
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\myfavorites.cs",
       "PackagePath": "staticwebassets\\css\\myfavorites.cs"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\playlist.css",
+      "PackagePath": "staticwebassets\\css\\playlist.css"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\profile.css",
+      "PackagePath": "staticwebassets\\css\\profile.css"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\rtl.css",
@@ -2537,6 +2549,14 @@
       "PackagePath": "staticwebassets\\images\\plugins\\video-3.mp4"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\images\\profiles\\s_s_com_638796448293361217.png",
+      "PackagePath": "staticwebassets\\images\\profiles\\s_s_com_638796448293361217.png"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\images\\profiles\\s_s_com_638796448480050970.jpg",
+      "PackagePath": "staticwebassets\\images\\profiles\\s_s_com_638796448480050970.jpg"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\images\\vectormap\\cloudy-day-1.png",
       "PackagePath": "staticwebassets\\images\\vectormap\\cloudy-day-1.png"
     },
@@ -3191,6 +3211,22 @@
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\50.mp3",
       "PackagePath": "staticwebassets\\music\\50.mp3"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\4d886aa9-03db-4f76-b3d6-20dda9bf97a5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\4d886aa9-03db-4f76-b3d6-20dda9bf97a5.jpg"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\d1228bf9-c602-4ffa-a7e5-479208f82cda.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\d1228bf9-c602-4ffa-a7e5-479208f82cda.jpg"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\d3c35e42-8db5-4255-8591-2b87e9da4ba8.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\d3c35e42-8db5-4255-8591-2b87e9da4ba8.jpg"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\e989ef19-b9fa-4eb0-a36d-5c8f06cf1513.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\e989ef19-b9fa-4eb0-a36d-5c8f06cf1513.jpg"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\vendor\\apexcharts\\dist\\apexchart.min.js",

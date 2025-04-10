@@ -9,8 +9,10 @@ namespace EmoTagger.Data
 
         public DbSet<MusicTag> MusicTags { get; set; }
         public DbSet<Music> Musics { get; set; }
+        
         public DbSet<User> Users { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<RecentlyPlayed> RecentlyPlayed { get; set; }
+      
     }
 }

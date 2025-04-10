@@ -1,4 +1,8 @@
-﻿
+﻿@{
+    
+    var profileImage = Context.Session.GetString("UserProfileImage") ?? "/assets/images/default-profile.png";
+}
+
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
@@ -53,6 +57,16 @@
 </head>
 <body class="  ">
     <style>
+        .iq-float-menu {
+            position: fixed;
+            bottom: auto !important; /* Alt pozisyonlama kaldırıldı */
+            top: 85% !important; /* Sayfa yüksekliğinin %70'ine konumlandırma */
+            right: 5px!important;
+            z-index: 999;
+        }
+
+        /* Alternatif olarak sabit bir piksel değeri de kullanabilirsiniz */
+        /* top: 400px !important; /* Üstten 400px aşağıda */
         /* Tema renkleri için CSS değişkenleri */
         :root {
             --primary: #7016d0;
@@ -389,6 +403,56 @@
             --accent: #f0f0f0;
             
         }
+
+        [data-theme="theme-gold"] .bg-primary,
+        [data-theme="theme-gold"] [class*="bg-primary"],
+        [data-theme="theme-gold"] .btn-primary,
+        [data-theme="theme-gold"] .header,
+        [data-theme="theme-gold"] .sidebar,
+        [data-theme="theme-gold"] .iq-float-menu-item.bg-primary {
+            background-color: #6F8FAF !important; /* Metalik gri-mavi */
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Sage Theme Styling */
+        [data-theme="theme-sage"] .bg-primary,
+        [data-theme="theme-sage"] [class*="bg-primary"],
+        [data-theme="theme-sage"] .btn-primary,
+        [data-theme="theme-sage"] .header,
+        [data-theme="theme-sage"] .sidebar,
+        [data-theme="theme-sage"] .iq-float-menu-item.bg-primary {
+            background: linear-gradient( 45deg, #2E8B57, /* Orjinal sage yeşili */
+            #3CB371, /* Açık yeşil */
+            #20B2AA, /* Açık deniz yeşili */
+            #00CED1, /* Koyu turkuaz */
+            #00FF7F, /* Bahar yeşili */
+            #2E8B57 /* Tekrar başa dönüş */
+            );
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            background-clip: border-box;
+        }
+
+        /* Wine Theme Styling */
+        [data-theme="theme-wine"] .bg-primary,
+        [data-theme="theme-wine"] [class*="bg-primary"],
+        [data-theme="theme-wine"] .btn-primary,
+        [data-theme="theme-wine"] .header,
+        [data-theme="theme-wine"] .sidebar,
+        [data-theme="theme-wine"] .iq-float-menu-item.bg-primary {
+            background-color: #722F37 !important;
+        }
+
+        /* Navy Blue Theme Styling */
+        [data-theme="theme-navy-blue"] .bg-primary,
+        [data-theme="theme-navy-blue"] [class*="bg-primary"],
+        [data-theme="theme-navy-blue"] .btn-primary,
+        [data-theme="theme-navy-blue"] .header,
+        [data-theme="theme-navy-blue"] .sidebar,
+        [data-theme="theme-navy-blue"] .iq-float-menu-item.bg-primary {
+            background-color: #1A2B3C !important;
+        }
         /* Diğer renkler için de aynı şekilde devam edin */
         /* Sayfanın tam yüksekliğe yayılmasını sağla */
         html, body {
@@ -463,11 +527,29 @@
             display: none;
         }
 
+        /* Kırmızı tema - beyaz yazı */
+        [data-theme="theme-navy-blue"] a.nav-link {
+            color: #ffffff !important;
         }
+        /* Kırmızı tema - beyaz yazı */
+        [data-theme="theme-wine"] a.nav-link {
+            color: #ffffff !important;
         }
+        /* Kırmızı tema - beyaz yazı */
+        [data-theme="theme-bordo"] a.nav-link {
+            color: #ffffff !important;
+        }
+   
+
+        
         /* Tema Renkleri için Nav Link Yazı Rengi Stilleri */
 
-    
+        /* Gold Theme Text Color Only */
+        
+        [data-theme="theme-gold"] .nav-link
+  {
+            color: #000000 !important;
+        }
 
         /* Mor tema - beyaz yazı */
         [data-theme="theme-mor"] a.nav-link {
@@ -706,33 +788,39 @@
                             @{
                                 var userName = Context.Session.GetString("UserName");
                             }
-                            <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
-                              
+                            <ul class="navbar-nav ms-auto align-items-center d-flex flex-row">
                                 @if (!string.IsNullOrEmpty(userName))
                                 {
-                                    <li class="nav-item ms-3">
-                                        <span class="text-primary fw-bold">Welcome @userName! Press play and lose yourself in the magic of music. </span>
-                                    </li>
-                                    <li class="nav-item ms-3">
-                                        <a asp-action="Logout" asp-controller="Dashboard" class="btn" style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;">
-                                            Log Out
+                                    <li class="nav-item d-flex align-items-center">
+                                        <span class="text-danger fw-bold me-2">
+                                            Welcome @userName! Press play and lose yourself in the magic of music.
+                                        </span>
+                                        <a asp-controller="Dashboard" asp-action="Profile">
+                                        <img src="@profileImage"
+                                             alt="Profil Resmi"
+                                             class="rounded-circle"
+                                             width="40"
+                                             height="40"
+                                                 style="object-fit: cover; border: 2px solid #ddd;" />
                                         </a>
                                     </li>
 
+                                    <li class="nav-item ms-3">
+                                        <a asp-action="Logout" asp-controller="Dashboard"
+                                           class="btn"
+                                           style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;">
+                                            Log Out
+                                        </a>
+                                    </li>
                                 }
                                 else
                                 {
-                                    <div class="d-flex align-items-center ms-3">
+                                    <li class="nav-item d-flex">
                                         <a asp-controller="Dashboard" asp-action="Login" class="btn btn-outline-primary me-2">Login</a>
                                         <a asp-controller="Dashboard" asp-action="Register" class="btn btn-primary">Register</a>
-                                    </div>
+                                    </li>
                                 }
                             </ul>
-
-
-
-
-                        </ul>
                     </div>
                 </div>
             </nav>            <!--Nav End-->
@@ -854,6 +942,7 @@
             </span>
         </span>
         <!-- Renk paleti modal -->
+        <!-- Theme Color Palette with Additional Elegant Colors -->
         <div class="theme-color-wrapper">
             <div class="theme-color-palette">
                 <div class="color-palette-header">
@@ -861,6 +950,7 @@
                     <span class="close-palette">×</span>
                 </div>
                 <div class="color-options">
+                    <!-- Original Colors -->
                     <span class="color-option" data-theme-color="theme-siyah" style="background-color: #121212;">
                         <i class="bi bi-check-lg"></i>
                     </span>
@@ -892,6 +982,20 @@
                         <i class="bi bi-check-lg"></i>
                     </span>
                     <span class="color-option" data-theme-color="theme-bordo" style="background-color: #9f1239;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+
+                    <!-- New Elegant Colors -->
+                    <span class="color-option" data-theme-color="theme-gold" style="background-color: #6F8FAF;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                    <span class="color-option" data-theme-color="theme-sage" style="background-color: #9BC4B7;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                    <span class="color-option" data-theme-color="theme-wine" style="background-color: #722F37;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                    <span class="color-option" data-theme-color="theme-navy-blue" style="background-color: #34495E;">
                         <i class="bi bi-check-lg"></i>
                     </span>
                 </div>
