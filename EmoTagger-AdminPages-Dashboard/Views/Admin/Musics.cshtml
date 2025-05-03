@@ -1,0 +1,74 @@
+﻿@model IEnumerable<EmoTagger.Models.Music>
+@{
+    ViewData["Title"] = "Müzikler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var tags = ViewBag.MusicTags as List<EmoTagger.Models.MusicTag>;
+    var tagCounts = ViewBag.TagCounts as Dictionary<int, int>;
+}
+
+<h2>Müzik Listesi</h2>
+<div class="btn-group mb-4">
+    <a class="btn btn-outline-primary" href="/Admin/Dashboard">Dashboard</a>
+    <a class="btn btn-outline-primary" href="/Admin/Users">Kullanıcılar</a>
+    <a class="btn btn-outline-primary" href="/Admin/Musics">Müzikler</a>
+</div>
+
+<form method="get" asp-action="Musics" class="d-flex mb-3" role="search">
+    <input type="text" name="search" class="form-control me-2" placeholder="Müzik ara (başlık/sanatçı)..." value="@ViewBag.Search" />
+    <button type="submit" class="btn btn-primary me-2">Ara</button>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+    {
+        <a href="/Admin/Musics" class="btn btn-secondary">Temizle</a>
+    }
+</form>
+
+
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Başlık</th>
+            <th>Sanatçı</th>
+            <th>Eklenme</th>
+            <th>Toplam Tag</th>
+            <th>Kimler Tagledi?</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var music in Model)
+        {
+            var relatedTags = tags?.Where(t => t.MusicId == music.musicid).ToList();
+            int totalTags = tagCounts != null && tagCounts.ContainsKey(music.musicid) ? tagCounts[music.musicid] : 0;
+
+            <tr>
+                <td>@music.title</td>
+                <td>@music.artist</td>
+                <td>@music.createdat.ToShortDateString()</td>
+                <td><strong>@totalTags</strong></td>
+                <td>
+                    @if (relatedTags != null && relatedTags.Count > 0)
+                    {
+                        <ul class="mb-0">
+                            @foreach (var tag in relatedTags)
+                            {
+                                <li>@tag.User.FirstName @tag.User.LastName - "@tag.Tag" (@tag.CreatedAt.ToShortDateString())</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <em class="text-muted">Henüz taglenmemiş</em>
+                    }
+                </td>
+                <td>
+                    <form method="post" asp-action="DeleteMusic">
+                        <input type="hidden" name="id" value="@music.musicid" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
