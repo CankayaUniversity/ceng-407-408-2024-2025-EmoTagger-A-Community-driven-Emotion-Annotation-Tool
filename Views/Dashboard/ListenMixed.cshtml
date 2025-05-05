@@ -1,26 +1,18 @@
-﻿@model List<EmoTagger.Models.Music>
+﻿@model EmoTagger.Models.ListenMixedViewModel
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // ID'ye göre sırala
-    var sortedMusics = Model?.OrderBy(m => m.musicid).ToList();
+    // Model.Tracks üzerinden sıralama yap
+    var sortedMusics = Model.Tracks.OrderBy(m => m.musicid).ToList();
 
-    // Sayfalama için gerekli değişkenler
     int pageSize = 15;
-    int currentPage = 1;
+    int currentPage = Model.CurrentPage;
 
-    // URL'den page parametresini oku
-    if (Context.Request.Query.ContainsKey("page") && int.TryParse(Context.Request.Query["page"], out int page))
-    {
-        currentPage = page > 0 ? page : 1;
-    }
+    int totalItems = sortedMusics.Count;
+    int totalPages = Model.TotalPages;
 
-    // Toplam öğe sayısı ve sayfa sayısı
-    int totalItems = sortedMusics?.Count ?? 0;
-    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-
-    // Geçerli sayfa için öğeleri al
-    var pagedItems = sortedMusics?.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    var pagedItems = sortedMusics.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
 }
 <link rel="stylesheet" href="~/css/listenmixed.css">
 <style>
@@ -102,71 +94,28 @@
             url.searchParams.set('page', page);
             window.location.href = url.toString();
         }
-
         function playMusic(src, title, element) {
-            // Previous playMusic function remains the same
             const audio = document.getElementById("musicPlayer");
+
             if (!audio) return;
 
-            document.querySelectorAll('.music-row').forEach(row => {
-                row.classList.remove('playing-now');
-            });
+            // localStorage'a son oynatılanı kaydet
+            localStorage.setItem("lastPlayedSrc", src);
+            localStorage.setItem("lastPlayedTitle", title);
 
-            if (element) {
-                element.classList.add('playing-now');
-            }
+            // Stil
+            document.querySelectorAll('.music-row').forEach(row => row.classList.remove('playing-now'));
+            if (element) element.classList.add('playing-now');
 
-            window.mixedPagePlaying = true;
-
-            if (window.titleInterval) {
-                clearInterval(window.titleInterval);
-                window.titleInterval = null;
-            }
-
-            if (window.titleCheckInterval) {
-                clearInterval(window.titleCheckInterval);
-                window.titleCheckInterval = null;
-            }
-
-            if (!window.originalSetCurrentTrack && window.setCurrentTrack) {
-                window.originalSetCurrentTrack = window.setCurrentTrack;
-                window.setCurrentTrack = function(track, autoPlay) {
-                    const result = window.originalSetCurrentTrack(track, autoPlay);
-
-                    if (window.mixedPagePlaying) {
-                        document.title = window.mixedPageTitle || document.title;
-                    }
-
-                    return result;
-                };
-            }
-
+            // Oynat
             audio.src = src;
             audio.play();
 
-            window.mixedPageTitle = title + " 🎵";
-            document.title = window.mixedPageTitle;
+            document.title = title + " 🎵";
 
             const marquee = document.querySelector('.marquee-content');
             if (marquee) {
                 marquee.innerHTML = `<strong>${title}</strong>`;
-            }
-
-            try {
-                const originalSetter = Object.getOwnPropertyDescriptor(Document.prototype, 'title').set;
-
-                Object.defineProperty(document, 'title', {
-                    set: function(val) {
-                        if (window.mixedPagePlaying && val !== window.mixedPageTitle) {
-                            originalSetter.call(this, window.mixedPageTitle);
-                        } else {
-                            originalSetter.call(this, val);
-                        }
-                    },
-                    get: Object.getOwnPropertyDescriptor(Document.prototype, 'title').get
-                });
-            } catch(e) {
-                console.error("Title override error:", e);
             }
         }
 

@@ -684,7 +684,15 @@
                     👤 <span class="item-name">My Profile</span>
                 </a>
             </li>
-           
+            @if (Context.Session.GetString("UserRole") == "Admin")
+            {
+                <li>
+                    <a asp-controller="Admin" asp-action="Index">
+                        <i class="fas fa-tools"></i> Admin Paneli
+                    </a>
+                </li>
+            }
+
         </div>
 
 
@@ -806,9 +814,10 @@
                                     </li>
 
                                     <li class="nav-item ms-3">
-                                        <a asp-action="Logout" asp-controller="Dashboard"
+                                        <a href="javascript:void(0);"
                                            class="btn"
-                                           style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;">
+                                           style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;"
+                                           onclick="performLogout()">
                                             Log Out
                                         </a>
                                     </li>
@@ -861,7 +870,7 @@
     </footer>
     <!--Footer End-->
     <!-- Global audio player that persists across page navigation -->
-<audio id="musicPlayer" preload="metadata" style="display:none;"></audio>
+    <audio id="musicPlayer" preload="metadata" controls style="width:100%; display:block;"></audio>
 
     <!-- Footer Section End -->        <!--Footer End-->
     <!--Burger Menu Start-->
@@ -1012,8 +1021,230 @@
     <script src="~/assets/js/plugins/tour.js" defer></script>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById("musicPlayer");
 
+            const lastSrc = localStorage.getItem("lastPlayedSrc");
+            const lastTitle = localStorage.getItem("lastPlayedTitle");
 
+            if (lastSrc && lastTitle) {
+                audio.src = lastSrc;
+
+                const marquee = document.querySelector('.marquee-content');
+                if (marquee) {
+                    marquee.innerHTML = `<strong>${lastTitle}</strong>`;
+                }
+
+                document.title = lastTitle + " 🎵";
+            }
+        });
+    </script>
+
+    <script>
+        // Sayfa geçişlerinde müziğin devam etmesini sağlayan SPA (Single Page Application) benzeri bağlantı yönetimi
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tüm iç bağlantıları işle (Listen & Tag hariç)
+            rehookLinks();
+
+            // Geri/ileri tuşları için popstate olayını dinle
+            window.addEventListener('popstate', function() {
+                // Sayfayı yeniden yüklerken müzik durumunu koru
+                const audio = document.getElementById('musicPlayer');
+                const isPlaying = audio && !audio.paused;
+                const currentTime = audio ? audio.currentTime : 0;
+                const currentSrc = audio ? audio.src : '';
+
+                // Sayfa yeniden yüklendiğinde müzik bilgilerini geri yükleyecek bir fonksiyon çağır
+                window.location.reload();
+            });
+        });
+
+        // Tüm bağlantıları yeniden bağla
+        function rehookLinks() {
+            document.querySelectorAll('a').forEach(link => {
+                // Zaten işlenmiş linkleri tekrar işleme
+                if (link.hasAttribute('data-hooked')) return;
+
+                // Dış bağlantıları ve Listen&Tag sayfasına olan bağlantıları normal davranışla bırak
+                const href = link.getAttribute('href');
+                if (!href ||
+                    href.startsWith('#') ||
+                    href.startsWith('javascript:') ||
+                    href.includes('/Dashboard/ListenTag') ||
+                    (href.startsWith('http') && !href.includes(window.location.hostname))) {
+                    return;
+                }
+
+                link.setAttribute('data-hooked', 'true');
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Müzik çalar bilgilerini kaydet
+                    const audio = document.getElementById('musicPlayer');
+                    const wasPlaying = audio && !audio.paused;
+                    const currentTime = audio ? audio.currentTime : 0;
+                    const currentSrc = audio ? audio.src : '';
+                    const currentTitle = localStorage.getItem('lastPlayedTitle') || '';
+
+                    // AJAX ile yeni sayfayı yükle
+                    fetch(href)
+                        .then(response => response.text())
+                        .then(html => {
+                            // HTML'i ayrıştır
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+
+                            // Ana içeriği güncelle
+                            const content = doc.querySelector('.content-inner');
+                            if (content) {
+                                document.querySelector('.content-inner').innerHTML = content.innerHTML;
+                            }
+
+                            // Başlığı güncelle
+                            document.title = doc.title;
+
+                            // URL'yi güncelle
+                            history.pushState({}, '', href);
+
+                            // Yeni sayfadaki scriptleri çalıştır
+                            Array.from(content.querySelectorAll('script')).forEach(oldScript => {
+                                const newScript = document.createElement('script');
+                                Array.from(oldScript.attributes).forEach(attr => {
+                                    newScript.setAttribute(attr.name, attr.value);
+                                });
+                                newScript.textContent = oldScript.textContent;
+
+                                // Eski script öğesini yenisiyle değiştir
+                                if (oldScript.parentNode) {
+                                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                                }
+                            });
+
+                            // Müzik çalarını geri yükle
+                            setTimeout(() => {
+                                // Müzik durumunu geri yükle
+                                if (wasPlaying && audio) {
+                                    audio.currentTime = currentTime;
+                                    if (audio.paused) {
+                                        audio.play().catch(e => console.warn("Otomatik oynatma engellendi:", e));
+                                    }
+                                }
+
+                                // Eğer çalınıyorsa, çalan şarkıyı görsel olarak işaretle
+                                if (audio && audio.src) {
+                                    document.querySelectorAll('.music-row').forEach(row => {
+                                        const onclick = row.getAttribute('onclick');
+                                        if (onclick && onclick.includes(audio.src)) {
+                                            row.classList.add('playing-now');
+                                        }
+                                    });
+                                }
+
+                                // Yeni bağlantıları tekrar bağla
+                                rehookLinks();
+                            }, 300);
+                        })
+                        .catch(error => {
+                            console.error("Sayfa yükleme hatası:", error);
+                            // Hata durumunda normal sayfa yüklemesine dön
+                            window.location.href = href;
+                        });
+                });
+            });
+        }
+
+        // Müzik oynatma fonksiyonunu global olarak tanımla
+        function playMusic(src, title, element) {
+            const audio = document.getElementById("musicPlayer");
+
+            if (!audio) return;
+
+            // localStorage'a son oynatılanı kaydet
+            localStorage.setItem("lastPlayedSrc", src);
+            localStorage.setItem("lastPlayedTitle", title);
+
+            // Stil
+            document.querySelectorAll('.music-row').forEach(row => row.classList.remove('playing-now'));
+            if (element) element.classList.add('playing-now');
+
+            // Global değişkenleri ayarla (footer ile uyum için)
+            window.currentTrackTitle = title.split(' - ')[0];
+            window.currentTrackArtist = title.split(' - ')[1];
+            window.currentMusicId = element ? element.getAttribute('data-music-id') : null;
+
+            // TrackData elementini güncelle (eğer varsa)
+            updateTrackDataElement();
+
+            // Oynat
+            audio.src = src;
+            audio.play().catch(e => console.warn("Otomatik oynatma engellendi:", e));
+
+            document.title = title + " 🎵";
+
+            const marquee = document.querySelector('.marquee-content');
+            if (marquee) {
+                marquee.innerHTML = `<strong>${title}</strong>`;
+            }
+
+            // Özel event tetikle - diğer bileşenlerle iletişim için
+            document.dispatchEvent(new CustomEvent('songChanged', {
+                detail: {
+                    id: window.currentMusicId,
+                    title: window.currentTrackTitle,
+                    artist: window.currentTrackArtist
+                }
+            }));
+        }
+
+        // TrackData elementini güncelle
+        function updateTrackDataElement() {
+            const trackDataElement = document.getElementById('trackData');
+            if (!trackDataElement || !window.currentMusicId) return;
+
+            // Şarkı index'ini bul
+            const trackItems = trackDataElement.querySelectorAll('.track-item');
+            let currentIndex = -1;
+
+            trackItems.forEach((item, index) => {
+                if (item.dataset.id === window.currentMusicId) {
+                    currentIndex = index;
+                }
+            });
+
+            // İndex bulunduysa güncelle
+            if (currentIndex >= 0) {
+                trackDataElement.dataset.currentIndex = currentIndex;
+                trackDataElement.dataset.currentTitle = window.currentTrackTitle;
+                trackDataElement.dataset.currentArtist = window.currentTrackArtist;
+            }
+        }
+
+        // Sayfa yüklendiğinde çalan şarkıları işaretle
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById("musicPlayer");
+            if (audio && audio.src) {
+                document.querySelectorAll('.music-row').forEach(row => {
+                    const onclick = row.getAttribute('onclick');
+                    if (onclick && onclick.includes(audio.src)) {
+                        row.classList.add('playing-now');
+                    }
+                });
+            }
+        });
+                // Logout işlemi için JavaScript fonksiyonu
+        function performLogout() {
+            // Tüm localStorage ve sessionStorage verilerini temizle
+            localStorage.removeItem("lastPlayedSrc");
+            localStorage.removeItem("lastPlayedTitle");
+            localStorage.removeItem("selectedCategory");
+            localStorage.removeItem("themeColor");
+            sessionStorage.clear();
+
+            // Önbelleği önlemek için rastgele bir parametre ekleyerek logout'a git
+            window.location.href = '/Dashboard/Logout?t=' + new Date().getTime();
+        }
+    </script>
 
 
 

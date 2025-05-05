@@ -56,7 +56,7 @@
     </div>
 
     <!-- Gizli audio elementi -->
-    <audio id="musicPlayer" style="display: none;"></audio>
+
 
     <!-- Müzik verisi için gizli div -->
     <div id="trackData" style="display: none;"
@@ -641,7 +641,9 @@ else
                     .then(data => {
                         console.log("✅ Dinleme kaydedildi:", data);
                         hasLogged = true;
-                        lastLoggedId = window.currentMusicId;
+                        lastLoggedId = window.
+                        
+                        MusicId;
 
                         // Başarılı loglamayı localStorage'a kaydet (zaman damgası ile)
                         localStorage.setItem('last_logged_' + window.currentMusicId, currentTime.toString());
@@ -809,7 +811,7 @@ else
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function () {
         console.log("Müzik takip modülü başlatılıyor...");
         const audioPlayer = document.getElementById('musicPlayer');
         if (!audioPlayer) {
@@ -824,12 +826,9 @@ else
         audioPlayer.addEventListener('loadedmetadata', function () {
             hasLogged = false;
             console.log("Yeni şarkı yüklendi, hasLogged sıfırlandı");
-
-            // Şarkının ID'sini bul
-            updateCurrentMusicId();
+            updateCurrentMusicId(); // 👈 burada artık geçerli
         });
 
-        // Şarkı değiştiğinde veya başladığında ID güncelleme
         function updateCurrentMusicId() {
             const trackData = document.getElementById("trackData");
             if (!trackData) {
@@ -837,7 +836,6 @@ else
                 return;
             }
 
-            // Aktif şarkı indeksini al
             const currentIndex = parseInt(trackData.dataset.currentIndex || 0);
             const allTracks = trackData.querySelectorAll('.track-item');
 
@@ -847,7 +845,6 @@ else
                 const trackTitle = currentTrack.dataset.title || '';
                 const trackArtist = currentTrack.dataset.artist || '';
 
-                // "Stay High" şarkısı kontrolü
                 const isStayHighSong = trackTitle.includes("Stay High") &&
                                       trackArtist.includes("Tove Lo");
 
@@ -870,5 +867,9 @@ else
                 console.warn("Geçerli şarkı indeksi bulunamadı:", currentIndex, "Toplam şarkı:", allTracks ? allTracks.length : 0);
             }
         }
+
+        // 💡 Eğer ayrıca şarkı başta yüklenmişse ID'yi de güncelle
+        updateCurrentMusicId();
     });
+
 </script>

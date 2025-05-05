@@ -1,4 +1,5 @@
-﻿/* Enhanced Music Table Styling */
+﻿
+/* Enhanced Music Table Styling */
 .music-table {
     width: 100%;
     border-collapse: collapse;
@@ -130,3 +131,4 @@
         opacity: 0.6;
     }
 }
+

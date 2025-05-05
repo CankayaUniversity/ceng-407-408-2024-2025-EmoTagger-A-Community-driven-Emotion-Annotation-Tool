@@ -1,33 +1,61 @@
-using EmoTagger.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using EmoTagger.Data;
+using EmoTagger.ViewModels;
+using System.Linq;
 
 namespace EmoTagger.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return RedirectToAction("Index", "Dashboard");
-        }
+            var viewModel = new HomeViewModel
+            {
+                // Trend þarkýlar (en çok dinlenen)
+                TrendingSongs = _context.Musics
+                    .OrderByDescending(m => m.playcount)
+                    .Take(6)
+                    .Select(m => new TrendingSongViewModel
+                    {
+                        MusicId = m.musicid,
+                        Title = m.title,
+                        Artist = m.artist,
+                        Filename = m.filename,
+                        MostCommonTag = "-", // Tag özelliði modelde yoksa "-" koy
+                        PlayCount = m.playcount
+                    }).ToList(),
 
+                // Önerilenler (en yeni eklenen)
+                RecommendedSongs = _context.Musics
+                    .OrderByDescending(m => m.createdat)
+                    .Take(4)
+                    .Select(m => new RecommendedSongViewModel
+                    {
+                        MusicId = m.musicid,
+                        Title = m.title,
+                        Artist = m.artist,
+                        Filename = m.filename,
+                        Tag = "-" // Henüz MostCommonTag gibi bir alan yoksa
+                    }).ToList(),
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+                // Etiketli þarkýlar yoksa boþ liste dön
+                MostTaggedSongs = new List<MostTaggedSongViewModel>(),
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                // Etiket daðýlýmý boþ (JS ile güncelleniyor)
+                TagDistribution = new List<TagDistributionViewModel>(),
+
+                // Kategoriler boþ (JS ile güncelleniyor)
+                EmotionCategories = new List<EmotionCategoryViewModel>()
+            };
+
+            return View(viewModel);
         }
     }
 }

@@ -55,6 +55,8 @@ namespace EmoTagger.Models
         public string? ProfileImageUrl { get; set; }
         // Yeni eklenen ilişkisel özellikler
         public virtual ICollection<Music> Musics { get; set; }
-     
+        public bool IsAdmin { get; set; } = false;
+
+
     }
 }

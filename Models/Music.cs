@@ -15,5 +15,6 @@ namespace EmoTagger.Models
         public DateTime createdat { get; set; } = DateTime.Now;
 
         public int? UserId { get; set; }  // 💖 Nullable yaparsan login olmayan da ekler
+        public int playcount { get; set; } = 0; // Varsayılan olarak 0'dan başlar
     }
 }

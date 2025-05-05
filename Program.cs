@@ -58,7 +58,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
+        pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 });
 
 app.MapControllerRoute(
@@ -66,5 +66,17 @@ app.MapControllerRoute(
     pattern: "dashboard/forgotpassword",
     defaults: new { controller = "Dashboard", action = "ForgotPassword" }
 );
-
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Eðer uploads/profiles klasöründeki bir dosyaysa önbelleði devre dýþý býrak
+        if (ctx.File.PhysicalPath.Contains("uploads/profiles"))
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+            ctx.Context.Response.Headers.Append("Expires", "0");
+        }
+    }
+});
 app.Run();

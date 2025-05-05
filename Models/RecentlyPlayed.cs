@@ -19,5 +19,12 @@ namespace EmoTagger.Models
 
         [Column("played_at")]
         public DateTime PlayedAt { get; set; } = DateTime.UtcNow;
+
+        // İlişkiler (isteğe bağlı ama önerilir)
+        [ForeignKey("MusicId")]
+        public virtual Music Music { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
     }
 }

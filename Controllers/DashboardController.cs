@@ -2,6 +2,7 @@
 using EmoTagger.Models;
 using EmoTagger.Services;
 using EmoTagger.ViewComponents;
+using EmoTagger.ViewModels;
 using EmoTagger.Views.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -386,25 +387,61 @@ namespace EmoTagger.Controllers
             {
                 return Json(new { success = false, message = "Şifreniz yanlış!" });
             }
+            if (loginUser.Email == "emotagger@admin.com")
+            {
+                Console.WriteLine($"Gelen şifre: {loginUser.Password}");
+                Console.WriteLine($"Hash: {user.Password}");
+            }
 
-            // Doğru session ekleme
+            // ✅ Session ayarları
             HttpContext.Session.SetInt32("UserId", user.Id);
-
-            HttpContext.Session.SetString("UserName", user.FirstName); // FirstName kullan
+            HttpContext.Session.SetString("UserName", user.FirstName);
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserProfileImage", user.ProfileImageUrl ?? "/assets/images/default-profile.png");
 
+            // ✅ Admin kontrolü
+            HttpContext.Session.SetString("UserRole", user.IsAdmin ? "Admin" : "User");
+
             return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+
         }
 
 
 
 
-        public IActionResult ListenMixed()
+        public IActionResult ListenMixed(int page = 1)
         {
-            var musics = _context.Musics.ToList();  // Postgres verisini çek
-            return View(musics);                   // View'e gönder
+            int pageSize = 15;
+            var sortedMusics = _context.Musics.OrderBy(m => m.musicid).ToList();
+
+            int totalItems = sortedMusics.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            int skip = (page - 1) * pageSize;
+            var pagedTracks = sortedMusics.Skip(skip).Take(pageSize).ToList();
+
+            // CurrentTrack işlemi (isteğe bağlı)
+            Music currentTrack = null;
+            if (HttpContext.Session.TryGetValue("CurrentMusicId", out byte[] trackIdBytes))
+            {
+                string trackIdStr = System.Text.Encoding.UTF8.GetString(trackIdBytes);
+                if (int.TryParse(trackIdStr, out int currentTrackId))
+                {
+                    currentTrack = _context.Musics.FirstOrDefault(m => m.musicid == currentTrackId);
+                }
+            }
+
+            var viewModel = new ListenMixedViewModel
+            {
+                Tracks = pagedTracks,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                CurrentTrack = currentTrack
+            };
+
+            return View(viewModel);  // HATA BURADA GENELLİKLE ANONİM TYPE DÖNÜYORSA OLUR
         }
+
+
         // 🎧 `Player` Sayfası
         public IActionResult Player()
         {
@@ -421,54 +458,86 @@ namespace EmoTagger.Controllers
 
         // 🛡️ Kullanıcı Kayıt İşlemi
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register(User user)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .Where(x => x.Value.Errors.Count > 0)
-                    .Select(x => new { Property = x.Key, Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToList() })
-                    .ToList();
+            // Form verilerini konsola yazdır
+            Console.WriteLine($"Form verileri: FirstName={user.FirstName}, LastName={user.LastName}, Email={user.Email}");
+            Console.WriteLine($"Şifre kontrolü: Password uzunluğu={user.Password?.Length ?? 0}, ConfirmPassword uzunluğu={user.ConfirmPassword?.Length ?? 0}");
 
-                Console.WriteLine("Model doğrulama hataları: " + string.Join(", ", errors));
-                return Json(new { success = false, message = "Lütfen tüm alanları eksiksiz doldurun!", errors = errors });
+            // Email kontrolü
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                return Json(new { success = false, message = "E-posta adresi girilmedi!" });
             }
+
+            // Kullanıcı adı soyadı kontrolü
+            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+            {
+                return Json(new { success = false, message = "Ad ve soyad alanları doldurulmalıdır!" });
+            }
+
+            // Email formatı kontrolü
+            if (!user.Email.Contains("@") || !user.Email.Contains("."))
+            {
+                return Json(new { success = false, message = "Geçerli bir e-posta adresi girin!" });
+            }
+
+            // Şifre boş mu kontrolü
+            if (string.IsNullOrEmpty(user.Password))
+            {
+                return Json(new { success = false, message = "Şifre girilmedi!" });
+            }
+
+            // Şifre uzunluğu kontrolü
+            if (user.Password.Length < 6)
+            {
+                return Json(new { success = false, message = "Şifreniz en az 6 karakter olmalıdır." });
+            }
+
+            // Email kayıtlı mı kontrolü
             if (_context.Users.Any(u => u.Email == user.Email))
             {
                 return Json(new { success = false, message = "Bu e-posta zaten kayıtlı!" });
             }
 
-            if (string.IsNullOrEmpty(user.Password) || user.Password.Length < 6)
-            {
-                return Json(new { success = false, message = "Şifreniz en az 6 karakter olmalıdır." });
-            }
-
+            // Şifre eşleşme kontrolü
             if (user.Password != user.ConfirmPassword)
             {
                 return Json(new { success = false, message = "Şifreler uyuşmuyor!" });
             }
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            user.CreatedAt = DateTime.UtcNow;
-
             try
             {
+                // Şifreyi hashle ve kayıt tarihini ekle
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                user.CreatedAt = DateTime.UtcNow;
+
+                // Kullanıcıyı veritabanına ekle
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
-                // ✅ Başarılıysa Login sayfasına yönlendir
-                return Json(new { success = true, redirectUrl = Url.Action("Login", "Dashboard") });
+                // Başarılı yanıt
+                return Json(new
+                {
+                    success = true,
+                    message = "Kayıt işlemi başarılı!",
+                    redirectUrl = Url.Action("Login", "Dashboard")
+                });
             }
             catch (Exception ex)
             {
+                // Hata durumunda detayları konsola yazdır
+                Console.WriteLine($"Kayıt hatası: {ex.Message}");
+                Console.WriteLine($"İç hata: {ex.InnerException?.Message}");
+
                 return Json(new
                 {
                     success = false,
-                    message = "Bir hata oluştu: " + (ex.InnerException?.Message ?? ex.Message)
+                    message = "Kayıt sırasında bir hata oluştu: " + (ex.InnerException?.Message ?? ex.Message)
                 });
             }
         }
-   
+
         // 🎧 Dinleme Geçmişi
         public async Task<IActionResult> ListeningHistory()
         {
@@ -547,7 +616,18 @@ namespace EmoTagger.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Geçersiz giriş!";
+                // Model doğrulama hatalarını detaylı olarak logla
+                foreach (var state in ModelState)
+                {
+                    if (state.Value.Errors.Count > 0)
+                    {
+                        foreach (var error in state.Value.Errors)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Doğrulama hatası: {state.Key} - {error.ErrorMessage}");
+                        }
+                    }
+                }
+                TempData["ErrorMessage"] = "Geçersiz giriş! Lütfen bilgilerinizi kontrol edin.";
                 return View("Profile", model);
             }
 
@@ -562,35 +642,85 @@ namespace EmoTagger.Controllers
                 return RedirectToAction("Login", "Dashboard");
             }
 
-            // Güncelle
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Country = model.Country;
+            // Değişiklikleri kontrol et ve sadece değişenleri güncelle
+            bool hasChanges = false;
+
+            if (user.FirstName != model.FirstName)
+            {
+                user.FirstName = model.FirstName;
+                hasChanges = true;
+            }
+
+            if (user.LastName != model.LastName)
+            {
+                user.LastName = model.LastName;
+                hasChanges = true;
+            }
+
+            if (user.PhoneNumber != model.PhoneNumber)
+            {
+                user.PhoneNumber = model.PhoneNumber;
+                hasChanges = true;
+            }
+
+            if (user.Country != model.Country)
+            {
+                user.Country = model.Country;
+                hasChanges = true;
+            }
 
             // Profil resmi güncellemesi
-            if (!string.IsNullOrEmpty(model.ProfileImageUrl))
+            if (!string.IsNullOrEmpty(model.ProfileImageUrl) && user.ProfileImageUrl != model.ProfileImageUrl)
             {
                 user.ProfileImageUrl = model.ProfileImageUrl;
+                hasChanges = true;
+            }
+
+            // Eğer değişiklik yoksa, veritabanına yazma
+            if (!hasChanges)
+            {
+                TempData["WarningMessage"] = "Herhangi bir değişiklik yapılmadı.";
+                return RedirectToAction("Profile");
             }
 
             // Kaydet
-            var result = await _context.SaveChangesAsync();
-            System.Diagnostics.Debug.WriteLine("SaveChanges sonucu: " + result);
+            try
+            {
+                var result = await _context.SaveChangesAsync();
+                System.Diagnostics.Debug.WriteLine("SaveChanges sonucu: " + result);
 
-            if (result > 0)
-            {
-                TempData["SuccessMessage"] = "Profil başarıyla güncellendi!";
+                if (result > 0)
+                {
+                    // Session bilgilerini güncelle
+                    HttpContext.Session.SetString("UserName", user.FirstName);
+                    HttpContext.Session.SetString("UserProfileImage", user.ProfileImageUrl ?? "/assets/images/default-profile.png");
+
+                    // Navbar'daki profil resminin güncellenmesi için
+                    TempData["RefreshPage"] = true;
+                    TempData["SuccessMessage"] = "Profil başarıyla güncellendi!";
+                }
+                else
+                {
+                    TempData["WarningMessage"] = "Değişiklik yapılmadı veya kaydedilemedi.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["WarningMessage"] = "Değişiklik yapılmadı.";
+                System.Diagnostics.Debug.WriteLine($"Güncelleme hatası: {ex.Message}");
+                TempData["ErrorMessage"] = $"Profil güncellenirken bir hata oluştu: {ex.Message}";
             }
 
             return RedirectToAction("Profile");
         }
+        [HttpGet]
+        public IActionResult GetProfileImageUrl()
+        {
+            // Session'dan profil resmi URL'ini al
+            var profileImageUrl = HttpContext.Session.GetString("UserProfileImage") ?? "/assets/images/default-profile.png";
 
-
+            // JSON olarak dön
+            return Json(new { profileImageUrl });
+        }
         [HttpPost]
         public async Task<IActionResult> UploadProfilePicture(IFormFile profileImage)
         {
@@ -599,79 +729,93 @@ namespace EmoTagger.Controllers
                 TempData["ErrorMessage"] = "Dosya seçilmedi.";
                 return RedirectToAction("Profile");
             }
-
             var userEmail = HttpContext.Session.GetString("UserEmail");
-
             if (string.IsNullOrEmpty(userEmail))
             {
                 return RedirectToAction("Login", "Dashboard");
             }
-
             // Dosya türünü kontrol et
             var extension = Path.GetExtension(profileImage.FileName).ToLower();
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
             if (!allowedExtensions.Contains(extension))
             {
                 TempData["ErrorMessage"] = "Sadece resim dosyaları kabul edilmektedir (.jpg, .jpeg, .png, .gif).";
                 return RedirectToAction("Profile");
             }
-
             try
             {
                 // Veritabanından kullanıcıyı bul
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == userEmail);
-
                 if (user == null)
                 {
                     TempData["ErrorMessage"] = "Kullanıcı bulunamadı.";
                     return RedirectToAction("Profile");
                 }
-
                 // Önceki resmi hatırla
                 var oldImageUrl = user.ProfileImageUrl;
                 System.Diagnostics.Debug.WriteLine($"Önceki profil resmi: {oldImageUrl}");
 
-                // Benzersiz dosya adı oluştur
-                var fileName = $"{Guid.NewGuid()}{extension}";
+                // Önbellek sorununu önlemek için timestamp ekle
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
+                // Benzersiz dosya adı oluştur
+                var fileName = $"{Guid.NewGuid()}_{timestamp}{extension}";
                 // Yükleme klasörü yolunu al
                 var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "profiles");
-
                 // Klasör yoksa oluştur
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-
                 var filePath = Path.Combine(uploadsFolder, fileName);
-
                 // Dosyayı kaydet
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await profileImage.CopyToAsync(fileStream);
                 }
-
-                // Dosya yolunu oluştur
-                var fileUrl = $"/uploads/profiles/{fileName}";
-
+                // Dosya yolunu oluştur - önbellek parametresi ekle
+                var fileUrl = $"/uploads/profiles/{fileName}?v={timestamp}";
                 // Kullanıcının profil resmini veritabanında güncelle
                 user.ProfileImageUrl = fileUrl;
-
                 // Değişiklikleri kaydet ve etkilenen satır sayısını al
                 var result = await _context.SaveChangesAsync();
-
                 // Debug için
                 System.Diagnostics.Debug.WriteLine($"Etkilenen satır sayısı: {result}");
                 System.Diagnostics.Debug.WriteLine($"Yeni profil resmi: {fileUrl}");
-
                 if (result > 0)
                 {
+                    // Session'daki profil resmini güncelle - bu çok önemli!
+                    HttpContext.Session.SetString("UserProfileImage", fileUrl);
+
                     TempData["SuccessMessage"] = "Profil resmi başarıyla güncellendi!";
+                    // Sayfanın yenilenmesi için flag ekle
+                    TempData["RefreshPage"] = true;
 
                     // Eğer önceki resim varsayılan değilse ve mevcut disk üzerinde ise, silebiliriz
-            
+                    if (!string.IsNullOrEmpty(oldImageUrl) &&
+                        !oldImageUrl.Contains("default-profile.png") &&
+                        oldImageUrl.StartsWith("/uploads/profiles/"))
+                    {
+                        try
+                        {
+                            // URL'den dosya adını çıkar
+                            var oldFileName = Path.GetFileName(oldImageUrl.Split('?')[0]);
+                            var oldFilePath = Path.Combine(uploadsFolder, oldFileName);
+
+                            // Dosya varsa sil
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                                System.Diagnostics.Debug.WriteLine($"Eski profil resmi silindi: {oldFilePath}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Eski resim silinirken hata: {ex.Message}");
+                            // Eski resim silinemedi ama bu kritik bir hata değil, devam edebiliriz
+                        }
+                    }
                 }
                 else
                 {
@@ -682,28 +826,53 @@ namespace EmoTagger.Controllers
             {
                 var innerErrorMsg = ex.InnerException?.Message ?? "İç hata yok";
                 TempData["ErrorMessage"] = $"Resim yüklenirken hata oluştu: {ex.Message} - {innerErrorMsg}";
-
                 // Debug için
                 System.Diagnostics.Debug.WriteLine($"UploadProfilePicture hatası: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"İç hata: {innerErrorMsg}");
             }
 
-            return RedirectToAction("Profile");
+            // Sayfayı yenileme parametresi ekle
+            return RedirectToAction("Profile", new { refresh = DateTime.Now.Ticks });
         }
-    
-// 🛑 Çıkış Yap
-[HttpGet]
+
+        [HttpGet]
         public IActionResult Logout()
         {
+            // Tüm session verilerini temizle
             HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+
+            // Çerezleri temizle (varsa)
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+
+            // Tarayıcının önbelleğe almasını engellemek için timestamp ekle
+            return RedirectToAction("Index", "Home", new { t = DateTime.Now.Ticks });
         }
         public async Task<IActionResult> Index()
         {
-     
+            var viewModel = new HomeViewModel();
 
-            return View();
+            viewModel.EmotionCategories = new List<EmotionCategoryViewModel>
+    {
+        new EmotionCategoryViewModel { Tag = "Sad" },
+        new EmotionCategoryViewModel { Tag = "Happy" },
+        new EmotionCategoryViewModel { Tag = "Nostalgic" },
+        new EmotionCategoryViewModel { Tag = "Energetic" },
+        new EmotionCategoryViewModel { Tag = "Relaxing" },
+        new EmotionCategoryViewModel { Tag = "Romantic" }
+    };
+
+            // Diğer özellikleri de boş listelerle başlat
+            viewModel.TrendingSongs = new List<TrendingSongViewModel>();
+            viewModel.MostTaggedSongs = new List<MostTaggedSongViewModel>();
+            viewModel.TagDistribution = new List<TagDistributionViewModel>();
+            viewModel.RecommendedSongs = new List<RecommendedSongViewModel>();
+
+            return View(viewModel);
         }
+
         [HttpGet]
         public IActionResult ListenTag()
         {
@@ -711,6 +880,7 @@ namespace EmoTagger.Controllers
 
             return View();
         }
+
         public class LogPlayedRequest
         {
             public int MusicId { get; set; }
@@ -791,6 +961,28 @@ namespace EmoTagger.Controllers
                 _logger.LogError(ex, "LogPlayed: Genel hata");
                 return Json(new { success = false, message = "Sunucu hatası" });
             }
+        }
+        [HttpGet]
+        public IActionResult GetRecentlyPlayed()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var lastPlays = _context.PlayCounts
+                .Where(p => p.UserId == userId)
+                .OrderByDescending(p => p.LastPlayed)
+                .Take(10)
+                .Select(p => new {
+                    Title = p.Music.title,
+                    Artist = p.Music.artist,
+                    PlayedAt = p.LastPlayed
+                }).ToList();
+
+            return Json(new { success = true, played = lastPlays });
         }
 
         [HttpGet]

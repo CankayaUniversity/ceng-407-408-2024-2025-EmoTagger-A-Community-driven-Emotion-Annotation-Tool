@@ -1,760 +1,604 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";  // Eğer `_Layout.cshtml` kullanıyorsan!
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Listen&Tag";
 }
 <!doctype html>
 <html lang="tr" dir="ltr">
 <head>
-  <link rel="stylesheet" href="~/css/listentag.css">
+    <link rel="stylesheet" href="~/css/listentag.css">
+ 
 </head>
-<!-- Balonlar için HTML Yapısı -->
-<div class="bubbles-container" id="bubblesContainer"></div>
-
-<!-- CSS Stili -->
-
-
-  
 <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Balon oluşturucu fonksiyon
-        function createBubbles() {
-            const container = document.getElementById('bubblesContainer');
+           // Daha yavaş hareket eden balonlar için JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM yüklendi, balonlar oluşturuluyor...");
 
-            // Sayfa yüklendiğinde balonları oluştur
-            for (let i = 0; i < 30; i++) {
+        // Sayfanın tam yüklenmesi için kısa bir bekleme
+        setTimeout(function() {
+            // Önce mevcut container'ı bul
+            let container = document.getElementById('bubblesContainer');
+
+            if (!container) {
+                console.error("bubblesContainer bulunamadı! Yeni bir container oluşturuluyor.");
+
+                // Container'ı doğrudan body'ye ekle (tüm sayfa için)
+                container = document.createElement('div');
+                container.id = 'bubblesContainer';
+                container.className = 'bubbles-container';
+
+                // Stil özellikleri
+                container.style.position = "fixed";
+                container.style.top = "0";
+                container.style.left = "0";
+                container.style.width = "100%";
+                container.style.height = "100%";
+                container.style.overflow = "hidden";
+                container.style.zIndex = "9999";
+                container.style.pointerEvents = "none";
+
+                // Body'nin ilk çocuğu olarak ekle
+                document.body.insertBefore(container, document.body.firstChild);
+                console.log("Yeni container oluşturuldu ve body'ye eklendi.");
+            }
+
+            // Container içeriğini temizle
+            container.innerHTML = '';
+
+            // Daha az balon oluştur (daha yavaş görünmesi için)
+            for (let i = 0; i < 20; i++) {
                 createBubble(container);
             }
 
-            // Belirli aralıklarla yeni balonlar ekle
+            // Daha az sıklıkta yeni balon ekle
             setInterval(() => {
                 createBubble(container);
-            }, 800);
-        }
+            }, 1000); // 1 saniyede bir yeni balon
 
-        // Tek bir balon oluştur
-        function createBubble(container) {
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble');
-
-            // Rastgele boyut (15px - 60px arası)
-            const size = Math.random() * 45 + 15;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-
-            // Rastgele renk
-            const colors = [
-                // Parlak ve canlı renkler
-                '#FF6B6B', '#4ECDC4', '#FF9F1C', '#F8CB2E',
-                '#A3CEF1', '#8EECF5', '#E4AEC5', '#FFD166',
-                '#06D6A0', '#118AB2', '#EF476F', '#FFC6FF',
-                '#67D5B5', '#84B1ED', '#FE5F55', '#FFBE0B'
-            ];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            bubble.style.backgroundColor = color;
-
-            // Rastgele başlangıç pozisyonu (yatay)
-            const startPositionX = Math.random() * 100;
-            bubble.style.left = `${startPositionX}%`;
-
-            // Rastgele animasyon süresi (8-18 saniye arası)
-            const animationDuration = (Math.random() * 10 + 8);
-            bubble.style.animationDuration = `${animationDuration}s`;
-
-            // Rastgele gecikme (0-5 saniye arası)
-            const delay = Math.random() * 5;
-            bubble.style.animationDelay = `${delay}s`;
-
-            // Balon container'a ekle
-            container.appendChild(bubble);
-
-            // Animasyon tamamlandığında balonu kaldır
-            setTimeout(() => {
-                if (container.contains(bubble)) {
-                    container.removeChild(bubble);
-                }
-            }, (animationDuration + delay) * 1000);
-        }
-
-        // Sayfada balonları başlat
-        createBubbles();
+            console.log("Balonlar başarıyla oluşturuldu!");
+        }, 200);
     });
 
-    // Sayfa tamamen yüklendikten sonra çalışacak
-    window.addEventListener('load', function() {
-      // Tag butonlarını seç
-      const tagButtons = document.querySelectorAll('.tag-btn');
-      console.log("Tag butonları bulundu:", tagButtons.length);
+    // Tek bir balon oluştur - daha yavaş hareket eden balonlar
+    function createBubble(container) {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
 
-      // Her butona data-tag özelliğini ekle
-      document.querySelector('.tag-btn.sad')?.setAttribute('data-tag', 'sad');
-      document.querySelector('.tag-btn.happy')?.setAttribute('data-tag', 'happy');
-      document.querySelector('.tag-btn.nostalgic')?.setAttribute('data-tag', 'nostalgic');
-      document.querySelector('.tag-btn.energetic')?.setAttribute('data-tag', 'energetic');
-      document.querySelector('.tag-btn.relaxing')?.setAttribute('data-tag', 'relaxing');
-      document.querySelector('.tag-btn.romantic')?.setAttribute('data-tag', 'romantic');
+        // Doğrudan stil ekle
+        bubble.style.position = "absolute";
+        bubble.style.borderRadius = "50%";
+        bubble.style.top = "-60px";
+        bubble.style.zIndex = "9999";
 
-      // Tüm butonlara tıklama olayı ekle
-      tagButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          console.log("Butona tıklandı", this.className);
+        // Çeşitli boyutlarda balonlar
+        const size = Math.random() * 40 + 15; // 15px - 55px arası
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
 
-          // Butonun data-tag özelliğini veya class'ına göre etiket değerini al
-          const tag = this.getAttribute('data-tag') ||
-                    (this.classList.contains('sad') ? 'sad' :
-                     this.classList.contains('happy') ? 'happy' :
-                     this.classList.contains('nostalgic') ? 'nostalgic' :
-                     this.classList.contains('energetic') ? 'energetic' :
-                     this.classList.contains('relaxing') ? 'relaxing' :
-                     this.classList.contains('romantic') ? 'romantic' : '');
+        // Parlak renkler
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#FF9F1C', '#F8CB2E',
+            '#A3CEF1', '#8EECF5', '#E4AEC5', '#FFD166',
+            '#06D6A0', '#118AB2', '#EF476F', '#FFC6FF',
+            '#67D5B5', '#84B1ED', '#FE5F55', '#FFBE0B'
+        ];
 
-          console.log("Etiket değeri:", tag);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        bubble.style.backgroundColor = color;
 
-          if (!tag) {
-            alert('Etiket değeri bulunamadı!');
-            return;
-          }
+        // Hafif parlaklık
+        bubble.style.boxShadow = `0 0 15px ${color}`;
+        bubble.style.filter = "brightness(1.2)";
+        bubble.style.opacity = "0.8";
 
-          // Çalan şarkı bilgisini al
-          const currentMusicId = window.currentMusicId;
-          console.log("Müzik ID:", currentMusicId);
+        // Animasyon özelliklerini direkt ekle
+        bubble.style.animation = "float-down linear forwards";
 
-          if (!currentMusicId) {
-            alert('Şu anda çalan bir müzik yok!');
-            return;
-          }
+        // Rastgele başlangıç pozisyonu (tüm sayfa genişliğinde)
+        const startPositionX = Math.random() * 100;
+        bubble.style.left = `${startPositionX}%`;
 
-          // API'ye kaydet
-          fetch('/Dashboard/SaveTag', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              musicId: parseInt(currentMusicId),
-              tag: tag
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Başarılı
-              const message = data.isUpdate ? 'Etiket güncellendi!' : 'Etiketlendi!';
-              alert(message);
+        // Daha uzun animasyon süresi (10-20 saniye arası - daha yavaş hareket)
+        const animationDuration = (Math.random() * 10 + 10);
+        bubble.style.animationDuration = `${animationDuration}s`;
 
-              // Aktif sekme etiketler ise listeyi yenile
-              if (document.querySelector('.history-tab[data-tab="recently-tagged"]').classList.contains('active')) {
-                loadRecentlyTagged();
-              }
-            } else {
-              alert(data.message || 'Etiketleme başarısız!');
+        // Rastgele gecikme (0-3 saniye)
+        const delay = Math.random() * 3;
+        bubble.style.animationDelay = `${delay}s`;
+
+        // Container'a ekle
+        container.appendChild(bubble);
+
+        // Animasyon tamamlandığında balonu kaldır
+        setTimeout(() => {
+            if (container.contains(bubble)) {
+                container.removeChild(bubble);
             }
-          })
-          .catch(error => {
-            console.error('Etiketleme hatası:', error);
-            alert('Bağlantı hatası! Etiket kaydedilemedi.');
-          });
-        });
-      });
-
-      // Son etiketlenenleri yükle
-      function loadRecentlyTagged() {
-        fetch('/Dashboard/GetRecentlyTagged')
-          .then(response => response.json())
-          .then(data => {
-            const tbody = document.getElementById('recentlyTaggedList');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
-
-            if (data.success && data.tags && data.tags.length > 0) {
-              data.tags.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${item.title || 'Bilinmeyen Şarkı'}</td>
-                  <td>${item.artist || 'Bilinmeyen Sanatçı'}</td>
-                  <td>${item.tag}</td>
-                  <td>${new Date(item.taggedAt).toLocaleString()}</td>
-                `;
-                tbody.appendChild(row);
-              });
-            } else {
-              const row = document.createElement('tr');
-              row.innerHTML = '<td colspan="4">Henüz etiketlediğiniz şarkı bulunmuyor.</td>';
-              tbody.appendChild(row);
-            }
-          })
-          .catch(error => {
-            console.error('Etiket geçmişi yüklenirken hata:', error);
-          });
-      }
-    });
-        // Etiketleme işlevleri için eksik fonksiyonlar
-    function saveTag(musicId, tag) {
-        // Yükleniyor göstergesi
-        showToast('Etiketleniyor...', 'info');
-
-        fetch('/Dashboard/SaveTag', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                musicId: parseInt(musicId),
-                tag: tag
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Sunucu hata kodu: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Başarı mesajı göster
-                const tagName = getTagName(tag);
-                const message = data.isUpdate ?
-                    `"${tagName}" olarak değiştirildi!` :
-                    `"${tagName}" olarak etiketlendi!`;
-
-                showToast(message, 'success');
-
-                // Seçili etiketi vurgula
-                highlightSelectedTag(tag);
-
-                // Son etiketlenen listesini yenile (eğer görünürse)
-                if (document.querySelector('.history-tab[data-tab="recently-tagged"]').classList.contains('active')) {
-                    loadRecentlyTagged();
-                }
-            } else {
-                showToast(data.message || 'Etiketleme başarısız!', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Etiketleme hatası:', error);
-            showToast('Bağlantı hatası! Etiket kaydedilemedi.', 'error');
-        });
-    }
-
-    // Seçili etiketi vurgulamak için fonksiyon
-    function highlightSelectedTag(tagName) {
-        // Tüm butonlardan 'selected' sınıfını kaldır
-        const tagButtons = document.querySelectorAll('.tag-btn');
-        tagButtons.forEach(btn => {
-            btn.classList.remove('selected');
-            const innerDiv = btn.querySelector('.tag-btn-inner');
-            if (innerDiv) {
-                innerDiv.classList.remove('selected');
-            }
-        });
-
-        // Seçili butona 'selected' sınıfını ekle
-        const selectedButton = document.querySelector(`.tag-btn[data-tag="${tagName}"]`);
-        if (selectedButton) {
-            selectedButton.classList.add('selected');
-            const innerDiv = selectedButton.querySelector('.tag-btn-inner');
-            if (innerDiv) {
-                innerDiv.classList.add('selected');
-            }
-        }
-    }
-
-    // Mevcut şarkı etiketini yüklemek için fonksiyon
-    function loadCurrentSongTag(musicId) {
-        fetch(`/Dashboard/GetSongTag?musicId=${musicId}`)
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        // Kullanıcı giriş yapmamış - hata göstermeye gerek yok
-                        return null;
-                    }
-                    throw new Error('Sunucu hata kodu: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.success && data.tag) {
-                    // Kullanıcının bu şarkı için önceki etiketini vurgula
-                    highlightSelectedTag(data.tag);
-                } else {
-                    // Etiket yoksa vurguları temizle
-                    const tagButtons = document.querySelectorAll('.tag-btn');
-                    tagButtons.forEach(btn => {
-                        btn.classList.remove('selected');
-                        const innerDiv = btn.querySelector('.tag-btn-inner');
-                        if (innerDiv) {
-                            innerDiv.classList.remove('selected');
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Şarkı etiketi yüklenirken hata:', error);
-            });
-    }
-
-    // Son etiketlenen parçaları yüklemek için geliştirilmiş fonksiyon
-     function loadRecentlyTagged() {
-        fetch('/Dashboard/GetRecentlyTagged')
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        const tbody = document.getElementById('recentlyTaggedList');
-                        if (tbody) {
-                            tbody.innerHTML = '<tr><td colspan="4">Etiket geçmişini görmek için giriş yapmalısınız</td></tr>';
-                        }
-                        throw new Error('Kullanıcı giriş yapmamış');
-                    }
-                    throw new Error('Sunucu hata kodu: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('recentlyTaggedList');
-                if (!tbody) {
-                    console.error('recentlyTaggedList elementi bulunamadı!');
-                    return;
-                }
-
-                tbody.innerHTML = ''; // Önceki verileri temizle
-
-                if (data.success && data.tags && data.tags.length > 0) {
-                    data.tags.forEach(item => {
-                        const taggedDate = new Date(item.taggedAt);
-                        const timeAgo = getTimeAgo(taggedDate); // zaman biçimlendirici
-
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${decodeHtmlEntities(item.title || 'Bilinmeyen Şarkı')}</td>
-                            <td>${decodeHtmlEntities(item.artist || 'Bilinmeyen Sanatçı')}</td>
-                            <td><span class="tag-badge ${item.tag}">${getTagName(item.tag)}</span></td>
-                            <td>${timeAgo}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="4">Henüz etiketlediğiniz şarkı bulunmuyor.</td>';
-                    tbody.appendChild(row);
-                }
-            })
-            .catch(error => {
-                if (error.message !== 'Kullanıcı giriş yapmamış') {
-                    console.error('Etiket geçmişi yüklenirken hata:', error);
-                    const tbody = document.getElementById('recentlyTaggedList');
-                    if (tbody) {
-                        tbody.innerHTML = '<tr><td colspan="4">Etiket geçmişi yüklenemedi</td></tr>';
-                    }
-                }
-            });
-    }
-
-    // Zaman önce bilgisi için yardımcı fonksiyon
-    function getTimeAgo(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-
-        let interval = Math.floor(seconds / 31536000);
-        if (interval > 1) return interval + ' yıl önce';
-        if (interval === 1) return '1 yıl önce';
-
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) return interval + ' ay önce';
-        if (interval === 1) return '1 ay önce';
-
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) return interval + ' gün önce';
-        if (interval === 1) return '1 gün önce';
-
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) return interval + ' saat önce';
-        if (interval === 1) return '1 saat önce';
-
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) return interval + ' minutes ago';
-        if (interval === 1) return '1 minutes ago';
-
-        return 'az önce';
-    }
-
-    // Bildirim gösterme fonksiyonu
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerText = message;
-
-        const toastContainer = document.getElementById('toastContainer');
-        if (toastContainer) {
-            toastContainer.appendChild(toast);
-
-            // Animasyonu tetikle
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-
-            // 3 saniye sonra otomatik kapat
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    if (toastContainer.contains(toast)) {
-                        toastContainer.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
-        }
+        }, (animationDuration + delay) * 1000);
     }
 </script>
+<!-- Balonlar için HTML Yapısı -->
+
 <body>
-   
-        <div class="rainbow-bg">
-            <div class="now-playing-title" id="playingStatus">Currently playing:</div>
-            <div class="song-info">
-                <div class="music-note-animation" id="noteAnimation">
-                    <div class="music-note-pulse"></div>
-                    <i class="fas fa-music music-note"></i>
+    <div class="rainbow-bg">
+        <!-- Balonlar için HTML Yapısı - rainbow-bg içine taşındı -->
+        <div class="bubbles-container" id="bubblesContainer"></div>
+
+        <div class="now-playing-title" id="playingStatus">Şu anda çalıyor:</div>
+        <div class="song-info">
+            <div class="music-note-animation" id="noteAnimation">
+                <div class="music-note-pulse"></div>
+                <i class="fas fa-music music-note"></i>
+            </div>
+            <div class="song-details">
+                <div class="song-title" id="songTitle">Müzik yükleniyor...</div>
+                <div class="song-artist" id="songArtist"></div>
+                <!-- Dinlenme sayıları bölümü -->
+                <div class="play-count-info" id="playCountInfo" style="display: none; flex-direction: column; align-items: flex-start; margin: 8px 0;">
+                    <div style="margin-bottom: 4px;">🎧 <span id="totalPlayCount">0</span> toplam dinlenme</div>
+                    <div>👤 <span id="userPlayCount">0</span> senin dinlemen</div>
                 </div>
-                <div class="song-details">
-                    <div class="song-title" id="songTitle">Müzik yükleniyor...</div>
-                    <div class="song-artist" id="songArtist"></div>
-                    <div class="player-info" id="playerInfo">
-                        <div class="progress mt-3 mb-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" id="songProgress" role="progressbar" style="width: 0%"></div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span id="currentTime">00:00</span>
-                            <span id="totalTime">00:00</span>
-                        </div>
+                <div class="player-info" id="playerInfo">
+                    <div class="progress mt-3 mb-2" style="height: 4px;">
+                        <div class="progress-bar bg-light" id="songProgress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span id="currentTime">00:00</span>
+                        <span id="totalTime">00:00</span>
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Gerekli elemanları seçelim
-                const playingStatus = document.getElementById('playingStatus');
-                const noteAnimation = document.getElementById('noteAnimation');
-                const audioPlayer = document.getElementById('musicPlayer') ||
-                                    window.parent.document.getElementById('musicPlayer');
+    </div>
 
-                // Çalma ve durdurma durumlarını kontrol eden fonksiyon
-                function updatePlayingStatus() {
-                    if (audioPlayer) {
-                        if (audioPlayer.paused) {
-                            // Müzik duraklatıldığında
-                            playingStatus.textContent = "Stopped:";
-                            playingStatus.classList.add('paused-status');
-                            playingStatus.classList.remove('playing-status');
+    <div class="tag-section">
+        <style>
+            .tag-section {
+                max-width: 1200px;
+                margin: 20px auto;
+                text-align: center;
+                font-family: Arial, sans-serif;
+            }
 
-                            // Nota animasyonunu durdur
-                            noteAnimation.classList.add('paused');
-                            noteAnimation.classList.remove('playing');
-                        } else {
-                            // Müzik çalınıyorken
-                            playingStatus.textContent = "Currently playing:";
-                            playingStatus.classList.add('playing-status');
-                            playingStatus.classList.remove('paused-status');
+            .tag-title {
+                font-size: 24px;
+                margin-bottom: 20px;
+                color: #333;
+            }
 
-                            // Nota animasyonunu başlat
-                            noteAnimation.classList.add('playing');
-                            noteAnimation.classList.remove('paused');
-                        }
-                    }
-                }
+            .tag-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
 
-                // Audio player olaylarını dinle
-                if (audioPlayer) {
-                    audioPlayer.addEventListener('play', updatePlayingStatus);
-                    audioPlayer.addEventListener('pause', updatePlayingStatus);
+            .tag-btn {
+                position: relative;
+                width: 170px;
+                height: 170px;
+                perspective: 1000px;
+                border: none;
+                background: none;
+                cursor: pointer;
+            }
 
-                    // Sayfa yüklendiğinde de kontrol et
-                    updatePlayingStatus();
-                }
-            });
-        </script>
+            .tag-btn-inner {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transition: transform 0.6s;
+                transform-style: preserve-3d;
+                border-radius: 15px;
+            }
 
-   <div class="tag-section">
+            .tag-btn:hover .tag-btn-inner {
+                transform: rotateY(180deg);
+            }
+
+            .tag-btn-front,
+            .tag-btn-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 15px;
+                color: white;
+            }
+
+            .tag-btn-front {
+                background-color: #6a5acd; /* Sad */
+            }
+
+            .tag-btn:nth-child(2) .tag-btn-front {
+                background-color: #ffa500;
+            }
+            /* Happy */
+            .tag-btn:nth-child(3) .tag-btn-front {
+                background-color: #9400d3;
+            }
+            /* Nostalgic */
+            .tag-btn:nth-child(4) .tag-btn-front {
+                background-color: #ff1493;
+            }
+            /* Energetic */
+            .tag-btn:nth-child(5) .tag-btn-front {
+                background-color: #40e0d0;
+            }
+            /* Relaxing */
+            .tag-btn:nth-child(6) .tag-btn-front {
+                background-color: #ff69b4;
+            }
+            /* Romantic */
+
+            .tag-btn-back {
+                transform: rotateY(180deg);
+                background-color: rgba(255,255,255,0.9);
+                color: #333;
+                text-align: center;
+                padding: 15px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .tag-btn .emoji {
+                font-size: 64px;
+                margin-bottom: 10px;
+            }
+
+            .tag-btn .label {
+                font-size: 16px;
+                font-weight: bold;
+            }
+        </style>
+        <h3 class="tag-title">How would you describe the mood of this song?</h3>
+        <div class="tag-buttons">
+            <button class="tag-btn sad">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">😢</div>
+                        <div class="label">Sad</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>Deep emotions, sincere sadness</p>
+                    </div>
+                </div>
+            </button>
+            <button class="tag-btn happy">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">😄</div>
+                        <div class="label">Happy</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>Positive energy, joyful moments</p>
+                    </div>
+                </div>
+            </button>
+            <button class="tag-btn nostalgic">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">🌧️</div>
+                        <div class="label">Nostalgic</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>A nostalgic, thought-provoking atmosphere</p>
+                    </div>
+                </div>
+            </button>
+            <button class="tag-btn energetic">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">🔥</div>
+                        <div class="label">Energetic</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>A lively, exciting rhythm</p>
+                    </div>
+                </div>
+            </button>
+            <button class="tag-btn relaxing">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">🧘</div>
+                        <div class="label">Relaxing</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>A calming, peace-giving melody</p>
+                    </div>
+                </div>
+            </button>
+            <button class="tag-btn romantic">
+                <div class="tag-btn-inner">
+                    <div class="tag-btn-front">
+                        <div class="emoji">❤️</div>
+                        <div class="label">Romantic</div>
+                    </div>
+                    <div class="tag-btn-back">
+                        <p>An emotional, love-inspiring melody</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+    <!-- Tag butonlarından sonra, history-section'dan önce ekleyin -->
+    <div class="tag-stats-section">
+        <h3 class="tag-title">Community Tags</h3>
+        <div id="tagStatsContainer" class="tag-stats-container">
+            <div class="loading-stats">Loading tag statistics...</div>
+        </div>
+    </div>
 
     <style>
-        .tag-section {
-            max-width: 600px;
-            margin: 20px auto;
-            text-align: center;
-            font-family: Arial, sans-serif;
+        .tag-stats-section {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
         }
-        .tag-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
+
+        .tag-stats-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .tag-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-        .tag-btn {
+
+        .tag-stat-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background-color: #f8f8f8;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-bottom: 15px;
         }
-        .tag-btn:hover {
-            transform: scale(1.05);
-            background-color: #f0f0f0;
-        }
-        .tag-btn .emoji {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-        .tag-btn .label {
-            font-size: 16px;
+
+        .tag-name {
+            width: 120px;
             font-weight: bold;
-            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .tag-emoji {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .tag-bar-container {
+            flex-grow: 1;
+            background-color: #f0f0f0;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 15px;
+            position: relative;
+        }
+
+        .tag-bar {
+            height: 100%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+            .tag-bar.sad {
+                background-color: #6a5acd;
+            }
+
+            .tag-bar.happy {
+                background-color: #ffa500;
+            }
+
+            .tag-bar.nostalgic {
+                background-color: #9400d3;
+            }
+
+            .tag-bar.energetic {
+                background-color: #ff1493;
+            }
+
+            .tag-bar.relaxing {
+                background-color: #40e0d0;
+            }
+
+            .tag-bar.romantic {
+                background-color: #ff69b4;
+            }
+
+        .tag-count {
+            width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .tag-percentage {
+            width: 50px;
+            text-align: right;
+        }
+
+        .loading-stats {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .no-tags-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Seçili etiket vurgusu */
+        .tag-btn.selected .tag-btn-inner,
+        .tag-btn .tag-btn-inner.selected {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            border: 3px solid gold;
+
         }
     </style>
-            <div class="tag-section">
-                <style>
-                    .tag-section {
-                        max-width: 1200px;
-                        margin: 20px auto;
-                        text-align: center;
-                        font-family: Arial, sans-serif;
-                    }
+    <div class="history-section">
+        <div class="history-tabs">
+            <div class="history-tab active" data-tab="recently-played">Last Listened</div>
+            <div class="history-tab" data-tab="recently-tagged">Last Tagged</div>
+        </div>
+        <div class="history-content" id="recently-played-content">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; vertical-align: middle;">Song</th>
+                        <th style="text-align: center; vertical-align: middle;">Artist</th>
+                        <th style="text-align: center; vertical-align: middle;">Listening Time</th>
+                    </tr>
+                </thead>
+                <tbody id="recentlyPlayedList">
+                    <!-- Recent plays will be loaded here -->
+                </tbody>
+            </table>
+        </div>
 
-                    .tag-title {
-                        font-size: 24px;
-                        margin-bottom: 20px;
-                        color: #333;
-                    }
-
-                    .tag-buttons {
-                        display: flex;
-                        justify-content: center;
-                        gap: 15px;
-                    }
-
-                    .tag-btn {
-                        position: relative;
-                        width: 170px;
-                        height: 170px;
-                        perspective: 1000px;
-                        border: none;
-                        background: none;
-                        cursor: pointer;
-                    }
-
-                    .tag-btn-inner {
-                        width: 100%;
-                        height: 100%;
-                        position: relative;
-                        transition: transform 0.6s;
-                        transform-style: preserve-3d;
-                        border-radius: 15px;
-                    }
-
-                    .tag-btn:hover .tag-btn-inner {
-                        transform: rotateY(180deg);
-                    }
-
-                    .tag-btn-front,
-                    .tag-btn-back {
-                        position: absolute;
-                        width: 100%;
-                        height: 100%;
-                        backface-visibility: hidden;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        border-radius: 15px;
-                        color: white;
-                    }
-
-                    .tag-btn-front {
-                        background-color: #6a5acd; /* Sad */
-                    }
-
-                    .tag-btn:nth-child(2) .tag-btn-front {
-                        background-color: #ffa500;
-                    }
-                    /* Happy */
-                    .tag-btn:nth-child(3) .tag-btn-front {
-                        background-color: #9400d3;
-                    }
-                    /* Melancholy */
-                    .tag-btn:nth-child(4) .tag-btn-front {
-                        background-color: #ff1493;
-                    }
-                    /* Energetic */
-                    .tag-btn:nth-child(5) .tag-btn-front {
-                        background-color: #40e0d0;
-                    }
-                    /* Relaxing */
-                    .tag-btn:nth-child(6) .tag-btn-front {
-                        background-color: #ff69b4;
-                    }
-                    /* Romantic */
-
-                    .tag-btn-back {
-                        transform: rotateY(180deg);
-                        background-color: rgba(255,255,255,0.9);
-                        color: #333;
-                        text-align: center;
-                        padding: 15px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
-
-                    .tag-btn .emoji {
-                        font-size: 64px;
-                        margin-bottom: 10px;
-                    }
-
-                    .tag-btn .label {
-                        font-size: 16px;
-                        font-weight: bold;
-                    }
-                </style>
-                <h3 class="tag-title">How would you describe the mood of this song ?</h3>
-                <div class="tag-buttons">
-                    <button class="tag-btn sad">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">😢</div>
-                                <div class="label">Sad</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>Deep emotions, sincere sadness</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="tag-btn happy">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">😄</div>
-                                <div class="label">Happy</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>Positive energy, joyful moments</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="tag-btn nostalgic">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">🌧️</div>
-                                <div class="label">Nostalgic</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>A nostalgic, thought-provoking atmosphere</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="tag-btn energetic">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">🔥</div>
-                                <div class="label">Energetic</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>A lively, exciting rhythm</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="tag-btn relaxing">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">🧘</div>
-                                <div class="label">Relaxing</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>A calming, peace-giving melody</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="tag-btn romantic">
-                        <div class="tag-btn-inner">
-                            <div class="tag-btn-front">
-                                <div class="emoji">❤️</div>
-                                <div class="label">Romantic</div>
-                            </div>
-                            <div class="tag-btn-back">
-                                <p>An emotional, love-inspiring melody</p>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-        <div class="history-section">
-            <div class="history-tabs">
-                    <div class="history-tab active" data-tab="recently-played">Last Listened</div>
-                    <div class="history-tab" data-tab="recently-tagged">Last tagged</div>
-            </div>
-                <div class="history-content" id="recently-played-content">
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; vertical-align: middle;">Song</th>
-                                <th style="text-align: center; vertical-align: middle;">Artist</th>
-                                <th style="text-align: center; vertical-align: middle;">Listening Time</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentlyPlayedList">
-                            <!-- Recent plays will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-
-            <div class="history-content" id="recently-tagged-content" style="display: none;">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Song</th>
-                            <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Artist</th>
-                            <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Tag</th>
-                            <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentlyTaggedList">
-                        <!-- Recent tags will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+        <div class="history-content" id="recently-tagged-content" style="display: none;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Song</th>
+                        <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Artist</th>
+                        <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Tag</th>
+                        <th style="text-align: center; padding: 10px; border: 1px solid #ccc;">Time</th>
+                    </tr>
+                </thead>
+                <tbody id="recentlyTaggedList">
+                    <!-- Recent tags will be loaded here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <div class="toast-container" id="toastContainer"></div>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <script>
-                window.emotaggerListenTagActive = true;
+                // Etiket istatistiklerini yükleyen fonksiyon
+        function loadTagStats(musicId) {
+            if (!musicId) return;
+
+            const container = document.getElementById('tagStatsContainer');
+            if (!container) return;
+
+            container.innerHTML = '<div class="loading-stats">Etiket istatistikleri yükleniyor...</div>';
+
+            fetch(`/Tag/GetPopularTags?musicId=${musicId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.tags && data.tags.length > 0) {
+                        // Tag istatistikleri için HTML oluştur
+                        let html = '';
+
+                        // Her etiket için bar ve yüzde göster
+                        data.tags.forEach(tag => {
+                            const tagEmoji = getTagEmoji(tag.tag);
+                            html += `
+                            <div class="tag-stat-item">
+                                <div class="tag-name">
+                                    <span class="tag-emoji">${tagEmoji}</span>
+                                    ${getTagName(tag.tag)}
+                                </div>
+                                <div class="tag-bar-container">
+                                    <div class="tag-bar ${tag.tag}" style="width: ${tag.percentage}%"></div>
+                                </div>
+                                <div class="tag-count">${tag.count}</div>
+                                <div class="tag-percentage">${tag.percentage}%</div>
+                            </div>`;
+                        });
+
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div class="no-tags-message">Bu şarkı henüz etiketlenmemiş.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Etiket istatistikleri alınırken hata:', error);
+                    container.innerHTML = '<div class="no-tags-message">Etiket istatistikleri yüklenirken hata oluştu.</div>';
+                });
+        }
+
+        // Etiket emojilerini getiren yardımcı fonksiyon
+        function getTagEmoji(tag) {
+            switch(tag.toLowerCase()) {
+                case 'sad': return '😢';
+                case 'happy': return '😄';
+                case 'nostalgic': return '🌧️';
+                case 'energetic': return '🔥';
+                case 'relaxing': return '🧘';
+                case 'romantic': return '❤️';
+                default: return '🏷️';
+            }
+        }
+
+        // Şarkı değişimlerini dinle ve etiket istatistiklerini güncelle
+        document.addEventListener('songChanged', function(event) {
+            const musicId = event.detail.musicId;
+            if (musicId) {
+                loadCurrentSongTag(musicId);
+                loadTagStats(musicId);
+            }
+        });
+
+        // Sayfa yüklendiğinde, eğer bir şarkı çalıyorsa istatistikleri yükle
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.currentMusicId) {
+                loadTagStats(window.currentMusicId);
+            }
+        });
+
+
+         let canSeek = false;
+        let seekLoggedTime = 0;
+        const seekMinDistance = 3;
+
+    
+        // Global değişkenler
+        window.emotaggerListenTagActive = true;
         if (window !== window.parent) {
             window.parent.emotaggerListenTagActive = true;
         }
-                     let hasLogged = false;
+
+        let hasLogged = false;
         let lastLoggedId = null;
         let isNavigating = false;
-                let isRefreshing = false;
-        let minimumPlayTime = 1;// Tuşlar arası geçişi takip etmek için
-                function handlePageRefresh() {
+        let isRefreshing = false;
+        let minimumPlayTime = 5; // Minimum dinleme süresi (saniye)
+
+        // Sayfa yenileme durumunu takip et
+        function handlePageRefresh() {
             isRefreshing = true;
-            // Yenileme bilgisini localStorage'a kaydet
-            const currentSongData = {
-                id: window.currentMusicId,
-                time: new Date().getTime()
-            };
-            localStorage.setItem('emotagger_current_refreshing_song', JSON.stringify(currentSongData));
+
+            try {
+                // Şu an çalan şarkı ID'sini ve dinleme sayılarını localStorage'a kaydet
+                const countsData = {
+                    id: window.currentMusicId,
+                    totalCount: document.getElementById('totalPlayCount')?.innerText || '0',
+                    userCount: document.getElementById('userPlayCount')?.innerText || '0',
+                    time: new Date().getTime()
+                };
+                localStorage.setItem('emotagger_counts_data', JSON.stringify(countsData));
+
+                // Yenileme bilgisini localStorage'a kaydet
+                const currentSongData = {
+                    id: window.currentMusicId,
+                    time: new Date().getTime()
+                };
+                localStorage.setItem('emotagger_current_refreshing_song', JSON.stringify(currentSongData));
+            } catch (e) {
+                console.error("LocalStorage kaydı sırasında hata:", e);
+            }
         }
-                window.addEventListener('load', function() {
+
+        window.addEventListener('beforeunload', handlePageRefresh);
+
+        // Sayfa yüklendiğinde
+        window.addEventListener('load', function() {
             // Sayfa yenilendiğinde aynı şarkı tekrar yazılmasın kontrolü
             const refreshData = localStorage.getItem('emotagger_current_refreshing_song');
             if (refreshData) {
@@ -778,63 +622,106 @@
                 }
             }
 
-            isRefreshing = false;
-        });
-                         document.addEventListener("DOMContentLoaded", function () {
-            loadRecentlyPlayed();
-            loadRecentlyTagged();  // Bunu eklediğinden emin ol!
-        });
+            // Kaydedilmiş dinleme sayılarını al
+            const countsData = localStorage.getItem('emotagger_counts_data');
+            if (countsData) {
+                try {
+                    const data = JSON.parse(countsData);
 
+                    // Dinleme sayılarını kaydet (bu bilgileri daha sonra kullanacağız)
+                    window.savedTotalCount = data.totalCount;
+                    window.savedUserCount = data.userCount;
+                    window.savedCountMusicId = data.id;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Theme switcher
-       
-
-            // Handle external theme changes (from parent page)
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.theme) {
-                    setTheme(event.data.theme);
-                    themeToggleButton.innerHTML = `<i class="fas ${event.data.theme === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
+                    // Veriyi temizle
+                    localStorage.removeItem('emotagger_counts_data');
+                } catch (e) {
+                    console.error("Dinleme sayıları verisi işlenemedi:", e);
                 }
-            });
-
-            // Check if we're in an iframe and send message to parent about our theme
-            if (window !== window.parent) {
-                window.parent.postMessage({ themeReady: true, currentTheme: savedTheme }, '*');
             }
 
-            // Variables
+            isRefreshing = false;
+        });
+
+        // Etiketleme işlemleri
+        window.addEventListener('load', function() {
+            // Tag butonlarını seç
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            console.log("Tag butonları bulundu:", tagButtons.length);
+
+            // Her butona data-tag özelliğini ekle
+            document.querySelector('.tag-btn.sad')?.setAttribute('data-tag', 'sad');
+            document.querySelector('.tag-btn.happy')?.setAttribute('data-tag', 'happy');
+            document.querySelector('.tag-btn.nostalgic')?.setAttribute('data-tag', 'nostalgic');
+            document.querySelector('.tag-btn.energetic')?.setAttribute('data-tag', 'energetic');
+            document.querySelector('.tag-btn.relaxing')?.setAttribute('data-tag', 'relaxing');
+            document.querySelector('.tag-btn.romantic')?.setAttribute('data-tag', 'romantic');
+
+            // Tüm butonlara tıklama olayı ekle
+            tagButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log("Butona tıklandı", this.className);
+
+                    // Butonun data-tag özelliğini veya class'ına göre etiket değerini al
+                    const tag = this.getAttribute('data-tag') ||
+                            (this.classList.contains('sad') ? 'sad' :
+                             this.classList.contains('happy') ? 'happy' :
+                             this.classList.contains('nostalgic') ? 'nostalgic' :
+                             this.classList.contains('energetic') ? 'energetic' :
+                             this.classList.contains('relaxing') ? 'relaxing' :
+                             this.classList.contains('romantic') ? 'romantic' : '');
+
+                    console.log("Etiket değeri:", tag);
+
+                    if (!tag) {
+                        alert('Etiket değeri bulunamadı!');
+                        return;
+                    }
+
+                    // Çalan şarkı bilgisini al
+                    const currentMusicId = window.currentMusicId;
+                    console.log("Müzik ID:", currentMusicId);
+
+                    if (!currentMusicId) {
+                        alert('Şu anda çalan bir müzik yok!');
+                        return;
+                    }
+
+                    saveTag(currentMusicId, tag);
+                });
+            });
+        });
+
+        // Sayfa yüklendiğinde veri yükleme
+        document.addEventListener("DOMContentLoaded", function () {
+            loadRecentlyPlayed();
+            loadRecentlyTagged();
+
+            // Sayaçları düzenle - alt alta göster
+            const playCountInfo = document.getElementById('playCountInfo');
+            if (playCountInfo) {
+                playCountInfo.style.flexDirection = 'column';
+                playCountInfo.style.alignItems = 'flex-start';
+                const children = playCountInfo.children;
+                if (children && children.length > 0) {
+                    children[0].style.marginBottom = '4px';
+                }
+            }
+        });
+
+        // Ana Player ve UI işlemleri
+        document.addEventListener('DOMContentLoaded', function() {
+            // Audio player'ı bul
             const audioPlayer = document.getElementById('musicPlayer') || window.parent.document.getElementById('musicPlayer');
             const songTitle = document.getElementById('songTitle');
             const songArtist = document.getElementById('songArtist');
-            const albumImage = document.getElementById('albumImage');
             const songProgress = document.getElementById('songProgress');
             const currentTimeEl = document.getElementById('currentTime');
             const totalTimeEl = document.getElementById('totalTime');
-            const tagButtons = document.querySelectorAll('.tag-btn');
             const historyTabs = document.querySelectorAll('.history-tab');
             const historyContents = document.querySelectorAll('.history-content');
-            const rainbowBg = document.querySelector('.rainbow-bg');
-            const toastContainer = document.getElementById('toastContainer');
 
-            // Random album colors
-            const albumColors = [
-                'linear-gradient(45deg, #ff006e, #8338ec)',
-                'linear-gradient(45deg, #3a86ff, #00f5d4)',
-                'linear-gradient(45deg, #fb5607, #ffbe0b)',
-                'linear-gradient(45deg, #8338ec, #3a86ff)',
-                'linear-gradient(45deg, #06d6a0, #118ab2)'
-            ];
-
-            // HTML entity'leri decode etmek için yardımcı fonksiyon
-            function decodeHtmlEntities(text) {
-                if (!text) return '';
-                const textArea = document.createElement('textarea');
-                textArea.innerHTML = text;
-                return textArea.value;
-            }
-
-            // Update player UI with current song
+            // Global değişkenler
             let lastTrackTitle = ''; // Son görüntülenen şarkıyı takip etmek için
             let lastTrackArtist = ''; // Son görüntülenen sanatçıyı takip etmek için
 
@@ -922,6 +809,7 @@
                 return { title, artist, musicId };
             }
 
+            // UI'yı güncelle
             function updatePlayerInfo() {
                 // Şarkı bilgilerini bul
                 const { title, artist, musicId } = findSongInfo();
@@ -961,18 +849,25 @@
                     lastTrackArtist = artist;
 
                     console.log("Şarkı bilgileri güncellendi:", decodedTitle, decodedArtist, "ID:", musicId);
-                            document.addEventListener('songChanged', function(event) {
-            const musicId = event.detail.musicId;
-            if (musicId) {
-                loadCurrentSongTag(musicId);
-            }
-        });
 
                     // Özel event tetikle
                     const event = new CustomEvent('songChanged', {
                         detail: { title: decodedTitle, artist: decodedArtist, musicId: musicId }
                     });
                     document.dispatchEvent(event);
+
+                    // Eğer kaydedilmiş dinleme sayıları aynı şarkı için varsa, sayılara uygula
+                    if (window.savedCountMusicId && window.savedCountMusicId == musicId) {
+                        setTimeout(() => {
+                            const totalCountEl = document.getElementById('totalPlayCount');
+                            const userCountEl = document.getElementById('userPlayCount');
+
+                            if (totalCountEl && window.savedTotalCount) totalCountEl.innerText = window.savedTotalCount;
+                            if (userCountEl && window.savedUserCount) userCountEl.innerText = window.savedUserCount;
+
+                            console.log("Kaydedilmiş dinleme sayıları geri yüklendi:", window.savedTotalCount, window.savedUserCount);
+                        }, 500);
+                    }
                 } else {
                     console.warn("Şarkı bilgileri eksik:", { title, artist, musicId });
                     if (songTitle) songTitle.textContent = title || 'Müzik yükleniyor...';
@@ -980,7 +875,7 @@
                 }
             }
 
-            // Update progress bar
+            // Progress bar güncelleme
             function updateProgress() {
                 if (!audioPlayer) return;
 
@@ -1005,7 +900,7 @@
                 return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
 
-            // Handle history tab clicks
+            // Sekme gezinme işlemleri
             historyTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabName = this.dataset.tab;
@@ -1029,106 +924,139 @@
                     }
                 });
             });
-            window.addEventListener('beforeunload', handlePageRefresh);
 
-
-
-            // Listen for audio player events if available
+            // Audio player olaylarını dinle
             if (audioPlayer) {
+                // Progress bar güncelleme
                 audioPlayer.addEventListener('timeupdate', updateProgress);
-                      audioPlayer.addEventListener('timeupdate', function () {
-                          if (window.emotaggerGlobalLogging === true ||
-            (window.parent && window.parent.emotaggerGlobalLogging === true)) {
-            return;
-        }
 
-                         if (!hasLogged && this.currentTime > minimumPlayTime && window.currentMusicId && !this.paused) {
-                console.log(`🎧 Şarkı ${minimumPlayTime} saniyeden fazla çalındı, loglanıyor:`, window.currentMusicId);
-
-                window.emotaggerGlobalLogging = true;
-                if (window.parent) window.parent.emotaggerGlobalLogging = true;
-
-                fetch('/Dashboard/LogPlayed', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ musicId: parseInt(window.currentMusicId) })
-                })
-                .then(res => res.ok ? res.json() : Promise.reject(res.status))
-                .then(data => {
-                    console.log("✅ Kaydedildi:", data);
-                    hasLogged = true;
-                    lastLoggedId = window.currentMusicId;
-
-                    window.emotaggerGlobalLogging = false;
-                    if (window.parent) window.parent.emotaggerGlobalLogging = false;
-
-                    // Geçmişi güncelle
-                    if (document.querySelector('.history-tab[data-tab="recently-played"]').classList.contains('active')) {
-                        loadRecentlyPlayed();
+                // Dinleme sayacı için timeupdate olayı
+                audioPlayer.addEventListener('timeupdate', function () {
+                    // Eğer global loglama devam ediyorsa işleme alma
+                    if (window.emotaggerGlobalLogging === true ||
+                        (window.parent && window.parent.emotaggerGlobalLogging === true)) {
+                        return;
                     }
-                })
-                .catch(err => {
-                    console.error("❌ Log hatası:", err);
-                    window.emotaggerGlobalLogging = false;
-                    if (window.parent) window.parent.emotaggerGlobalLogging = false;
+
+                    // Dinleme sayacını güncelle
+                    if (!hasLogged && this.currentTime > minimumPlayTime && window.currentMusicId && !this.paused) {
+                        console.log(`🎧 Şarkı ${minimumPlayTime} saniyeden fazla çalındı, PlayCountsController'a gönderiliyor:`, window.currentMusicId);
+
+                        window.emotaggerGlobalLogging = true;
+                        if (window.parent) window.parent.emotaggerGlobalLogging = true;
+
+                        fetch('/PlayCounts/UpdateCounts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `musicId=${window.currentMusicId}`
+                        })
+                        .then(response => {
+                            console.log("PlayCounts API yanıtı durumu:", response.status);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("✅ Dinleme sayacı güncellendi:", data);
+                            if (data.success) {
+                                hasLogged = true;
+                                lastLoggedId = window.currentMusicId;
+
+                                // Sayaçları güncelle
+                                const totalCountEl = document.getElementById('totalPlayCount');
+                                const userCountEl = document.getElementById('userPlayCount');
+
+                                if (totalCountEl) totalCountEl.innerText = data.totalPlayCount;
+                                if (userCountEl) userCountEl.innerText = data.userPlayCount;
+
+                                // Sayaçları localStorage'a da kaydet
+                                window.savedTotalCount = data.totalPlayCount;
+                                window.savedUserCount = data.userPlayCount;
+                                window.savedCountMusicId = window.currentMusicId;
+                            }
+
+                            window.emotaggerGlobalLogging = false;
+                            if (window.parent) window.parent.emotaggerGlobalLogging = false;
+                        })
+                        .catch(err => {
+                            console.error("❌ PlayCounts API hatası:", err);
+                            window.emotaggerGlobalLogging = false;
+                            if (window.parent) window.parent.emotaggerGlobalLogging = false;
+                        });
+                    }
                 });
+
+                // Şarkı çalma olayı
+                      audioPlayer.addEventListener('play', function() {
+            canSeek = false; // Seek engeli başlatılıyor
+            setTimeout(() => {
+                canSeek = true;
+                console.log("⏩ Seek artık serbest.");
+            }, 5000);
+
+            const playingStatus = document.getElementById('playingStatus');
+            const noteAnimation = document.getElementById('noteAnimation');
+
+            if (playingStatus) {
+                playingStatus.textContent = "Şu anda çalıyor:";
+                playingStatus.classList.add('playing-status');
+                playingStatus.classList.remove('paused-status');
+            }
+
+            if (noteAnimation) {
+                noteAnimation.classList.add('playing');
+                noteAnimation.classList.remove('paused');
+            }
+
+            if (lastLoggedId !== window.currentMusicId) {
+                hasLogged = false;
+            }
+        });
+
+        // Seek (ileri sarma) engeli ve loglama koruması
+        audioPlayer.addEventListener('seeking', function () {
+            if (!canSeek) {
+                console.warn("⛔ 5 saniye geçmediği için seek engellendi.");
+                this.currentTime = 0;
+                return;
+            }
+
+            // Seek sonrası loglama kontrolü
+            const now = this.currentTime;
+            if (Math.abs(now - seekLoggedTime) < seekMinDistance) {
+                console.warn("🔁 Çok yakın zamanda seek yapıldı, loglanmayacak:", now);
+                hasLogged = true; // log engellenir
+            } else {
+                seekLoggedTime = now;
+                console.log("✅ Seek geçerli, log yapılabilir:", now);
             }
         });
 
 
-                // Şarkı çalmaya başladığında sunucuya bildir - global bir değişkenle ilk dinleme kontrolü
-                let isFirstPlay = true; // İlk çalma kontrolü için global değişken
 
-                audioPlayer.addEventListener('play', function() {
-                    // İlk çalmada kaydı atla ama sonraki çalmalarda kaydet
-                    if (isFirstPlay) {
-                        console.log("İlk çalma tespit edildi, bu çalmayı geçmişe eklemiyoruz");
-                        isFirstPlay = false;
-                        return;
+                // Şarkı durma olayı
+                audioPlayer.addEventListener('pause', function() {
+                    // Durma durumunu güncelle
+                    const playingStatus = document.getElementById('playingStatus');
+                    const noteAnimation = document.getElementById('noteAnimation');
+
+                    if (playingStatus) {
+                        playingStatus.textContent = "Durduruldu:";
+                        playingStatus.classList.add('paused-status');
+                        playingStatus.classList.remove('playing-status');
                     }
 
-                    // Şarkı bilgilerini al
-                    const songSrc = audioPlayer.src;
-                    const songTitle = window.currentTrackTitle || '';
-                    const songArtist = window.currentTrackArtist || '';
-
-                    // "Stay High" şarkısını tespit et
-              
-                    console.log("Çalan şarkı ID:", currentMusicId);
-
-                    if (currentMusicId) {
-                        // Şarkı ID'sini sunucuya gönder
-                        fetch('/Dashboard/LogPlayed', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ musicId: currentMusicId })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                console.warn('Çalma kaydı başarısız:', response.status);
-                            } else {
-                                console.log(`Şarkı ID ${currentMusicId} geçmişe eklendi`);
-                                // Geçmiş listesini başarılı kayıttan sonra yenile
-                                if (document.querySelector('.history-tab[data-tab="recently-played"]').classList.contains('active')) {
-                                    loadRecentlyPlayed();
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Çalma kaydı hatası:', error);
-                        });
-                    } else {
-                        console.warn("Çalma kaydı için şarkı ID'si bulunamadı!");
+                    if (noteAnimation) {
+                        noteAnimation.classList.add('paused');
+                        noteAnimation.classList.remove('playing');
                     }
                 });
 
+                // Şarkı bitme olayı
                 audioPlayer.addEventListener('ended', function() {
                     console.log("Şarkı bitti, bilgiler resetleniyor...");
                     // Şarkı bittiğinde bilgileri resetle ve güncelle
                     lastTrackTitle = '';
                     lastTrackArtist = '';
+                    hasLogged = false;
                     setTimeout(updatePlayerInfo, 500);
                 });
             }
@@ -1141,16 +1069,45 @@
                     console.log("Audio source değişti, şarkı değişimi olabilir:", value);
                     lastTrackTitle = '';
                     lastTrackArtist = '';
+                    hasLogged = false;
                     setTimeout(updatePlayerInfo, 500);
                 }
                 return result;
             };
 
+            // Şarkı değişimlerini dinle
+            window.addEventListener('nextTrack', function() {
+                console.log("nextTrack olayı tespit edildi");
+                lastTrackTitle = '';
+                lastTrackArtist = '';
+                hasLogged = false;
+                setTimeout(() => {
+                    updatePlayerInfo();
+                    // Şarkı bilgisi güncelledikten sonra sayaçları getir
+                    if (window.currentMusicId) {
+                        updatePlayCounts(window.currentMusicId);
+                    }
+                }, 500);
+            });
+
+            window.addEventListener('prevTrack', function() {
+                console.log("prevTrack olayı tespit edildi");
+                lastTrackTitle = '';
+                lastTrackArtist = '';
+                hasLogged = false;
+                setTimeout(() => {
+                    updatePlayerInfo();
+                    // Şarkı bilgisi güncelledikten sonra sayaçları getir
+                    if (window.currentMusicId) {
+                        updatePlayCounts(window.currentMusicId);
+                    }
+                }, 500);
+            });
+
             // Açılışta bir kez mevcut şarkıyı kontrol et
             setTimeout(updatePlayerInfo, 300);
 
             // Poll for track updates (in case external player changes)
-            // Normal polling süresini uzatıyoruz, olay bazlı detection ekledik
             setInterval(updatePlayerInfo, 3000);
 
             // DOM değişimlerini izle (player component güncellendiğinde)
@@ -1167,7 +1124,7 @@
 
             // NowPlaying component'ini izle
             const nowPlayingElement = document.querySelector('.now-playing') ||
-                                      window.parent.document.querySelector('.now-playing');
+                                       window.parent.document.querySelector('.now-playing');
             if (nowPlayingElement) {
                 observer.observe(nowPlayingElement, { childList: true, subtree: true });
                 console.log("NowPlaying component izleniyor");
@@ -1175,90 +1132,89 @@
 
             // trackData değişimlerini izle
             const trackDataElement = document.getElementById('trackData') ||
-                                     window.parent.document.getElementById('trackData');
+                                      window.parent.document.getElementById('trackData');
             if (trackDataElement) {
                 observer.observe(trackDataElement, { childList: true, subtree: true, attributes: true });
                 console.log("trackData izleniyor");
             }
 
-            // Şarkı değişimi olaylarını dinle
-            window.addEventListener('nextTrack', function() {
-                   
-                console.log("nextTrack olayı tespit edildi");
-                 isNavigating = true;lastTrackTitle = '';
-                lastTrackArtist = '';
-                hasLogged = false;
-                    setTimeout(() => {
-            updatePlayerInfo();
-            // Şarkı bilgisi güncelledikten sonra loglama işlemini tetikle
-            if (window.currentMusicId) {
-                logTrack(window.currentMusicId);
-            }
-        }, 500);
-            });
-
-            window.addEventListener('prevTrack', function() {
-                console.log("prevTrack olayı tespit edildi");
-                lastTrackTitle = '';
-                lastTrackArtist = '';
-                     hasLogged = false; // Her geri tuşuna basıldığında loglama durumunu sıfırla
-        setTimeout(() => {
-            updatePlayerInfo();
-            // Şarkı bilgisi güncelledikten sonra loglama işlemini tetikle
-            if (window.currentMusicId) {
-                logTrack(window.currentMusicId);
-            }
-        }, 500);
-            });
-
-            // Global fonksiyonlara erişmeyi dene
-            if (window.parent.nextTrack) {
-                const originalNextTrack = window.parent.nextTrack;
-                window.parent.nextTrack = function() {
-                    originalNextTrack.apply(this, arguments);
-                    console.log("nextTrack fonksiyonu çağrıldı");
-                    lastTrackTitle = '';
-                    lastTrackArtist = '';
-        hasLogged = false;
-                setTimeout(() => {
-                    updatePlayerInfo();
-                    if (window.currentMusicId) {
-                        logTrack(window.currentMusicId);
-                    }
-                }, 500);
-            
-                };
-            }
-
-            if (window.parent.prevTrack) {
-                const originalPrevTrack = window.parent.prevTrack;
-                window.parent.prevTrack = function() {
-                    originalPrevTrack.apply(this, arguments);
-                    console.log("prevTrack fonksiyonu çağrıldı");
-                    lastTrackTitle = '';
-                    lastTrackArtist = '';
-                    hasLogged = false;
-                    setTimeout(updatePlayerInfo, 500);
-                };
-            }
-
-            // Initial load
+            // Sayfa yüklendiğinde verileri getir
             updatePlayerInfo();
             loadRecentlyPlayed();
 
             // Custom event listener for track changes
-            window.addEventListener('trackChanged', updatePlayerInfo);
+            document.addEventListener('songChanged', function(event) {
+                const musicId = event.detail.musicId;
+                if (musicId) {
+                    loadCurrentSongTag(musicId);
+                    updatePlayCounts(musicId);
+                }
+            });
 
-            // Handle parent window track changes
-            if (window.parent) {
-                window.parent.addEventListener('trackChanged', updatePlayerInfo);
-            }
+            // Kullanıcı giriş kontrolü ve sayaçların gösterimi
+            fetch('/PlayCounts/CheckLogin')
+                .then(response => response.json())
+                .then(data => {
+                    const playCountInfo = document.getElementById('playCountInfo');
+                    if (playCountInfo) {
+                        if (data.isLoggedIn) {
+                            playCountInfo.style.display = 'flex';
+                            playCountInfo.style.flexDirection = 'column';
+                            playCountInfo.style.alignItems = 'flex-start';
+
+                            const children = playCountInfo.children;
+                            if (children && children.length > 0) {
+                                children[0].style.marginBottom = '4px';
+                            }
+
+                            console.log("Kullanıcı giriş yapmış, sayaçlar gösteriliyor");
+
+                            // Mevcut şarkının dinleme sayısını güncelle (eğer varsa)
+                            setTimeout(function() {
+                                if (window.currentMusicId) {
+                                    updatePlayCounts(window.currentMusicId);
+                                }
+                            }, 1000);
+                        } else {
+                            console.log("Kullanıcı giriş yapmamış, sayaçlar gizlendi");
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Giriş durumu kontrol edilirken hata:', error);
+                });
         });
 
+        // Sayaç için yardımcı fonksiyon
+        function updatePlayCounts(musicId) {
+            fetch(`/PlayCounts/GetCounts?musicId=${musicId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const totalCountEl = document.getElementById('totalPlayCount');
+                        const userCountEl = document.getElementById('userPlayCount');
+
+                        if (totalCountEl) totalCountEl.innerText = data.totalPlayCount;
+                        if (userCountEl) userCountEl.innerText = data.userPlayCount;
+
+                        // Sayaçları local storage için de kaydet
+                        window.savedTotalCount = data.totalPlayCount;
+                        window.savedUserCount = data.userPlayCount;
+                        window.savedCountMusicId = musicId;
+
+                        console.log("Dinleme sayıları alındı:", data);
+                    }
+                })
+                .catch(err => console.error("Dinleme sayıları alınamadı:", err));
+        }
+
+        // Son dinlenenleri yükle
+             // Son dinlenenleri yüklemek için geliştirilmiş fonksiyon
         function loadRecentlyPlayed(page = 1) {
             console.log("loadRecentlyPlayed çağrıldı, sayfa:", page);
-            const itemsPerPage = 7; // Sayfa başına gösterilecek maksimum öğe sayısı
+            const itemsPerPage = 7; // Sayfa başına gösterilecek öğe sayısı
 
+            // Veriler için istek yap
             fetch('/Dashboard/GetHistory')
                 .then(res => {
                     if (res.status === 401) {
@@ -1273,7 +1229,7 @@
                         throw new Error("Sunucu hatası: " + res.status);
                     }
 
-                    // Parse JSON with error handling
+                    // JSON yanıtını parse et
                     return res.text().then(text => {
                         try {
                             return text.trim() ? JSON.parse(text) : { played: [] };
@@ -1287,39 +1243,21 @@
                     console.log("GetHistory yanıtı:", data);
 
                     const tbody = document.getElementById('recentlyPlayedList');
-                    const historyContent = document.getElementById('recently-played-content');
-
-                    if (!tbody || !historyContent) {
-                        console.error("recentlyPlayedList veya history content bulunamadı!");
+                    if (!tbody) {
+                        console.error("recentlyPlayedList bulunamadı!");
                         return;
                     }
 
-                    tbody.innerHTML = ''; // önceki verileri temizle
-
-                    // Sayfalama düğmelerini kaldır (varsa)
-                    const existingPagination = historyContent.querySelector('.history-pagination');
-                    if (existingPagination) {
-                        existingPagination.remove();
-                    }
-
-                    // Daha fazla butonunu kaldır (varsa)
-                    const existingViewMoreBtn = historyContent.querySelector('.view-more-btn');
-                    if (existingViewMoreBtn) {
-                        existingViewMoreBtn.remove();
-                    }
+                    tbody.innerHTML = ''; // Önceki verileri temizle
 
                     if (data.played && data.played.length > 0) {
-                        // Sayfalama için toplam sayfa sayısını hesapla
-                        const totalPages = Math.ceil(data.played.length / itemsPerPage);
-
-                        // Geçerli sayfa için verileri filtrele
+                        // Sayfalama için verileri filtrele
                         const startIndex = (page - 1) * itemsPerPage;
                         const endIndex = Math.min(startIndex + itemsPerPage, data.played.length);
                         const pageItems = data.played.slice(startIndex, endIndex);
 
                         // Verileri tabloya ekle
                         pageItems.forEach(item => {
-                            // HTML entity'leri decode et
                             const title = decodeHtmlEntities(item.title || 'Başlık Yok');
                             const artist = decodeHtmlEntities(item.artist || 'Sanatçı Yok');
 
@@ -1332,22 +1270,33 @@
                             tbody.appendChild(row);
                         });
 
-                        // Eğer birden fazla sayfa varsa ve tüm veriler gösterilmemişse daha fazla butonunu ekle
-                        if (data.played.length > itemsPerPage) {
-                            const viewMoreDiv = document.createElement('div');
-                            viewMoreDiv.className = 'view-more-container';
-                            viewMoreDiv.innerHTML = `
-                                <button class="view-more-btn">Daha Fazla Görüntüle</button>
-                            `;
-                            historyContent.appendChild(viewMoreDiv);
+                        // Daha fazla butonu için konteyner
+                        const historyContent = document.getElementById('recently-played-content');
+                        if (historyContent) {
+                            // Mevcut butonları temizle
+                            const existingViewMoreBtn = historyContent.querySelector('.view-more-btn');
+                            if (existingViewMoreBtn) {
+                                existingViewMoreBtn.parentElement.remove();
+                            }
 
-                            // Daha fazla butonuna tıklama olayı ekle
-                            const viewMoreBtn = viewMoreDiv.querySelector('.view-more-btn');
-                            viewMoreBtn.addEventListener('click', function() {
-                                window.location.href = '/Dashboard/ListeningHistory';
-                            });
+                            // Eğer daha fazla veri varsa, daha fazla butonunu ekle
+                            if (data.played.length > itemsPerPage) {
+                                const viewMoreDiv = document.createElement('div');
+                                viewMoreDiv.className = 'view-more-container';
+                                viewMoreDiv.innerHTML = `
+                                    <button class="view-more-btn">Daha Fazla Görüntüle</button>
+                                `;
+                                historyContent.appendChild(viewMoreDiv);
+
+                                // Butona tıklama olayı ekle
+                                const viewMoreBtn = viewMoreDiv.querySelector('.view-more-btn');
+                                viewMoreBtn.addEventListener('click', function() {
+                                    window.location.href = '/Dashboard/ListeningHistory';
+                                });
+                            }
                         }
                     } else {
+                        // Veri yoksa bilgi mesajı göster
                         const row = document.createElement('tr');
                         row.innerHTML = '<td colspan="3">Henüz şarkı dinlenmedi.</td>';
                         tbody.appendChild(row);
@@ -1365,19 +1314,134 @@
                 });
         }
 
-        // HTML entity'leri decode etmek için yardımcı fonksiyon (global)
-        function decodeHtmlEntities(text) {
-            if (!text) return '';
-            const textArea = document.createElement('textarea');
-            textArea.innerHTML = text;
-            return textArea.value;
+        // Şarkı çalındığında geçmişe eklemek için
+        // Audio player'ın timeupdate olayını dinleyen iyileştirilmiş fonksiyon
+        function setupPlayedTracking() {
+            const audioPlayer = document.getElementById('musicPlayer') ||
+                               window.parent.document.getElementById('musicPlayer');
+
+            if (!audioPlayer) {
+                console.error("Audio player bulunamadı!");
+                return;
+            }
+
+            // Minimum dinleme süresi - bir kaydı geçmişe eklemek için gereken minimum süre (saniye)
+            const minimumPlayTime = 2; // 2 saniyeye düşürüldü
+            let hasLogged = false;
+            let lastLoggedId = null;
+
+            // timeupdate olayını dinle
+            audioPlayer.addEventListener('timeupdate', function() {
+                // Global loglama bayrağını kontrol et
+                if (window.emotaggerGlobalLogging === true ||
+                    (window.parent && window.parent.emotaggerGlobalLogging === true)) {
+                    return;
+                }
+
+                // Şarkı ID'si değiştiyse log durumunu sıfırla
+                if (lastLoggedId !== window.currentMusicId) {
+                    hasLogged = false;
+                }
+
+                // Minimum süre geçtiyse ve daha önce loglanmadıysa
+                if (!hasLogged &&
+                    this.currentTime >= minimumPlayTime &&
+                    window.currentMusicId &&
+                    !this.paused) {
+
+                    console.log(`🎧 Şarkı ${minimumPlayTime} saniyeden fazla çalındı, loglanıyor:`, window.currentMusicId);
+
+                    // Global loglama bayrağını ayarla
+                    window.emotaggerGlobalLogging = true;
+                    if (window.parent) window.parent.emotaggerGlobalLogging = true;
+
+                    // LogPlayed API'sine istek gönder
+                    fetch('/Dashboard/LogPlayed', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ musicId: parseInt(window.currentMusicId) })
+                    })
+                    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+                    .then(data => {
+                        console.log("✅ Dinleme geçmişine kaydedildi:", data);
+
+                        // Loglama durumunu güncelle
+                        hasLogged = true;
+                        lastLoggedId = window.currentMusicId;
+
+                        // Global loglama bayrağını temizle
+                        window.emotaggerGlobalLogging = false;
+                        if (window.parent) window.parent.emotaggerGlobalLogging = false;
+
+                        // Geçmiş listesini yenile (eğer aktif sekme ise)
+                        if (document.querySelector('.history-tab[data-tab="recently-played"]')?.classList.contains('active')) {
+                            loadRecentlyPlayed();
+                        }
+                    })
+                    .catch(err => {
+                        console.error("❌ Loglama hatası:", err);
+
+                        // Global loglama bayrağını temizle
+                        window.emotaggerGlobalLogging = false;
+                        if (window.parent) window.parent.emotaggerGlobalLogging = false;
+                    });
+                }
+            });
+
+            // Şarkı değiştirme olaylarını da izle
+            setupTrackChangeEvents();
         }
-                // Şarkıyı loglamak için yardımcı fonksiyon
-        function logTrack(musicId) {
+
+        // Şarkı değiştirme olaylarını izlemek için (ileri/geri tuşları)
+        function setupTrackChangeEvents() {
+            // Sonraki şarkıya geçme olayı
+            window.addEventListener('nextTrack', function() {
+                console.log("nextTrack olayı tespit edildi");
+
+                // Şarkı bilgilerini sıfırla
+                lastTrackTitle = '';
+                lastTrackArtist = '';
+                hasLogged = false;
+
+                // Şarkı bilgileri güncellendikten sonra direkt olarak logla
+                setTimeout(() => {
+                    updatePlayerInfo();
+
+                    if (window.currentMusicId) {
+                        // İleri tuşuna basıldığında minimum bekleme süresi olmadan doğrudan kaydet
+                        logPlayed(window.currentMusicId);
+                    }
+                }, 500);
+            });
+
+            // Önceki şarkıya geçme olayı
+            window.addEventListener('prevTrack', function() {
+                console.log("prevTrack olayı tespit edildi");
+
+                // Şarkı bilgilerini sıfırla
+                lastTrackTitle = '';
+                lastTrackArtist = '';
+                hasLogged = false;
+
+                // Şarkı bilgileri güncellendikten sonra direkt olarak logla
+                setTimeout(() => {
+                    updatePlayerInfo();
+
+                    if (window.currentMusicId) {
+                        // Geri tuşuna basıldığında minimum bekleme süresi olmadan doğrudan kaydet
+                        logPlayed(window.currentMusicId);
+                    }
+                }, 500);
+            });
+        }
+
+        // Çalma listesine tıklanarak bir şarkı başlatıldığında geçmişe ekleme
+        function logPlayed(musicId) {
             if (!musicId) return;
 
-            console.log("🎧 İleri/Geri tuşu ile şarkı loglanıyor:", musicId);
+            console.log("🎵 Şarkı değişimi ile hemen loglanıyor:", musicId);
 
+            // Global loglama bayrağını ayarla
             window.emotaggerGlobalLogging = true;
             if (window.parent) window.parent.emotaggerGlobalLogging = true;
 
@@ -1388,25 +1452,236 @@
             })
             .then(res => res.ok ? res.json() : Promise.reject(res.status))
             .then(data => {
-                console.log("✅ Kaydedildi:", data);
+                console.log("✅ Şarkı başarıyla geçmişe eklendi:", data);
+
+                // Loglama durumunu güncelle
                 hasLogged = true;
                 lastLoggedId = musicId;
 
+                // Global loglama bayrağını temizle
                 window.emotaggerGlobalLogging = false;
                 if (window.parent) window.parent.emotaggerGlobalLogging = false;
 
-                // Geçmişi güncelle
-                if (document.querySelector('.history-tab[data-tab="recently-played"]').classList.contains('active')) {
+                // Geçmiş listesini yenile (eğer aktif sekme ise)
+                if (document.querySelector('.history-tab[data-tab="recently-played"]')?.classList.contains('active')) {
                     loadRecentlyPlayed();
                 }
             })
             .catch(err => {
-                console.error("❌ Log hatası:", err);
+                console.error("❌ Geçmişe ekleme hatası:", err);
+
+                // Global loglama bayrağını temizle
                 window.emotaggerGlobalLogging = false;
                 if (window.parent) window.parent.emotaggerGlobalLogging = false;
             });
         }
-                // Etiket adlarını insan dostu formatlara çeviren fonksiyon
+
+        // Tüm izleme işlemlerini başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sayfa yüklendiğinde dinleme geçmişini yükle
+            loadRecentlyPlayed();
+
+            // Audio player izleme işlemlerini ayarla
+            setupPlayedTracking();
+        });
+
+        // Son etiketlenen parçaları yüklemek için geliştirilmiş fonksiyon
+        function loadRecentlyTagged() {
+            fetch('/Dashboard/GetRecentlyTagged')
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            const tbody = document.getElementById('recentlyTaggedList');
+                            if (tbody) {
+                                tbody.innerHTML = '<tr><td colspan="4">Etiket geçmişini görmek için giriş yapmalısınız</td></tr>';
+                            }
+                            throw new Error('Kullanıcı giriş yapmamış');
+                        }
+                        throw new Error('Sunucu hata kodu: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.getElementById('recentlyTaggedList');
+                    if (!tbody) {
+                        console.error('recentlyTaggedList elementi bulunamadı!');
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+
+                    if (data.success && data.tags && data.tags.length > 0) {
+                        data.tags.forEach(item => {
+                            const taggedDate = new Date(item.taggedAt);
+                            const timeAgo = getTimeAgo(taggedDate);
+
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${decodeHtmlEntities(item.title || 'Bilinmeyen Şarkı')}</td>
+                                <td>${decodeHtmlEntities(item.artist || 'Bilinmeyen Sanatçı')}</td>
+                                <td><span class="tag-badge ${item.tag}">${getTagName(item.tag)}</span></td>
+                                <td>${timeAgo}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        const row = document.createElement('tr');
+                        row.innerHTML = '<td colspan="4">Henüz etiketlediğiniz şarkı bulunmuyor.</td>';
+                        tbody.appendChild(row);
+                    }
+                })
+                .catch(error => {
+                    if (error.message !== 'Kullanıcı giriş yapmamış') {
+                        console.error('Etiket geçmişi yüklenirken hata:', error);
+                        const tbody = document.getElementById('recentlyTaggedList');
+                        if (tbody) {
+                            tbody.innerHTML = '<tr><td colspan="4">Etiket geçmişi yüklenemedi</td></tr>';
+                        }
+                    }
+                });
+        }
+
+        // Şarkıyı etiketlemek için fonksiyon
+        function saveTag(musicId, tag) {
+            // Yükleniyor göstergesi
+            showToast('Etiketleniyor...', 'info');
+
+            fetch('/Dashboard/SaveTag', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    musicId: parseInt(musicId),
+                    tag: tag
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Sunucu hata kodu: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Başarı mesajı göster
+                    const tagName = getTagName(tag);
+                    const message = data.isUpdate ?
+                        `"${tagName}" olarak değiştirildi!` :
+                        `"${tagName}" olarak etiketlendi!`;
+
+                    showToast(message, 'success');
+
+                    // Seçili etiketi vurgula
+                    highlightSelectedTag(tag);
+
+                    // Son etiketlenen listesini yenile (eğer görünürse)
+                    if (document.querySelector('.history-tab[data-tab="recently-tagged"]').classList.contains('active')) {
+                        loadRecentlyTagged();
+                    }
+                } else {
+                    showToast(data.message || 'Etiketleme başarısız!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Etiketleme hatası:', error);
+                showToast('Bağlantı hatası! Etiket kaydedilemedi.', 'error');
+            });
+        }
+
+        // Mevcut şarkı etiketini yüklemek için fonksiyon
+        function loadCurrentSongTag(musicId) {
+            fetch(`/Dashboard/GetSongTag?musicId=${musicId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Kullanıcı giriş yapmamış - hata göstermeye gerek yok
+                            return null;
+                        }
+                        throw new Error('Sunucu hata kodu: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.success && data.tag) {
+                        // Kullanıcının bu şarkı için önceki etiketini vurgula
+                        highlightSelectedTag(data.tag);
+                    } else {
+                        // Etiket yoksa vurguları temizle
+                        const tagButtons = document.querySelectorAll('.tag-btn');
+                        tagButtons.forEach(btn => {
+                            btn.classList.remove('selected');
+                            const innerDiv = btn.querySelector('.tag-btn-inner');
+                            if (innerDiv) {
+                                innerDiv.classList.remove('selected');
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Şarkı etiketi yüklenirken hata:', error);
+                });
+        }
+
+        // Seçili etiketi vurgulamak için fonksiyon
+        function highlightSelectedTag(tagName) {
+            // Tüm butonlardan 'selected' sınıfını kaldır
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            tagButtons.forEach(btn => {
+                btn.classList.remove('selected');
+                const innerDiv = btn.querySelector('.tag-btn-inner');
+                if (innerDiv) {
+                    innerDiv.classList.remove('selected');
+                }
+            });
+
+            // Seçili butona 'selected' sınıfını ekle
+            const selectedButton = document.querySelector(`.tag-btn[data-tag="${tagName}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('selected');
+                const innerDiv = selectedButton.querySelector('.tag-btn-inner');
+                if (innerDiv) {
+                    innerDiv.classList.add('selected');
+                }
+            }
+        }
+
+        // HTML entity'leri decode etmek için yardımcı fonksiyon
+        function decodeHtmlEntities(text) {
+            if (!text) return '';
+            const textArea = document.createElement('textarea');
+            textArea.innerHTML = text;
+            return textArea.value;
+        }
+
+        // Zaman önce bilgisi için yardımcı fonksiyon
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            let interval = Math.floor(seconds / 31536000);
+            if (interval > 1) return interval + ' yıl önce';
+            if (interval === 1) return '1 yıl önce';
+
+            interval = Math.floor(seconds / 2592000);
+            if (interval > 1) return interval + ' ay önce';
+            if (interval === 1) return '1 ay önce';
+
+            interval = Math.floor(seconds / 86400);
+            if (interval > 1) return interval + ' gün önce';
+            if (interval === 1) return '1 gün önce';
+
+            interval = Math.floor(seconds / 3600);
+            if (interval > 1) return interval + ' saat önce';
+            if (interval === 1) return '1 saat önce';
+
+            interval = Math.floor(seconds / 60);
+            if (interval > 1) return interval + ' dakika önce';
+            if (interval === 1) return '1 dakika önce';
+
+            return 'az önce';
+        }
+
+        // Etiket adlarını insan dostu formatlara çeviren fonksiyon
         function getTagName(tag) {
             switch(tag.toLowerCase()) {
                 case 'sad': return 'Sad';
@@ -1418,8 +1693,102 @@
                 default: return tag;
             }
         }
-    </script>
 
-  
+        // Bildirim gösterme fonksiyonu
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerText = message;
+
+            const toastContainer = document.getElementById('toastContainer');
+            if (toastContainer) {
+                toastContainer.appendChild(toast);
+
+                // Animasyonu tetikle
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+
+                // 3 saniye sonra otomatik kapat
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toastContainer.contains(toast)) {
+                            toastContainer.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        }
+
+                document.addEventListener('DOMContentLoaded', function () {
+            const audioPlayer = document.getElementById('musicPlayer') || window.parent.document.getElementById('musicPlayer');
+            const playingStatus = document.getElementById('playingStatus');
+            const noteAnimation = document.getElementById('noteAnimation');
+
+            if (audioPlayer && playingStatus) {
+                if (audioPlayer.paused || audioPlayer.currentTime === 0) {
+                    playingStatus.textContent = "Durduruldu:";
+                    playingStatus.classList.remove('playing-status');
+                    playingStatus.classList.add('paused-status');
+
+                    if (noteAnimation) {
+                        noteAnimation.classList.add('paused');
+                        noteAnimation.classList.remove('playing');
+                    }
+                }
+            }
+        });
+                // sayfa yüklendiğinde çalan müziği kontrol et ve güncelle
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global değişkeni kontrol et - mevcut çalan şarkı bilgisi
+            if (window.parent && window.parent.currentMusicId) {
+                console.log("Ana sayfadan şarkı bilgisi alındı:", window.parent.currentMusicId);
+                window.currentMusicId = window.parent.currentMusicId;
+                window.currentTrackTitle = window.parent.currentTrackTitle;
+                window.currentTrackArtist = window.parent.currentTrackArtist;
+
+                // UI'yi güncelle
+                updatePlayerInfo();
+                updatePlayCounts(window.currentMusicId);
+            }
+
+            // Audio player varsa ve çalıyorsa, animasyonu güncelle
+            const audioPlayer = document.getElementById('musicPlayer') || window.parent.document.getElementById('musicPlayer');
+            if (audioPlayer && !audioPlayer.paused) {
+                const playingStatus = document.getElementById('playingStatus');
+                const noteAnimation = document.getElementById('noteAnimation');
+
+                if (playingStatus) {
+                    playingStatus.textContent = "Şu anda çalıyor:";
+                    playingStatus.classList.add('playing-status');
+                    playingStatus.classList.remove('paused-status');
+                }
+
+                if (noteAnimation) {
+                    noteAnimation.classList.add('playing');
+                    noteAnimation.classList.remove('paused');
+                }
+            }
+        });
+
+        // updatePlayerInfo fonksiyonuna ekleme yapın
+        function updatePlayerInfo() {
+            // Burada mevcut kodunuz var
+
+            // Şu satırları ekleyin
+            if (title && artist && musicId) {
+                // Global değişkenler - window.parent'a da yaz ki diğer sayfalardan erişilebilsin
+                window.currentTrackTitle = decodedTitle;
+                window.currentTrackArtist = decodedArtist;
+                window.currentMusicId = musicId;
+
+                window.parent.currentTrackTitle = decodedTitle;
+                window.parent.currentTrackArtist = decodedArtist;
+                window.parent.currentMusicId = musicId;
+            }
+        }
+
+    </script>
 </body>
 </html>

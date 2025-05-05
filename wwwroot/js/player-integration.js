@@ -1,54 +1,217 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    console.log("Player entegrasyonu başlatılıyor...");
+    console.log("Geliştirilmiş player entegrasyonu başlatılıyor...");
 
-    // Global müzik oynatıcısı - sayfalar arası geçişte kullanılır
-    const globalPlayer = document.getElementById('musicPlayer');
+    // Global müzik oynatıcısı
+    const audioPlayer = document.getElementById('musicPlayer');
+    if (!audioPlayer) {
+        console.error("Audio player bulunamadı!");
+        return;
+    }
 
-    // Listen & Tag sayfasında mıyız?
+    // Sayfa türünü kontrol et
     const isListenTagPage = window.location.pathname.includes('/Dashboard/ListenTag');
+    const isListenMixedPage = window.location.pathname.includes('/Dashboard/ListenMixed');
 
-    // Eğer globalPlayer daha önce tanımlanmadıysa oluştur
-    if (!globalPlayer && typeof Audio !== 'undefined') {
-        const newPlayer = document.createElement('audio');
-        newPlayer.id = 'musicPlayer';
-        newPlayer.style.display = 'none';
-        document.body.appendChild(newPlayer);
-        console.log("Global müzik oynatıcısı oluşturuldu");
-    }
+    // Tüm müzik tıklama olaylarını dinle (delegasyon ile)
+    document.addEventListener('click', function (e) {
+        // Listen Mixed sayfasında müzik satırına tıklama
+        if (e.target.closest('.music-row')) {
+            const row = e.target.closest('.music-row');
+            // Eğer zaten playMusic fonksiyonu bağlıysa müdahale etme
+            if (row.getAttribute('onclick') && row.getAttribute('onclick').includes('playMusic')) {
+                return; // Mevcut fonksiyon çalışacak
+            }
 
-    // Recently Played listesini güncellemek için AJAX çağrısı
-    function updateRecentlyPlayed() {
-        // Sadece Listen & Tag sayfasındaysak güncelle
-        if (!isListenTagPage) return;
+            const musicId = row.getAttribute('data-music-id');
+            if (musicId) {
+                // Müzik ID'sini global değişkene kaydet
+                window.currentMusicId = musicId;
 
-        fetch('/Dashboard/GetRecentlyPlayed')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Sunucu hatası: ' + response.status);
+                // Gerekli diğer bilgileri bul
+                const titleCell = row.querySelector('td:nth-child(2)');
+                const artistCell = row.querySelector('td:nth-child(3)');
+
+                if (titleCell && artistCell) {
+                    window.currentTrackTitle = titleCell.textContent.trim();
+                    window.currentTrackArtist = artistCell.textContent.trim();
                 }
-                return response.text();
-            })
-            .then(html => {
-                // Recently Played bölümünü bul ve güncelle
-                const recentlyPlayedContainer = document.querySelector('.activity-section .card:first-child .list-group');
-                if (recentlyPlayedContainer) {
-                    recentlyPlayedContainer.innerHTML = html;
-                    console.log("Recently Played listesi güncellendi");
-                } else {
-                    console.warn("Recently Played konteyneri bulunamadı");
-                }
-            })
-            .catch(error => {
-                console.error("Recently Played güncelleme hatası:", error);
-            });
-    }
-
-    // globalPlayer için genel bir log fonksiyonu
-    function logPlayedTrack(musicId) {
-        if (!musicId) {
-            console.warn("Log için geçerli bir müzik ID'si bulunamadı");
-            return;
+            }
         }
+
+        // Listen Tag sayfasında albüm kapağına tıklama
+        if (isListenTagPage && e.target.closest('.album-cover')) {
+            const slide = e.target.closest('.swiper-slide');
+            if (slide) {
+                const musicId = slide.getAttribute('data-music-id');
+                const filename = slide.getAttribute('data-filename');
+                const title = slide.getAttribute('data-title');
+                const artist = slide.getAttribute('data-artist');
+
+                if (filename && audioPlayer) {
+                    // Çalma bilgilerini güncelle
+                    window.currentMusicId = musicId;
+                    window.currentTrackTitle = title;
+                    window.currentTrackArtist = artist;
+
+                    // Müziği çal
+                    audioPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(filename)}`;
+                    audioPlayer.play().catch(err => console.error("Müzik çalma hatası:", err));
+
+                    // UI güncelle
+                    updateNowPlayingUI(title, artist);
+                }
+            }
+        }
+    });
+
+    // Dinleme süresi takibi
+    let hasLogged = false;
+
+    audioPlayer.addEventListener('timeupdate', function () {
+        // Şarkı 5 saniyeden fazla çalındıysa dinleme olarak kaydet
+        if (!hasLogged && this.currentTime > 5 && window.currentMusicId) {
+            logPlayedTrack(window.currentMusicId);
+            hasLogged = true;
+        }
+    });
+
+    audioPlayer.addEventListener('ended', function () {
+        // Şarkı bittiğinde sıradaki şarkıyı çal
+        if (typeof nextTrack === 'function') {
+            nextTrack();
+        }
+        hasLogged = false; // Logging durumunu sıfırla
+    });
+
+    audioPlayer.addEventListener('play', function () {
+        // Oynatma durumunu güncelle
+        const playPauseIcon = document.querySelector('.play-pause-btn i');
+        if (playPauseIcon) {
+            playPauseIcon.className = 'fas fa-pause';
+        }
+    });
+
+    audioPlayer.addEventListener('pause', function () {
+        // Duraklama durumunu güncelle
+        const playPauseIcon = document.querySelector('.play-pause-btn i');
+        if (playPauseIcon) {
+            playPauseIcon.className = 'fas fa-play';
+        }
+    });
+
+    // Global oynatma kontrolü fonksiyonlarını yeniden tanımla
+    window.playPause = function () {
+        if (!audioPlayer) return;
+
+        if (audioPlayer.paused) {
+            audioPlayer.play().catch(e => console.error("Oynatma hatası:", e));
+        } else {
+            audioPlayer.pause();
+        }
+    };
+
+    window.nextTrack = function () {
+        // Track Data'dan bir sonraki şarkıyı çal
+        const trackData = document.getElementById('trackData');
+        if (trackData) {
+            const currentIndex = parseInt(trackData.dataset.currentIndex) || 0;
+            const trackCount = parseInt(trackData.dataset.tracksCount) || 0;
+
+            if (trackCount > 0) {
+                // Bir sonraki şarkı indeksini hesapla
+                const nextIndex = (currentIndex + 1) % trackCount;
+
+                // Tüm şarkıları al
+                const trackItems = trackData.querySelectorAll('.track-item');
+                if (trackItems && trackItems.length > nextIndex) {
+                    const nextTrack = trackItems[nextIndex];
+
+                    // Yeni şarkı bilgilerini al
+                    const id = nextTrack.dataset.id;
+                    const title = nextTrack.dataset.title;
+                    const artist = nextTrack.dataset.artist;
+                    const filename = nextTrack.dataset.filename;
+
+                    // Şarkıyı ayarla ve çal
+                    if (filename && audioPlayer) {
+                        window.currentMusicId = id;
+                        window.currentTrackTitle = title;
+                        window.currentTrackArtist = artist;
+
+                        audioPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(filename)}`;
+                        audioPlayer.play().catch(err => console.error("Müzik çalma hatası:", err));
+
+                        // UI güncelle
+                        updateNowPlayingUI(title, artist);
+                        hasLogged = false; // Yeni şarkı için log durumunu sıfırla
+
+                        // Current index'i güncelle
+                        trackData.dataset.currentIndex = nextIndex;
+                    }
+                }
+            }
+        }
+    };
+
+    window.prevTrack = function () {
+        // Track Data'dan bir önceki şarkıyı çal
+        const trackData = document.getElementById('trackData');
+        if (trackData) {
+            const currentIndex = parseInt(trackData.dataset.currentIndex) || 0;
+            const trackCount = parseInt(trackData.dataset.tracksCount) || 0;
+
+            if (trackCount > 0) {
+                // Bir önceki şarkı indeksini hesapla
+                const prevIndex = (currentIndex - 1 + trackCount) % trackCount;
+
+                // Tüm şarkıları al
+                const trackItems = trackData.querySelectorAll('.track-item');
+                if (trackItems && trackItems.length > prevIndex) {
+                    const prevTrack = trackItems[prevIndex];
+
+                    // Yeni şarkı bilgilerini al
+                    const id = prevTrack.dataset.id;
+                    const title = prevTrack.dataset.title;
+                    const artist = prevTrack.dataset.artist;
+                    const filename = prevTrack.dataset.filename;
+
+                    // Şarkıyı ayarla ve çal
+                    if (filename && audioPlayer) {
+                        window.currentMusicId = id;
+                        window.currentTrackTitle = title;
+                        window.currentTrackArtist = artist;
+
+                        audioPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(filename)}`;
+                        audioPlayer.play().catch(err => console.error("Müzik çalma hatası:", err));
+
+                        // UI güncelle
+                        updateNowPlayingUI(title, artist);
+                        hasLogged = false; // Yeni şarkı için log durumunu sıfırla
+
+                        // Current index'i güncelle
+                        trackData.dataset.currentIndex = prevIndex;
+                    }
+                }
+            }
+        }
+    };
+
+    window.stopTrack = function () {
+        if (!audioPlayer) return;
+
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+
+        // UI güncelle
+        const playPauseIcon = document.querySelector('.play-pause-btn i');
+        if (playPauseIcon) {
+            playPauseIcon.className = 'fas fa-play';
+        }
+    };
+
+    // Yardımcı fonksiyonlar
+    function logPlayedTrack(musicId) {
+        if (!musicId) return;
 
         fetch('/Dashboard/LogPlayed', {
             method: 'POST',
@@ -57,107 +220,51 @@
                 MusicId: parseInt(musicId)
             })
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Sunucu hatası: ' + response.status);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log("🎧 Dinlenme kaydedildi:", musicId);
-                // Başarıyla loglandıktan sonra güncellemeleri yap
-                updateRecentlyPlayed();
+                console.log("🎧 Dinleme kaydedildi:", musicId);
+                // Dinleme geçmişini güncelle (eğer sayfadaysa)
+                if (isListenTagPage) {
+                    updateRecentlyPlayed();
+                }
             })
             .catch(error => {
                 console.error("Dinleme logu hatası:", error);
             });
     }
 
-    // NowPlaying bileşenindeki müzik çalma olayını dinle
-    if (globalPlayer) {
-        let hasLogged = false;
-        let lastLoggedMusicId = null;
+    function updateRecentlyPlayed() {
+        fetch('/Dashboard/GetRecentlyPlayed')
+            .then(response => response.text())
+            .then(html => {
+                const recentlyPlayedContainer = document.querySelector('.activity-section .card:first-child .list-group');
+                if (recentlyPlayedContainer) {
+                    recentlyPlayedContainer.innerHTML = html;
+                }
+            })
+            .catch(err => {
+                console.error("Recently Played güncelleme hatası:", err);
+            });
+    }
 
-        // Müzik çalmaya başladığında
-        globalPlayer.addEventListener('play', function () {
-            console.log("Müzik çalmaya başladı");
-            hasLogged = false; // Yeni çalma başladığında log durumunu sıfırla
-        });
+    function updateNowPlayingUI(title, artist) {
+        // Başlık güncelleme
+        const marqueeContent = document.querySelector('.marquee-content');
+        if (marqueeContent && title && artist) {
+            marqueeContent.innerHTML = `<strong>${title} - ${artist}</strong>`;
 
-        // Müzik çalarken zaman ilerledikçe
-        globalPlayer.addEventListener('timeupdate', function () {
-            // Müzik 1 saniyeden fazla çaldıysa ve henüz loglanmadıysa
-            if (!hasLogged && this.currentTime > 1) {
-                // trackData elementinden ID'yi bulmaya çalış
-                const trackData = document.getElementById('trackData');
-                if (trackData) {
-                    const musicId = getCurrentTrackId();
-                    if (musicId && musicId !== lastLoggedMusicId) {
-                        logPlayedTrack(musicId);
-                        hasLogged = true;
-                        lastLoggedMusicId = musicId;
-                    }
+            // Sayfa başlığını güncelle
+            document.title = `${title} - ${artist} 🎵`;
+
+            // Marquee aktivasyonu
+            const container = document.querySelector('.marquee-container');
+            if (container) {
+                if (container.offsetWidth < marqueeContent.offsetWidth) {
+                    container.classList.add('marquee-active');
                 } else {
-                    // Listen & Tag sayfasında aktif slayttan ID'yi bul
-                    const activeSlide = document.querySelector('.swiper-slide-active');
-                    if (activeSlide) {
-                        const musicId = activeSlide.getAttribute('data-music-id');
-                        if (musicId && musicId !== lastLoggedMusicId) {
-                            logPlayedTrack(musicId);
-                            hasLogged = true;
-                            lastLoggedMusicId = musicId;
-                        }
-                    }
+                    container.classList.remove('marquee-active');
                 }
             }
-        });
-
-        // Çalan müziğin ID'sini al (NowPlaying bileşeninden)
-        function getCurrentTrackId() {
-            const trackData = document.getElementById('trackData');
-            if (trackData) {
-                const currentIndex = parseInt(trackData.dataset.currentIndex) || 0;
-                const trackItems = trackData.querySelectorAll('.track-item');
-                if (trackItems && trackItems.length > 0 && currentIndex < trackItems.length) {
-                    return trackItems[currentIndex].dataset.id;
-                }
-            }
-            return null;
         }
     }
-
-    // Listen & Tag sayfasındaki albümlere tıklama işlevi
-    if (isListenTagPage) {
-        const albumCovers = document.querySelectorAll('.album-cover');
-        albumCovers.forEach(cover => {
-            cover.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                // En yakın swiper slide'ı bul
-                const slide = this.closest('.swiper-slide');
-                if (slide) {
-                    const musicId = slide.getAttribute('data-music-id');
-                    const filename = slide.getAttribute('data-filename');
-                    const title = slide.getAttribute('data-title');
-                    const artist = slide.getAttribute('data-artist');
-
-                    if (filename) {
-                        // Global müzik çaları ayarla
-                        if (globalPlayer) {
-                            globalPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(filename)}`;
-                            globalPlayer.play()
-                                .then(() => {
-                                    console.log(`Müzik çalınıyor: ${title} - ${artist}`);
-                                    // 1 saniye sonra otomatik olarak güncelleyeceğiz,
-                                    // ama acil durumlarda burada da manuel güncellenebilir
-                                    // updateRecentlyPlayed(); 
-                                })
-                                .catch(err => {
-                                    console.error("Müzik çalma hatası:", err);
-                                });
-                        }
-                    }
-                }
-            });
-        });
-    }
+});

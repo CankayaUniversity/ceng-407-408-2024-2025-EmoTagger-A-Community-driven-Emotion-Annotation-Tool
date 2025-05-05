@@ -137,25 +137,54 @@
     <script src="~/assets/js/sidebar.js?v=1.0.1" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.querySelector("form").addEventListener("submit", function (e) {
-            e.preventDefault(); // Formun varsayılan gönderimini engelle
+             document.querySelector("form").addEventListener("submit", function (e) {
+            e.preventDefault();
 
-            let formData = new FormData(this);
+            // Formdaki tüm alanları al (ClientValidation için)
+            const password = document.querySelector('input[name="Password"]').value;
+            const confirmPassword = document.querySelector('input[name="ConfirmPassword"]').value;
 
+            // Client tarafında temel doğrulama
+            if (password.length < 6) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreniz en az 6 karakter olmalıdır.",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreler uyuşmuyor!",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            // FormData kullanarak tüm verileri gönder
+            const formData = new FormData(this);
+
+            // Gönderim formatı kontrolü - fetch ile FormData
             fetch("/Dashboard/Register", {
                 method: "POST",
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
+                console.log("Sunucu yanıtı:", data);
+
                 if (data.success) {
                     Swal.fire({
                         icon: "success",
                         title: "Başarılı!",
-                        text: data.message,
+                        text: data.message || "Kaydınız başarıyla oluşturuldu!",
                         confirmButtonText: "Tamam"
                     }).then(() => {
-                        window.location.href = "/Dashboard/Login"; // Başarı sayfasına yönlendir
+                        window.location.href = data.redirectUrl;
                     });
                 } else {
                     Swal.fire({
@@ -167,7 +196,13 @@
                 }
             })
             .catch(error => {
-                console.error("Hata:", error);
+                console.error("Bağlantı hatası:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Bağlantı Hatası!",
+                    text: "Sunucu ile iletişim kurulurken bir problem oluştu.",
+                    confirmButtonText: "Tamam"
+                });
             });
         });
     </script>

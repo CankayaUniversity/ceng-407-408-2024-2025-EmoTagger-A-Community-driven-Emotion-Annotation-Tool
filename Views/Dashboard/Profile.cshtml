@@ -2,9 +2,26 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Profilim";
+    var cacheBuster = DateTime.Now.Ticks;
 }
 
 <link rel="stylesheet" href="~/css/profile.css">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <div class="profile-container">
     <div class="profile-grid">
@@ -12,7 +29,8 @@
         <div class="left-column">
             <div class="profile-card">
                 <div class="profile-image-container">
-                    <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "/assets/images/default-profile.png" : Model.ProfileImageUrl)" alt="Profil Resmi" class="profile-image">
+                    <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "/assets/images/default-profile.png" : Model.ProfileImageUrl + "?v=" + cacheBuster)"
+                         alt="Profil Resmi" class="profile-image">
                     <h3 class="profile-name">@($"{Model.FirstName} {Model.LastName}")</h3>
                     <p class="profile-email">@Model.Email</p>
 
@@ -21,6 +39,7 @@
                         <label for="profileImage" class="btn-upload">
                             Profil Resmini Değiştir
                         </label>
+                        <div id="uploadStatus" style="display: none; margin-top: 10px;"></div>
                     </form>
                 </div>
             </div>
@@ -70,16 +89,16 @@
         <div class="right-column">
             <div class="profile-card">
                 <div class="profile-tabs">
-                    <button class="tab-link active" data-tab="profile-info">Profil Bilgisi</button>
-                    <button class="tab-link" data-tab="music-history">Müzik Geçmişi</button>
-                    <button class="tab-link" data-tab="friends">Arkadaşlar</button>
+                    <button class="tab-link active" data-tab="profile-info" tabindex="0">Profil Bilgisi</button>
+                    <button class="tab-link" data-tab="music-history" tabindex="0">Müzik Geçmişi</button>
+                    <button class="tab-link" data-tab="friends" tabindex="0">Arkadaşlar</button>
                 </div>
 
                 <div class="card-body">
                     <!-- Profil Bilgisi Sekmesi -->
                     <div id="profile-info" class="tab-content active">
                         <h4>Hesap Bilgileri</h4>
-                        <form method="post" asp-controller="Dashboard" asp-action="UpdateProfile">
+                        <form method="post" asp-controller="Dashboard" asp-action="UpdateProfile" id="profileForm">
                             <!-- GİZLİ GÖNDERİLEN ALANLAR -->
                             <input type="hidden" name="Email" value="@Model.Email" />
                             <input type="hidden" name="ProfileImageUrl" value="@Model.ProfileImageUrl" />
@@ -107,9 +126,9 @@
                             <div style="text-align: right;">
                                 <button type="button" id="editBtn" class="btn btn-primary">Profili Düzenle</button>
                                 <button type="submit" id="saveBtn" class="btn btn-success" style="display:none;">Değişiklikleri Kaydet</button>
+                                <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">İptal</button>
                             </div>
                         </form>
-
                     </div>
 
                     <!-- Müzik Geçmişi Sekmesi -->
@@ -242,16 +261,28 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Profil düzenleme butonları
         const editBtn = document.getElementById("editBtn");
         const saveBtn = document.getElementById("saveBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
         const inputs = document.querySelectorAll(".form-control");
         let isFormEdited = false;
 
-        if (editBtn && saveBtn && inputs.length > 0) {
+        if (editBtn && saveBtn && cancelBtn && inputs.length > 0) {
             editBtn.addEventListener("click", function () {
                 inputs.forEach(input => input.removeAttribute("readonly"));
                 editBtn.style.display = "none";
                 saveBtn.style.display = "inline-block";
+                cancelBtn.style.display = "inline-block";
+            });
+
+            cancelBtn.addEventListener("click", function() {
+                document.getElementById('profileForm').reset();
+                inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                isFormEdited = false;
             });
 
             inputs.forEach(input => {
@@ -268,6 +299,103 @@
                 e.returnValue = '';
             }
         });
+
+        // Form gönderildiğinde
+        document.getElementById('profileForm')?.addEventListener('submit', function() {
+            if (!isFormEdited) {
+                alert('Hiçbir değişiklik yapmadınız.');
+                return false;
+            }
+            return true;
+        });
+
+        // Profil resmi değiştirme işlemi
+        const profileImageInput = document.getElementById('profileImage');
+        if (profileImageInput) {
+            profileImageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    // Dosya tipini kontrol et
+                    const fileType = this.files[0].type;
+                    if (!fileType.startsWith('image/')) {
+                        alert('Lütfen bir resim dosyası seçin.');
+                        this.value = ''; // Input'u temizle
+                        return;
+                    }
+
+                    // Dosya boyutunu kontrol et (5MB)
+                    if (this.files[0].size > 5 * 1024 * 1024) {
+                        alert('Dosya boyutu çok büyük! Lütfen 5MB\'dan küçük bir dosya seçin.');
+                        this.value = ''; // Input'u temizle
+                        return;
+                    }
+
+                    // Resmi önizleme göster
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const profileImage = document.querySelector('.profile-image');
+                        if (profileImage) {
+                            profileImage.src = e.target.result;
+                        }
+                    }
+                    reader.readAsDataURL(this.files[0]);
+
+                    // Yükleniyor göstergesi
+                    const uploadStatus = document.getElementById('uploadStatus');
+                    if (uploadStatus) {
+                        uploadStatus.style.display = 'block';
+                        uploadStatus.innerHTML = '<span class="text-info">Resim yükleniyor...</span>';
+                    }
+
+                    // Formu gönder
+                    document.getElementById('uploadForm').submit();
+                }
+            });
+        }
+
+        // Sekmeler arası geçiş
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+
+                // Aktif sekme sınıfını kaldır
+                tabLinks.forEach(link => link.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Tıklanan sekmeyi aktif yap
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Layout'daki profil resmini de güncelle (bu fonksiyon _Layout.cshtml'de tanımlanmış olmalı)
+        if (typeof window.updateProfileImageInNavbar === 'function') {
+            // Mevcut profil resmini al
+            const currentProfileImage = document.querySelector('.profile-image')?.src;
+            if (currentProfileImage) {
+                // Navbar'daki profil resmini güncelle
+                window.updateProfileImageInNavbar(currentProfileImage);
+            }
+        }
     });
 </script>
+<script>
+    // URL'den refresh parametresini kontrol et
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('refresh')) {
+        // Tüm resim URL'lerini zorla güncelle
+        const allImages = document.querySelectorAll('img');
+        allImages.forEach(img => {
+            if (img.src && !img.src.includes('?v=')) {
+                img.src = img.src + '?v=' + new Date().getTime();
+            }
+        });
 
+        // Ana sayfaya ve diğer kısımlara da bildir
+        if (window.parent && window.parent !== window) {
+            window.parent.location.reload();
+        }
+    }
+</script>
