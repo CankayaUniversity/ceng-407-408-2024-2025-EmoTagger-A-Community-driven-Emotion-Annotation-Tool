@@ -46,5 +46,7 @@ Name Surname | Student Number |
 ### Project Design FigmaLinkOfProject:
 [Figma Of Project](https://www.figma.com/design/5Lo0Q6GxEHEMog2CO1Iin0/ceng407project?node-id=2-1194&t=hOEuBxwTTNekag7L-1)
 
+### User Manual of EmoTagger
+[User Manual].(https://github.com/CankayaUniversity/ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool/blob/main/Documents/EmoTagger%20Music%20Platform%20User%20Manual.pdf) 
 
 >>>>>>> 0a8267fd0b9c204d4d6db1e66e884190c932a4fd
