@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Admin Paneli - Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Eğer özel bir admin layout yapmadıysan bu şekilde kalsın
+}
+
+<h2>Admin Dashboard</h2>
+<div class="btn-group mb-4">
+    <a class="btn btn-outline-primary" href="/Admin/Dashboard">Dashboard</a>
+    <a class="btn btn-outline-primary" href="/Admin/Users">Kullanıcılar</a>
+    <a class="btn btn-outline-primary" href="/Admin/Musics">Müzikler</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                Toplam Kullanıcı: <strong>@ViewBag.TotalUsers</strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                Toplam Müzik: <strong>@ViewBag.TotalMusics</strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                Toplam Etiket: <strong>@ViewBag.TotalTags</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h4>Son Eklenen Kullanıcılar</h4>
+<table class="table table-bordered">
+    <tr>
+        <th>Ad Soyad</th>
+        <th>Email</th>
+        <th>Kayıt Tarihi</th>
+    </tr>
+    @foreach (var user in ViewBag.RecentUsers)
+    {
+        <tr>
+            <td>@user.FirstName @user.LastName</td>
+            <td>@user.Email</td>
+            <td>@user.CreatedAt.ToShortDateString()</td>
+        </tr>
+    }
+</table>
+
+<h4>Son Eklenen Müzikler</h4>
+<table class="table table-bordered">
+    <tr>
+        <th>Başlık</th>
+        <th>Sanatçı</th>
+        <th>Eklenme</th>
+    </tr>
+    @foreach (var music in ViewBag.RecentMusics)
+    {
+        <tr>
+            <td>@music.title</td>
+            <td>@music.artist</td>
+            <td>@music.createdat.ToShortDateString()</td>
+        </tr>
+    }
+</table>
+<h4>Son Etiketlenen Müzikler</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Kullanıcı</th>
+            <th>Müzik</th>
+            <th>Tag (Duygu)</th>
+            <th>Tarih</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var tags = ViewBag.RecentTags as List<EmoTagger.Models.MusicTag>;
+        }
+
+        @if (tags != null && tags.Count > 0)
+        {
+            <h4>Son Etiketlenen Müzikler</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>Müzik</th>
+                        <th>Tag (Duygu)</th>
+                        <th>Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tag in tags)
+                    {
+                        <tr>
+                            <td>@tag.User.FirstName @tag.User.LastName</td>
+                            <td>@tag.Music.title - @tag.Music.artist</td>
+                            <td><strong>@tag.Tag</strong></td>
+                            <td>@tag.CreatedAt.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Henüz taglenmiş müzik yok.</p>
+        }
+
+    </tbody>
+</table>

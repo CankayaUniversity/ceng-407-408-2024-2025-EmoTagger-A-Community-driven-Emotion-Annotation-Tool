@@ -1,0 +1,194 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\models\\musictag.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\musictag.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\views\\admin\\musics.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\admin\\musics.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\views\\admin\\users.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\admin\\users.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\views\\dashboard\\leaderboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\leaderboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\models\\music.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\music.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\proft\\desktop\\proje\\ceng-407-408-2024-2025-emotagger-a-community-driven-emotion-annotation-tool-development\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Leaderboard.cshtml",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Dashboard\\Leaderboard.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Leaderboard.cshtml",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Dashboard\\Leaderboard.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Leaderboard.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-02T14:08:24.952Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\User.cs",
+              "RelativeDocumentMoniker": "Models\\User.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\User.cs*",
+              "RelativeToolTip": "Models\\User.cs*",
+              "ViewState": "AgIAACEAAAAAAAAAAAAmwDQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T13:55:19.819Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Music.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\Music.cs",
+              "RelativeDocumentMoniker": "Models\\Music.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\Music.cs",
+              "RelativeToolTip": "Models\\Music.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T13:05:24.663Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Models\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Models\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T13:12:39.802Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MusicTag.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\MusicTag.cs",
+              "RelativeDocumentMoniker": "Models\\MusicTag.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Models\\MusicTag.cs",
+              "RelativeToolTip": "Models\\MusicTag.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T13:05:36.078Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T12:51:35.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAADwvx8AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T12:49:59.963Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Musics.cshtml",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Musics.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Musics.cshtml",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Musics.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Musics.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-02T12:50:57.662Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Users.cshtml",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Users.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Users.cshtml",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Users.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Users.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-02T12:50:42.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Dashboard.cshtml",
+              "ToolTip": "C:\\Users\\ProfT\\Desktop\\Proje\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\\Views\\Admin\\Dashboard.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Dashboard.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-02T12:50:29.128Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

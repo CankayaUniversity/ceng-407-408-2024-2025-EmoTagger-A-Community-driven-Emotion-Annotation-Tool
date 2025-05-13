@@ -1,0 +1,12 @@
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.css
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.css.map
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.min.css
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.min.css.map
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.rtl.css
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.rtl.css.map
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.rtl.min.css
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\css\adminlte.rtl.min.css.map
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\js\adminlte.js
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\js\adminlte.js.map
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\js\adminlte.min.js
+C:\Users\ProfT\Desktop\Proje\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool-development\wwwroot\js\adminlte.min.js.map
