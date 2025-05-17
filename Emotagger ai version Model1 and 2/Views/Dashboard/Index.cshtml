@@ -1,0 +1,702 @@
+@model EmoTagger.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<link rel="stylesheet" href="~/css/home.css">
+
+
+
+<!-- Öne Çıkan Bölüm -->
+<div class="highlighted-section">
+    <div class="content">
+        <h2>Müziğin Duygularını Keşfet</h2>
+        <p>Müzik ruh haline göre etiketlenmiş binlerce şarkı arasından seçim yap.</p>
+        <a asp-controller="Dashboard" asp-action="ListenTag" class="btn btn-discover">Keşfet <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+    <div class="image">
+        <img src="~/assets/images/music-discovery.jpg" alt="Müzik Deneyimi">
+    </div>
+</div>
+
+<!-- Duygu Kategorileri -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="section-title">Duygu Koleksiyonları</h3>
+        <a asp-controller="Categories" asp-action="Index" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row">
+        @foreach (var category in Model.EmotionCategories)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card" data-tag="@category.Tag">
+                    <div class="category-overlay"></div>
+                    <img src="~/assets/images/categories/@(category.Tag.ToLower()).jpg" alt="@category.Tag">
+                    <div class="category-content">
+                        <div class="emoji">@GetEmoji(category.Tag)</div>
+                        <div class="category-title">@category.Tag</div>
+                        <div class="category-count">@category.SongCount şarkı</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Kategoriye Göre Şarkılar (Dinamik olarak JavaScript ile yüklenecek) -->
+<!-- Kategoriye Göre Şarkılar (Dinamik olarak JavaScript ile yüklenecek) -->
+<div id="category-music-section" class="mb-5 d-none">
+    <h3 class="section-title category-title">
+        <span class="category-emoji"></span>
+        <span class="category-name"></span>
+    </h3>
+    <div id="category-music-container" class="category-container">
+        <!-- Kategoriye göre şarkılar burada gösterilecek (yatay kaydırmalı) -->
+    </div>
+</div>
+
+
+<div class="row">
+    <!-- Sol Sütun - En Çok Dinlenenler -->
+    <div class="col-lg-8">
+        <!-- En Çok Dinlenen Şarkılar -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title">Trend Şarkılar</h3>
+                <a asp-controller="Dashboard" asp-action="Trending" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="trending-track-list">
+                @foreach (var song in Model.TrendingSongs)
+                {
+                    <div class="trending-track" data-music-id="@song.MusicId">
+                        <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
+                        <div class="track-info">
+                            <div class="track-title">@song.Title</div>
+                            <div class="track-artist">@song.Artist</div>
+                        </div>
+                        <span class="tag-badge @song.MostCommonTag.ToLower()">@song.MostCommonTag</span>
+                        <div class="play-count">
+                            <i class="fas fa-headphones"></i>
+                            <span>@FormatNumber(song.PlayCount)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- En Çok Etiketlenen Şarkılar -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="section-title">En Çok Etiketlenen Şarkılar</h3>
+                <a asp-controller="Dashboard" asp-action="MostTagged" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="row">
+                @foreach (var song in Model.MostTaggedSongs)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="track-card" data-music-id="@song.MusicId" onclick="playMusic('@song.Filename', '@song.Title - @song.Artist', this)">
+                            <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
+                            <div class="track-info">
+                                <div class="track-title">@song.Title</div>
+                                <div class="track-artist">@song.Artist</div>
+                                <div class="track-tags">
+                                    @foreach (var tag in song.Tags)
+                                    {
+                                        <span class="tag-badge @tag.ToLower()">@tag</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sağ Sütun - İstatistikler ve Öneriler -->
+    <div class="col-lg-4">
+        <!-- Etiket Dağılımı -->
+        <div class="tag-distribution">
+            <h4 class="mb-4">Etiket Dağılımı</h4>
+
+            @foreach (var tagStat in Model.TagDistribution)
+            {
+                <div class="tag-progress">
+                    <div class="tag-name">
+                        <span>@GetEmoji(tagStat.Tag) @tagStat.Tag</span>
+                        <span class="tag-percent">@tagStat.Percentage%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar @tagStat.Tag.ToLower()" role="progressbar" style="width: @tagStat.Percentage%" aria-valuenow="@tagStat.Percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Senin İçin Önerilen -->
+        <div class="mb-4 mt-4">
+            <h4 class="mb-3">Senin İçin Önerilen</h4>
+
+            @foreach (var song in Model.RecommendedSongs)
+            {
+                <div class="trending-track" data-music-id="@song.MusicId" onclick="playMusic('@song.Filename', '@song.Title - @song.Artist', this)">
+                    <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
+                    <div class="track-info">
+                        <div class="track-title">@song.Title</div>
+                        <div class="track-artist">@song.Artist</div>
+                    </div>
+                    <span class="tag-badge @song.Tag.ToLower()">@song.Tag</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetEmoji(string tag)
+    {
+        return tag.ToLower() switch
+        {
+            "sad" => "😢",
+            "happy" => "😄",
+            "nostalgic" => "🌧️",
+            "energetic" => "🔥",
+            "relaxing" => "🧘",
+            "romantic" => "❤️",
+            _ => "🎵"
+        };
+    }
+
+    public string FormatNumber(int number)
+    {
+        if (number < 1000) return number.ToString();
+        if (number < 10000) return Math.Round(number / 1000.0, 1) + "k";
+        return (number / 1000) + "k";
+    }
+}
+
+@section Scripts {
+    <script>
+       
+             // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            // Otomatik sayfa yenileme varsa durdur
+            preventPageRefresh();
+            sessionStorage.clear(); // tüm eski verileri uçur
+
+            // Logo yazısını gizle (sol üstteki siyah yazı)
+            hideLogo();
+
+            // Kategori yazılarını ortala
+            centerCategoryContent();
+
+            // Kategorileri yükle ve güncelle - sayıların doğru gelmesi için
+            loadCategoriesForHomepage();
+
+            // Kategori kartlarına tıklama olayı
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const tag = this.getAttribute('data-tag');
+                    if (tag) {
+                        // Tıklandığında animasyon efekti
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = 'translateY(-5px)';
+                            // Titreme çözümü ile kategori şarkılarını yükle
+                            loadCategoryMusicWithoutFlicker(tag);
+                        }, 150);
+                    }
+                });
+
+                // Hover efektlerini iyileştir
+                card.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = 'translateY(-8px)';
+                        this.style.boxShadow = '0 15px 25px rgba(0,0,0,0.2)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                    }
+                });
+            });
+
+            // LocalStorage'dan seçili kategoriyi kontrol et
+            const selectedCategory = localStorage.getItem('selectedCategory');
+            if (selectedCategory) {
+                // Kısa bir süre bekleyerek sayfanın tam yüklenmesini sağla
+                setTimeout(() => {
+                    loadCategoryMusicWithoutFlicker(selectedCategory);
+                    // Seçili kategoriyi temizle
+                    localStorage.removeItem('selectedCategory');
+                }, 500);
+            }
+        });
+
+        // Otomatik sayfa yenilemesini tamamen durdur
+        function preventPageRefresh() {
+            // 1. Tüm mevcut zamanlayıcıları temizle
+            for (let i = 1; i < 10000; i++) {
+                window.clearTimeout(i);
+                window.clearInterval(i);
+            }
+
+            // 2. History API'sini değiştir
+            const originalPushState = history.pushState;
+            history.pushState = function() {
+                return originalPushState.apply(this, arguments);
+            };
+
+            // 3. window.location.reload'u devre dışı bırak
+            window.location.reload = function() {
+                console.log("Sayfa yenileme engellendi");
+                return false;
+            };
+
+            // 4. Formların submit olayını engelle
+            document.addEventListener('submit', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            // 5. Bağlantıların tıklama olayını izle
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+            }, true);
+
+            console.log("Tüm sayfa yenileme mekanizmaları devre dışı bırakıldı");
+        }
+
+        // Logo yazısını gizle
+        function hideLogo() {
+            // Sol üstteki siyah yazıyı gizle - CSS kullanamadığımız için JS ile yapıyoruz
+            const logoElements = document.querySelectorAll('.tagger, .music-logo-text, .app-title, .app-logo-text');
+            logoElements.forEach(el => {
+                if (el) el.style.display = 'none';
+            });
+
+            // Ayrıca müzik simgesi için özel stil
+            const musicIcon = document.querySelector('.music-logo-icon, .app-logo-icon');
+            if (musicIcon) {
+                musicIcon.style.fontSize = '32px';
+                musicIcon.style.color = '#ff5252';
+                musicIcon.style.marginRight = '5px';
+            }
+        }
+
+        // Kategori içeriğini ortala
+        function centerCategoryContent() {
+            // Tüm kategori kartlarındaki içeriği ortala
+            document.querySelectorAll('.category-content').forEach(content => {
+                content.style.display = 'flex';
+                content.style.flexDirection = 'column';
+                content.style.justifyContent = 'center';
+                content.style.alignItems = 'center';
+                content.style.height = '100%';
+                content.style.top = '0';
+                content.style.padding = '20px';
+            });
+
+            // Emoji boyutunu artır
+            document.querySelectorAll('.category-content .emoji').forEach(emoji => {
+                emoji.style.fontSize = '48px';
+                emoji.style.marginBottom = '10px';
+            });
+
+            // Kategori başlığını büyüt
+            document.querySelectorAll('.category-content .category-title').forEach(title => {
+                title.style.fontSize = '32px';
+                title.style.fontWeight = 'bold';
+                title.style.marginBottom = '8px';
+            });
+        }
+
+        // Şarkı çalma fonksiyonu
+        function playMusic(src, title, element) {
+            const audio = document.getElementById("musicPlayer");
+            if (!audio) return;
+
+            // MusicID'yi al
+            const musicId = element.getAttribute('data-music-id') ||
+                            element.closest('[data-music-id]')?.getAttribute('data-music-id');
+
+            // Müzik URL'ini oluştur
+            const musicUrl = `https://emomusicc.vercel.app/music/${encodeURIComponent(src)}`;
+
+            // localStorage'a son oynatılanı kaydet
+            localStorage.setItem("lastPlayedSrc", musicUrl);
+            localStorage.setItem("lastPlayedTitle", title);
+
+            // Stil
+            document.querySelectorAll('.track-card, .trending-track, .carousel-item').forEach(item => {
+                item.classList.remove('playing-now');
+            });
+
+            if (element) {
+                element.classList.add('playing-now');
+            }
+
+            // Global değişkenleri ayarla
+            const titleParts = title.split(' - ');
+            window.currentTrackTitle = titleParts[0];
+            window.currentTrackArtist = titleParts.length > 1 ? titleParts[1] : '';
+            window.currentMusicId = musicId;
+
+            // Oynat
+            audio.src = musicUrl;
+            audio.play().catch(e => console.warn("Otomatik oynatma engellendi:", e));
+
+            document.title = title + " 🎵";
+
+            const marquee = document.querySelector('.marquee-content');
+            if (marquee) {
+                marquee.innerHTML = `<strong>${title}</strong>`;
+            }
+
+            // Özel event tetikle - diğer bileşenlerle iletişim için
+            document.dispatchEvent(new CustomEvent('songChanged', {
+                detail: {
+                    id: window.currentMusicId,
+                    title: window.currentTrackTitle,
+                    artist: window.currentTrackArtist
+                }
+            }));
+        }
+
+               function loadCategoriesForHomepage() {
+            fetch('/Tag/GetAllCategories?ts=' + new Date().getTime(), {
+                cache: "no-store"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.categories && data.categories.length > 0) {
+                        const categoryUpdates = {};
+                        data.categories.forEach(category => {
+                            categoryUpdates[category.tag.toLowerCase()] = category.songCount;
+                        });
+
+                        document.querySelectorAll('.category-card').forEach(card => {
+                            const tag = card.getAttribute('data-tag').toLowerCase();
+                            if (categoryUpdates[tag]) {
+                                const countEl = card.querySelector('.category-count');
+                                if (countEl) {
+                                    countEl.textContent = `${categoryUpdates[tag]} şarkı`;
+                                }
+                            }
+                        });
+
+                        console.log("Kategori sayıları güncellendi");
+                    }
+                })
+                .catch(err => console.error("Kategori listesi alınırken hata:", err));
+                bindCategoryCardEvents(); // Güncellenen kartlara tekrar tıklama olayı ekle
+
+        }
+
+
+        // Titreme olmadan kategori şarkılarını yükle
+        function loadCategoryMusicWithoutFlicker(tag) {
+            // Seçilen kategoriyi vurgula
+            highlightSelectedCategory(tag);
+
+            // Kategori bölümünü göster
+            const categorySection = document.getElementById('category-music-section');
+            categorySection.classList.remove('d-none');
+
+            // Başlığı güncelle
+            const categoryTitle = categorySection.querySelector('.category-title');
+            const categoryEmoji = categoryTitle.querySelector('.category-emoji');
+            const categoryName = categoryTitle.querySelector('.category-name');
+
+            categoryEmoji.textContent = getEmoji(tag);
+            categoryName.textContent = tag + ' Şarkıları';
+
+            // Şarkı konteyneri
+            const container = document.getElementById('category-music-container');
+
+            // Yükleme göstergesi
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center p-5">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-3">Şarkılar yükleniyor...</p>
+                    </div>
+                `;
+            }
+
+            // Müzikleri getir
+            fetch(`/Tag/GetMusicByCategory?category=${tag}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.songs && data.songs.length > 0) {
+                        // Yeni titreme olmayan metod ile şarkıları göster
+                        displayCategoryMusicWithoutFlicker(data.songs, tag);
+                    } else {
+                        // Sonuç yoksa bilgi ver
+                        if (container) {
+                            container.innerHTML = `
+                                <div class="alert alert-info text-center py-4">
+                                    "${tag}" kategorisinde henüz şarkı bulunmuyor.
+                                </div>
+                            `;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("Kategori müzikleri alınırken hata:", err);
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="alert alert-danger text-center py-4">
+                                Müzikler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.
+                            </div>
+                        `;
+                    }
+                });
+
+            // Kategori bölümüne yumuşak kaydırma
+            categorySection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+           // Kategori müziklerini titreme olmadan göster (yatay kaydırmalı versiyon)
+        function displayCategoryMusicWithoutFlicker(songs, categoryName) {
+            const container = document.getElementById('category-music-container');
+            if (!container) return;
+
+            // Sayfayı sabit tut
+            container.style.height = Math.max(container.offsetHeight, 400) + 'px';
+            container.style.opacity = '0';
+
+            // Kategori rengini belirle
+            const categoryColor = getCategoryColor(categoryName);
+
+            // İçeriği hazırla - Yatay kaydırmalı yapı
+            let html = `
+                <div class="w-100 mb-4">
+                    <button class="btn btn-success" onclick="playRandomSong()">
+                        <i class="fas fa-random mr-2"></i> Karışık Çal
+                    </button>
+                </div>
+                <div class="position-relative songs-scroll-container">
+                    <!-- Sol kaydırma oku -->
+                    <button class="scroll-arrow scroll-left" onclick="scrollSongs('left')">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <!-- Yatay kaydırmalı şarkı listesi -->
+                    <div class="songs-scroll" id="songs-scroll-${categoryName.toLowerCase()}">
+            `;
+
+            songs.forEach(song => {
+                html += `
+                    <div class="track-card song-card"
+                         data-music-id="${song.musicId}"
+                         data-filename="${song.filename}"
+                         style="background: linear-gradient(135deg, ${categoryColor}, ${getLighterColor(categoryColor)})">
+                        <div class="track-info">
+                            <div class="track-title">${song.title}</div>
+                            <div class="track-artist">${song.artist}</div>
+                            <div class="track-tags">
+                                <span class="tag-badge ${categoryName.toLowerCase()}">${categoryName}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+
+                    <!-- Sağ kaydırma oku -->
+                    <button class="scroll-arrow scroll-right" onclick="scrollSongs('right')">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+
+            // Tek seferde DOM'a ekle
+            container.innerHTML = html;
+
+            // Şarkı kartlarına tıklama olayları
+            container.querySelectorAll('.track-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const musicId = this.getAttribute('data-music-id');
+                    const filename = this.getAttribute('data-filename');
+                    const title = this.querySelector('.track-title').textContent;
+                    const artist = this.querySelector('.track-artist').textContent;
+
+                    playMusic(filename, `${title} - ${artist}`, this);
+                });
+            });
+
+            // Çalan şarkıyı vurgula
+            if (window.currentMusicId) {
+                const playingCard = container.querySelector(`.track-card[data-music-id="${window.currentMusicId}"]`);
+                if (playingCard) {
+                    playingCard.classList.add('playing-now');
+                }
+            }
+
+            // Stabilize et ve göster
+            setTimeout(() => {
+                container.style.height = 'auto';
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.3s ease';
+            }, 50);
+        }
+
+        // Şarkıları kaydırma fonksiyonu
+        function scrollSongs(direction) {
+            const currentCategoryName = document.querySelector('.category-title .category-name').textContent.split(' ')[0];
+            const scrollContainer = document.getElementById(`songs-scroll-${currentCategoryName.toLowerCase()}`);
+
+            if (!scrollContainer) return;
+
+            const scrollAmount = 300; // her tıklamada kaydırma miktarı
+
+            if (direction === 'left') {
+                scrollContainer.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            } else {
+                scrollContainer.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Kategori rengini al
+        function getCategoryColor(categoryName) {
+            switch(categoryName.toLowerCase()) {
+                case 'sad': return '#6a5acd';
+                case 'happy': return '#ffa500';
+                case 'nostalgic': return '#9400d3';
+                case 'energetic': return '#ff1493';
+                case 'relaxing': return '#40e0d0';
+                case 'romantic': return '#ff69b4';
+                default: return '#3498db';
+            }
+        }
+
+        // Daha açık renk oluştur (gradient için)
+        function getLighterColor(hexColor) {
+            // Hex rengi RGB'ye çevir
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+
+            // Daha açık renk oluştur
+            const lighterR = Math.min(255, r + 50);
+            const lighterG = Math.min(255, g + 50);
+            const lighterB = Math.min(255, b + 50);
+
+            // RGB'yi hex'e çevir
+            return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
+        }
+
+        // Karışık şarkı çalma fonksiyonu
+        function playRandomSong() {
+            const trackCards = document.querySelectorAll('.track-card');
+            if (trackCards.length === 0) return;
+
+            // Rastgele bir şarkı kartı seç
+            const randomIndex = Math.floor(Math.random() * trackCards.length);
+            const randomCard = trackCards[randomIndex];
+
+            // Seçili karta tıklama olayını tetikle
+            randomCard.click();
+        }
+
+        // Seçilen kategoriyi vurgula
+        function highlightSelectedCategory(tag) {
+            // Tüm kategorilerden vurguyu kaldır
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('selected');
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            });
+
+            // Seçilen kategoriye vurgu ekle
+            const selectedCard = document.querySelector(`.category-card[data-tag="${tag}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                selectedCard.style.transform = 'translateY(-5px)';
+                selectedCard.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)';
+            }
+        }
+
+        // Emoji fonksiyonu - View'daki GetEmoji ile aynı
+        function getEmoji(tag) {
+            switch(tag.toLowerCase()) {
+                case 'sad': return '😢';
+                case 'happy': return '😄';
+                case 'nostalgic': return '🌧️';
+                case 'energetic': return '🔥';
+                case 'relaxing': return '🧘';
+                case 'romantic': return '❤️';
+                default: return '🎵';
+            }
+        }
+                document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.getAttribute('href') === '/' || link.getAttribute('asp-controller') === 'Home') {
+                setTimeout(() => {
+                    loadCategoriesForHomepage(); // Home'a bastıktan sonra sayıları tekrar getir
+                }, 100); // çok küçük delay, sayfa yüklemesini bekliyoruz
+            }
+        });
+                document.addEventListener('DOMContentLoaded', function () {
+            const homeLink = document.getElementById('home-link');
+            if (homeLink) {
+                homeLink.addEventListener('click', function () {
+                    setTimeout(() => {
+                        loadCategoriesForHomepage(); // yeniden kategori sayılarını yükle
+                    }, 200); // sayfa yüklenmesini bekleyerek çağır
+                });
+            }
+        });
+                function bindCategoryCardEvents() {
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    const tag = this.getAttribute('data-tag');
+                    if (tag) {
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = 'translateY(-5px)';
+                            loadCategoryMusicWithoutFlicker(tag);
+                        }, 150);
+                    }
+                });
+
+                card.addEventListener('mouseenter', function () {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = 'translateY(-8px)';
+                        this.style.boxShadow = '0 15px 25px rgba(0,0,0,0.2)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                    }
+                });
+            });
+        }
+
+    </script>
+}
+

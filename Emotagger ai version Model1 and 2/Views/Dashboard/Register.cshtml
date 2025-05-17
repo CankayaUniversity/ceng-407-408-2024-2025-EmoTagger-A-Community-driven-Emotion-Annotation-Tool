@@ -1,0 +1,211 @@
+﻿@model EmoTagger.Models.User
+
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Muzik Responsive Bootstrap 5 Admin Dashboard Template</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="~/assets/css/core/libs.min.css">
+    <link rel="stylesheet" href="~/assets/css/muzik.min.css?v=1.0.1">
+    <link rel="stylesheet" href="~/assets/css/custom.min.css?v=1.0.1">
+    <link rel="stylesheet" href="~/assets/css/dark.min.css?v=1.0.1">
+    <link rel="stylesheet" href="~/assets/css/customizer.min.css?v=1.0.1">
+    <link rel="stylesheet" href="~/assets/css/rtl.min.css?v=1.0.1">
+</head>
+<body>
+    <div class="wrapper">
+        <section class="login-content overflow-hidden">
+
+            <div class="row no-gutters align-items-center bg-white">
+                <div class="col-md-12 col-lg-6 align-self-center">
+                    <div class="row justify-content-center">
+                        <div class="col-md-9">
+
+                            <div class="card auth-card d-flex justify-content-center mb-0">
+                                <div class="card-body">
+                                    <div class="text-center mb-4">
+                                        <img src="~/assets/images/logo2.png" alt="Logo" class="img-fluid" width="180">
+                                    </div>
+                                    <h2 class="mb-2 text-center">Sign Up</h2>
+                                    <p class="text-center">Create your Muzik account.</p>
+
+                                    @* **FORM BAŞLANGICI** *@
+                                    <form asp-controller="Dashboard" asp-action="Register" method="post">
+
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="first-name" class="form-label">First Name</label>
+                                                    <input type="text" class="form-control" asp-for="FirstName" placeholder="John">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="last-name" class="form-label">Last Name</label>
+                                                    <input type="text" class="form-control" asp-for="LastName" placeholder="Doe">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" asp-for="Email" placeholder="xyz@example.com">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="phone" class="form-label">Phone No.</label>
+                                                    <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="123456789">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="password" class="form-label">Password</label>
+                                                    <input type="password" class="form-control" asp-for="Password" placeholder="Enter password">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                                                    <input type="password" class="form-control" asp-for="ConfirmPassword" placeholder="Confirm password">
+                                                </div>
+                                            </div>
+
+                                            @* **Ülke Alanı** *@
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="country" class="form-label">Country</label>
+                                                    <select class="form-control" asp-for="Country">
+                                                        <option value="Turkey">Turkey</option>
+                                                        <option value="USA">USA</option>
+                                                        <option value="Germany">Germany</option>
+                                                        <option value="France">France</option>
+                                                        <option value="UK">United Kingdom</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-12 d-flex justify-content-center">
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="terms" required>
+                                                    <label class="form-check-label" for="terms">I agree with the terms of use</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-center">
+                                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                                            </div>
+
+                                            
+
+                                          
+                                            <p class="mt-3 text-center">
+                                                Already have an Account? <a asp-controller="Dashboard" asp-action="Login" class="text-underline">Sign In</a>
+                                            </p>
+                                        </div>
+                                    </form>
+                                    @* **FORM BİTİŞİ** *@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-lg-block d-none bg-primary p-0 overflow-hidden">
+                    <img src="~/assets/images/auth/01.jpg" class="img-fluid gradient-main" alt="images">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JS -->
+    <script src="~/assets/js/core/libs.min.js"></script>
+    <script src="~/assets/js/muzik.js?v=1.0.1" defer></script>
+    <script src="~/assets/js/sidebar.js?v=1.0.1" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+             document.querySelector("form").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Formdaki tüm alanları al (ClientValidation için)
+            const password = document.querySelector('input[name="Password"]').value;
+            const confirmPassword = document.querySelector('input[name="ConfirmPassword"]').value;
+
+            // Client tarafında temel doğrulama
+            if (password.length < 6) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreniz en az 6 karakter olmalıdır.",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreler uyuşmuyor!",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            // FormData kullanarak tüm verileri gönder
+            const formData = new FormData(this);
+
+            // Gönderim formatı kontrolü - fetch ile FormData
+            fetch("/Dashboard/Register", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Sunucu yanıtı:", data);
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Başarılı!",
+                        text: data.message || "Kaydınız başarıyla oluşturuldu!",
+                        confirmButtonText: "Tamam"
+                    }).then(() => {
+                        window.location.href = data.redirectUrl;
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Hata!",
+                        text: data.message,
+                        confirmButtonText: "Tamam"
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Bağlantı hatası:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Bağlantı Hatası!",
+                    text: "Sunucu ile iletişim kurulurken bir problem oluştu.",
+                    confirmButtonText: "Tamam"
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

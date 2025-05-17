@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<h2 class="mb-3">Admin Panel</h2>
+
+<!-- Buttons -->
+<button type="button" class="btn btn-danger mb-2 me-2" onclick="showModel('model1Table')">Model 1</button>
+<button type="button" class="btn btn-info mb-4" onclick="showModel('model2Table')">Model 2</button>
+
+<!-- Model 1 Table -->
+<div id="model1Table" style="display:none;">
+    <p class="text-muted">Predicted emotions (Model 1 – based on user tags):</p>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                @Html.Raw(
+                         ViewBag.EmotionHtml1?.ToString()
+                         .Replace("<table", "<table class='table table-bordered table-striped'")
+                         .Replace("<thead>", "<thead class='table-dark'>")
+                         )
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model 2 Table -->
+<div id="model2Table" style="display:none;">
+    <p class="text-muted">Predicted emotions (Model 2 – based on audio analysis):</p>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                @Html.Raw(
+                         ViewBag.EmotionHtml2?.ToString()
+                         .Replace("<table", "<table class='table table-bordered table-striped'")
+                         .Replace("<thead>", "<thead class='table-primary'>")
+                         )
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script to toggle -->
+<script>
+    function showModel(modelId) {
+        document.getElementById('model1Table').style.display = 'none';
+        document.getElementById('model2Table').style.display = 'none';
+        document.getElementById(modelId).style.display = 'block';
+    }
+</script>
