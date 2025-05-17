@@ -1,0 +1,143 @@
+﻿/* Main Container Styling */
+.container-fluid {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 1.5rem;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+.card-body {
+    padding: 1.75rem;
+}
+
+/* Stat Icon Styling */
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+    .stat-icon i {
+        font-size: 1.5rem;
+    }
+
+/* Color Scheme */
+.bg-primary {
+    background: linear-gradient(45deg, #4a6bff, #657eff) !important;
+}
+
+.bg-success {
+    background: linear-gradient(45deg, #28c76f, #48da89) !important;
+}
+
+.bg-secondary {
+    background: linear-gradient(45deg, #868e96, #adb5bd) !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+/* Typography */
+.card-title {
+    color: #6c757d;
+    font-weight: 500;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+h2 {
+    font-weight: 700;
+    color: #333;
+    font-size: 2.2rem;
+}
+
+/* Music Item Styling */
+.card-body div {
+    margin-top: 0.75rem;
+}
+
+.card-body b {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+/* Badge Styling */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.8rem;
+    border-radius: 50px;
+    margin-top: 0.75rem;
+    display: inline-block;
+}
+
+    .badge.bg-primary {
+        background: linear-gradient(45deg, #4a6bff, #657eff) !important;
+    }
+
+    .badge.bg-secondary {
+        background: linear-gradient(45deg, #868e96, #adb5bd) !important;
+    }
+
+/* Empty State */
+.text-muted {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Additional Animation */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 107, 255, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(74, 107, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 107, 255, 0);
+    }
+}
+
+.stat-icon {
+    animation: pulse 2s infinite;
+}

@@ -18,3 +18,26 @@
         background-color: #cc0000;
     }
 }
+
+/* Sadece dark mode için: dinleme geçmişi tablosunda beyaz satırları da koyu yap */
+.dark .history-table,
+.dark .history-table tr,
+.dark .history-table td {
+    background-color: #181a20 !important;
+    color: #fff !important;
+}
+.dark .history-table tr:nth-child(even) td {
+    background-color: #23242a !important;
+}
+.dark .history-table th, .dark .history-table thead {
+    background-color: #ff4c4c !important;
+    color: #fff !important;
+}
+
+/* Light mode'da hiçbir şey değişmesin */
+
+.history-table th, .history-table td {
+    padding: 18px 16px;
+    line-height: 1.7;
+    font-size: 1.08em;
+}

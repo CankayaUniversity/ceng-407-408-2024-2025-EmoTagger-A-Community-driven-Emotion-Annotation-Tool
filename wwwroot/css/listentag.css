@@ -1,78 +1,542 @@
-﻿
-/* Balonlar için animasyon stili */
-.bubble {
-    position: absolute;
-    border-radius: 50%;
-    bottom: 0;
-    animation: rise linear forwards;
-    opacity: 0.7;
+﻿/* Kaydırılabilir yorum konteynerı için stil */
+.scrollable-comments-container {
+    max-height: 400px; /* Maksimum yüksekliği ayarlayabilirsiniz */
+    overflow-y: auto;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes rise {
-    0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0.7;
+    /* Kaydırma çubuğunu özelleştirme */
+    .scrollable-comments-container::-webkit-scrollbar {
+        width: 8px;
     }
 
-    50% {
-        opacity: 0.9;
+    .scrollable-comments-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+    }
+
+    .scrollable-comments-container::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+
+        .scrollable-comments-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+/* Yorum öğesi stilleri */
+.comment-item {
+    padding: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+
+    .comment-item:last-child {
+        border-bottom: none;
+    }
+
+    .comment-item:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+/* Daha fazla göster butonu */
+.load-more-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 16px;
+    margin: 10px auto;
+    display: block;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #555;
+}
+
+    .load-more-btn:hover {
+        background-color: #e9ecef;
+        color: #333;
+    }
+
+/* Yükleniyor ve boş yorum mesajları */
+.loading-comments, .no-comments, .error-message {
+    padding: 15px;
+    text-align: center;
+    color: #666;
+}
+
+    .loading-comments i {
+        margin-right: 8px;
+        color: #888;
+    }
+
+.no-comments {
+    font-style: italic;
+}
+
+.error-message {
+    color: #d9534f;
+}
+/* Yorum Sistemi CSS - Son Hali */
+.comments-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.comments-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+.comments-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.comment-form-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.comments-list-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Kullanıcı bilgisi stili */
+#commentUserInfo {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Yorum formu stili */
+.comment-form textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    color: #333;
+    font-size: 16px;
+    resize: vertical;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #ff5454;
+        box-shadow: 0 0 5px rgba(255, 84, 84, 0.3);
+    }
+
+/* Yorum seçenekleri bölümü */
+.comment-form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+    /* Checkbox stili */
+    .comment-form-options label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        color: #666;
+    }
+
+    .comment-form-options input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+/* Buton stili */
+.btn-primary {
+    padding: 10px 20px;
+    background: #ff5454;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+    .btn-primary:hover {
+        background: #ff3838;
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+/* Yorum listesi bölümü */
+.comments-list-section h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.comments-count {
+    display: inline-block;
+    background: #ff5454;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.son-yorumlar {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    scrollbar-width: thin;
+}
+
+    /* Webkit scrollbar */
+    .son-yorumlar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .son-yorumlar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .son-yorumlar::-webkit-scrollbar-thumb {
+        background: #ff5454;
+        border-radius: 10px;
+    }
+
+/* Yorum elemanı stili */
+.comment-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+    .comment-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.comment-user {
+    font-weight: bold;
+    color: #333;
+}
+
+.comment-time {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.comment-content {
+    line-height: 1.5;
+    color: #333;
+    word-break: break-word;
+}
+
+/* Yükleniyor ve hata mesajları */
+.loading-comments, .error-message, .no-comments {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    border-radius: 8px;
+}
+
+.loading-comments {
+    background: rgba(255,255,255,0.8);
+}
+
+.error-message {
+    background: rgba(255,200,200,0.3);
+    color: #d32f2f;
+}
+
+.no-comments {
+    background: rgba(245, 245, 245, 0.7);
+}
+
+/* Toast bildirimleri */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    min-width: 250px;
+    margin-bottom: 10px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s;
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+.toast-success {
+    background-color: #4CAF50;
+}
+
+.toast-error {
+    background-color: #F44336;
+}
+
+.toast-info {
+    background-color: #2196F3;
+}
+
+.toast-warning {
+    background-color: #FF9800;
+}
+
+/* Mobil cihazlar için responsive düzenleme */
+@media (max-width: 768px) {
+    .comments-container {
+        flex-direction: column;
+    }
+
+    .comment-form-section,
+    .comments-list-section {
+        width: 100%;
+    }
+
+    .comments-section {
+        padding: 15px;
+    }
+}
+
+
+.friend-badge {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    margin-left: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .friend-badge i {
+        margin-right: 3px;
+    }
+
+.add-friend-btn {
+    background: none;
+    border: none;
+    color: #4CAF50;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
+}
+
+    .add-friend-btn i {
+        margin-right: 3px;
+    }
+
+    .add-friend-btn:hover {
+        text-decoration: underline;
+    }
+
+.load-more-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    color: #555;
+    font-size: 14px;
+    transition: background 0.3s;
+    margin: 0 auto;
+    display: block;
+}
+
+    .load-more-btn:hover {
+        background: #e0e0e0;
+    }
+
+.no-comments {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+    background: rgba(0,0,0,0.02);
+    border-radius: 5px;
+}
+
+.comment-time {
+    font-size: 0.85em;
+    color: #999;
+}
+
+/* Mobil cihazlar için düzenleme */
+@media (max-width: 768px) {
+    .comments-container {
+        flex-direction: column;
+    }
+
+    .comment-form-section,
+    .comments-list-section {
+        width: 100%;
+    }
+}
+
+
+/* Bubble Animation CSS */
+@keyframes float-down {
+    0% {
+        transform: translateY(-60px);
+        opacity: 0.8;
     }
 
     100% {
-        transform: translateY(-100vh) translateX(20px);
+        transform: translateY(100vh);
         opacity: 0;
     }
 }
 
-/* Çalıyor/Durduruldu durumları */
-.playing-status {
-    color: #32CD32;
-    font-weight: bold;
+.bubbles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 9; /* Reduced z-index so it doesn't block interactions */
+    pointer-events: none;
 }
 
-.paused-status {
-    color: #FF6347;
-    font-weight: normal;
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    top: -60px;
+    z-index: 9;
+    animation: float-down linear forwards;
 }
 
-/* Nota animasyonu */
+/* Nota animasyonu için stiller - Birleştirilmiş ve optimize edilmiş */
 .music-note-animation {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100px;
+    height: 100px;
+    margin-right: 1rem;
 }
 
-    .music-note-animation.playing .music-note-pulse {
-        animation: pulse 1.5s infinite;
-    }
-
-    .music-note-animation.playing .music-note {
-        animation: rotate 3s infinite linear;
-        color: #fff;
-    }
-
-    .music-note-animation.paused .music-note-pulse {
-        animation: none;
-    }
-
-    .music-note-animation.paused .music-note {
-        animation: none;
-        opacity: 0.5;
-        color: #ccc;
-    }
-
-/* Dinleme sayaçları */
-.play-count-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+.music-note {
+    font-size: 4rem;
+    color: #fff;
+    position: absolute;
+    transition: all 0.3s ease;
 }
 
-/* Pulslama efekti */
+.music-note-pulse {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Çalma durumu için animasyonlar */
+.music-note-animation.playing .music-note-pulse {
+    animation: pulse 1.5s infinite !important;
+}
+
+.music-note-animation.playing .music-note {
+    animation: rotate 3s infinite linear !important;
+    color: #fff !important;
+}
+
+/* Durdurulmuş durum için stiller */
+.music-note-animation.paused .music-note-pulse {
+    animation: none !important;
+}
+
+.music-note-animation.paused .music-note {
+    animation: none !important;
+    opacity: 0.5 !important;
+    color: #ccc !important;
+}
+
+/* Oynatma durumu göstergeleri */
+.music-note-animation::after {
+    content: 'Çalıyor';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: bold;
+    color: #4cc9f0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.music-note-animation.playing::after {
+    content: 'Çalıyor';
+    opacity: 1;
+}
+
+.music-note-animation.paused::after {
+    content: 'Durduruldu';
+    color: #ccc;
+    opacity: 1;
+}
+
+/* Animasyon tanımları - Tek seferde tanımlanmış */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -90,7 +554,6 @@
     }
 }
 
-/* Döndürme animasyonu */
 @keyframes rotate {
     0% {
         transform: rotate(0deg);
@@ -101,6 +564,15 @@
     }
 }
 
+/* Dinleme sayaçları */
+.play-count-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
 
 .play-stats {
     display: flex;
@@ -147,138 +619,6 @@
         justify-content: center;
     }
 }
-/* listentag.css dosyasına ekleyin veya <style> etiketleri arasına yerleştirin */
-
-/* Balonların tüm sayfada görünmesi için CSS */
-
-.bubbles-container {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-}
-
-.bubble {
-    position: absolute !important;
-    border-radius: 50% !important;
-    top: -60px !important;
-    animation: float-down linear forwards !important;
-    opacity: 0.8 !important;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important;
-    filter: brightness(1.3) !important;
-    filter: brightness(1.3) !important;
-    z-index: 9999 !important;
-}
-
-@keyframes float-down {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.8;
-    }
-
-    50% {
-        opacity: 0.9;
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-    /* Sayfa içeriğini balonların altında tutmak için z-index ayarları */
-    .rainbow-bg {
-        position: relative;
-        z-index: 1;
-    }
-    /* Player elementlerinin görünür kalması için */
-    .now-playing-title, .song-info, .song-details, .music-note-animation {
-        position: relative;
-        z-index: 2;
-    }
-    /* JavaScript içinde güncellemeniz gereken createBubble fonksiyonu */
-    .play-count-info {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 5px;
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.8);
-    }
-
-    .music-note-animation.playing .music-note {
-        animation: pulse 1.5s infinite;
-        color: #fff;
-    }
-
-    .music-note-animation.paused .music-note {
-        animation: none;
-        opacity: 0.5;
-    }
-    /* Çalıyor durum stili */
-    .playing-status {
-        color: #fff;
-        font-weight: bold;
-    }
-    /* Durduruldu durum stili */
-    .paused-status {
-        color: #aaa;
-        font-weight: normal;
-    }
-    /* Nota animasyonu için stiller */
-    .music-note-animation {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .music-note-animation.playing .music-note-pulse {
-        animation: pulse 1.5s infinite;
-    }
-
-    .music-note-animation.playing .music-note {
-        animation: rotate 3s infinite linear; /* Notayı döndürme animasyonu */
-    }
-
-    .music-note-animation.paused .music-note-pulse {
-        animation: none;
-    }
-
-    .music-note-animation.paused .music-note {
-        animation: none;
-        opacity: 0.5;
-    }
-    /* Pulslama efekti animasyonu */
-    @keyframes pulse {
-        0% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-
-    50% {
-        transform: scale(1.2);
-        opacity: 0.7;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-}
-
-/* Döndürme animasyonu */
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
 
 /* Adaptive Theme CSS for History Sections */
 .history-section {
@@ -305,6 +645,13 @@
     --col-1-dark: linear-gradient(to right, rgba(255, 107, 107, 0.2), rgba(255, 159, 127, 0.2));
     --col-2-dark: linear-gradient(to right, rgba(76, 217, 103, 0.2), rgba(73, 198, 120, 0.2));
     --col-3-dark: linear-gradient(to right, rgba(72, 198, 184, 0.2), rgba(75, 163, 217, 0.2));
+    /* Mood Tag Colors */
+    --tag-sad: #3f37c9;
+    --tag-happy: #ffbe0b;
+    --tag-nostalgic: #9d4edd;
+    --tag-energetic: #ff006e;
+    --tag-relaxing: #4cc9f0;
+    --tag-romantic: #f72585;
 }
 
 /* Dark mode styles */
@@ -664,7 +1011,7 @@ body.dark .history-content::-webkit-scrollbar-thumb {
         transform: translateY(-50%);
     }
 
-/* Theme color detection script */
+/* View more button */
 .view-more-container {
     text-align: center;
     margin-top: 20px;
@@ -697,16 +1044,6 @@ body.dark .history-content::-webkit-scrollbar-thumb {
         transform: translateY(1px);
         box-shadow: 0 2px 10px rgba(255, 75, 43, 0.4);
     }
-
-:root {
-    /* Mood Tag Colors */
-    --tag-sad: #3f37c9;
-    --tag-happy: #ffbe0b;
-    --tag-nostalgic: #9d4edd;
-    --tag-energetic: #ff006e;
-    --tag-relaxing: #4cc9f0;
-    --tag-romantic: #f72585;
-}
 
 /* Mood Tag Buttons Styling */
 .tag-buttons {
@@ -774,7 +1111,7 @@ body.dark .history-content::-webkit-scrollbar-thumb {
             font-size: 12px;
         }
 
-
+/* Rainbow background */
 .rainbow-bg {
     position: relative;
     overflow: hidden;
@@ -804,7 +1141,6 @@ body.dark .history-content::-webkit-scrollbar-thumb {
     filter: blur(10px);
     transition: opacity 0.3s ease;
 }
-
 
 @keyframes gradient {
     0% {
@@ -837,58 +1173,43 @@ body.dark .history-content::-webkit-scrollbar-thumb {
     backdrop-filter: blur(5px);
     background-color: rgba(255,255,255,0.1);
     border-radius: 1rem;
-}
-
-.music-note-animation {
-    width: 100px;
-    height: 100px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
 }
 
-.music-note {
-    font-size: 4rem;
-    color: rgba(255,255,255,0.7);
-    animation: rotate 8s linear infinite;
+/* Müzik durumu için stil */
+.song-status {
     position: absolute;
+    top: -25px;
+    right: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
+    transition: all 0.3s ease;
 }
 
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
+    .song-status.playing {
+        background-color: #4cc9f0;
+        box-shadow: 0 0 10px #4cc9f0;
+        animation: pulse-status 2s infinite;
     }
 
-    100% {
-        transform: rotate(360deg);
+    .song-status.paused {
+        background-color: #666;
     }
-}
 
-.music-note-pulse {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
+@keyframes pulse-status {
     0% {
-        transform: scale(0.95);
-        opacity: 0.7;
+        opacity: 0.8;
     }
 
     50% {
-        transform: scale(1.1);
-        opacity: 0.3;
+        opacity: 1;
     }
 
     100% {
-        transform: scale(0.95);
-        opacity: 0.7;
+        opacity: 0.8;
     }
 }
 
@@ -932,256 +1253,6 @@ body.dark .history-content::-webkit-scrollbar-thumb {
     transition: color 0.3s ease;
 }
 
-.tag-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-}
-
-.tag-btn {
-    padding: 1rem;
-    border: none;
-    border-radius: 0.5rem;
-    color: white;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-    .tag-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.1);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-    }
-
-    .tag-btn:hover::before {
-        transform: translateX(0);
-    }
-
-    .tag-btn:hover {
-        transform: translateY(-3px);
-    }
-
-    .tag-btn.sad {
-        background-color: var(--tag-sad);
-    }
-
-        .tag-btn.sad::before {
-            content: "😢 ";
-        }
-
-    .tag-btn.happy {
-        background-color: var(--tag-happy);
-        color: #333;
-    }
-
-        .tag-btn.happy::before {
-            content: "😊 ";
-        }
-
-    .tag-btn.nostalgic {
-        background-color: var(--tag-nostalgic);
-    }
-
-        .tag-btn.nostalgic::before {
-            content: "😔 ";
-        }
-
-    .tag-btn.energetic {
-        background-color: var(--tag-energetic);
-    }
-
-        .tag-btn.energetic::before {
-            content: "⚡ ";
-        }
-
-    .tag-btn.relaxing {
-        background-color: var(--tag-relaxing);
-        color: #333;
-    }
-
-        .tag-btn.relaxing::before {
-            content: "😌 ";
-        }
-
-    .tag-btn.romantic {
-        background-color: var(--tag-romantic);
-    }
-
-        .tag-btn.romantic::before {
-            content: "❤️ ";
-        }
-
-    .tag-btn.selected {
-        transform: scale(0.95);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-        .tag-btn.selected::after {
-            content: ' ✓';
-        }
-
-.history-section {
-    margin-top: 3rem;
-}
-
-.history-tabs {
-    display: flex;
-    margin-bottom: 1rem;
-}
-
-.history-tab {
-    flex: 1;
-    text-align: center;
-    padding: 1rem;
-    cursor: pointer;
-    background-color: var(--card-bg);
-    transition: all 0.3s ease;
-    color: var(--text);
-}
-
-    .history-tab:first-child {
-        border-top-left-radius: 0.5rem;
-        border-bottom-left-radius: 0.5rem;
-    }
-
-    .history-tab:last-child {
-        border-top-right-radius: 0.5rem;
-        border-bottom-right-radius: 0.5rem;
-    }
-
-    .history-tab.active {
-        background-color: var(--primary-color);
-        color: white;
-        font-weight: 600;
-    }
-
-.history-content {
-    background-color: var(--card-bg);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    max-height: 400px;
-    overflow-y: auto;
-    transition: background-color 0.3s ease;
-}
-
-.history-table {
-    width: 100%;
-    color: var(--text);
-    transition: color 0.3s ease;
-}
-
-    .history-table th {
-        padding: 0.75rem;
-        background-color: rgba(0,0,0,0.1);
-        transition: background-color 0.3s ease;
-    }
-
-[data-theme="dark"] .history-table th {
-    background-color: rgba(0,0,0,0.3);
-}
-
-.history-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.history-table tr:hover {
-    background-color: rgba(255,255,255,0.05);
-}
-
-.tag-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-    .tag-badge.sad {
-        background-color: var(--tag-sad);
-    }
-
-        .tag-badge.sad::before {
-            content: "😢 ";
-        }
-
-    .tag-badge.happy {
-        background-color: var(--tag-happy);
-        color: #333;
-    }
-
-        .tag-badge.happy::before {
-            content: "😊 ";
-        }
-
-    .tag-badge.nostalgic {
-        background-color: var(--tag-nostalgic);
-    }
-
-        .tag-badge.nostalgic::before {
-            content: "😔 ";
-        }
-
-    .tag-badge.energetic {
-        background-color: var(--tag-energetic);
-    }
-
-        .tag-badge.energetic::before {
-            content: "⚡ ";
-        }
-
-    .tag-badge.relaxing {
-        background-color: var(--tag-relaxing);
-        color: #333;
-    }
-
-        .tag-badge.relaxing::before {
-            content: "😌 ";
-        }
-
-    .tag-badge.romantic {
-        background-color: var(--tag-romantic);
-    }
-
-        .tag-badge.romantic::before {
-            content: "❤️ ";
-        }
-
-.toast-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.toast {
-    background-color: rgba(0,0,0,0.8);
-    color: white;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.3s ease;
-}
-
-    .toast.show {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
 /* Responsive adjustments */
 @media (max-width: 992px) {
     .song-info {
@@ -1209,3 +1280,27 @@ body.dark .history-content::-webkit-scrollbar-thumb {
         margin-bottom: 0.25rem;
     }
 }
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }

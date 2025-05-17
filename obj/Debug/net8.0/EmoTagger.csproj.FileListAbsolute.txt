@@ -138,3 +138,4 @@ C:\Users\SelinUzunoğlu\Desktop\EmoTagger\EmoTagger\obj\Debug\net8.0\refint\EmoT
 C:\Users\SelinUzunoğlu\Desktop\EmoTagger\EmoTagger\obj\Debug\net8.0\EmoTagger.pdb
 C:\Users\SelinUzunoğlu\Desktop\EmoTagger\EmoTagger\obj\Debug\net8.0\EmoTagger.genruntimeconfig.cache
 C:\Users\SelinUzunoğlu\Desktop\EmoTagger\EmoTagger\obj\Debug\net8.0\ref\EmoTagger.dll
+C:\Users\SelinUzunoğlu\Desktop\EmoTagger\EmoTagger\bin\Debug\net8.0\Newtonsoft.Json.dll

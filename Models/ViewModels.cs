@@ -51,4 +51,18 @@
         public string Filename { get; set; }
         public string Tag { get; set; }
     }
+
+    public class LeaderboardUserViewModel
+    {
+        public int UserId { get; set; }
+        public string UserName { get; set; }
+        public string ProfileImageUrl { get; set; }
+        public int Count { get; set; } // Dinleme veya tag sayısı
+    }
+
+    public class LeaderboardViewModel
+    {
+        public List<LeaderboardUserViewModel> TopListeners { get; set; } = new();
+        public List<LeaderboardUserViewModel> TopTaggers { get; set; } = new();
+    }
 }

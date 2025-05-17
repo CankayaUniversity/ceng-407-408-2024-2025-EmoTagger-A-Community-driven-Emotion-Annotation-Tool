@@ -1,15 +1,63 @@
 [
   {
+    "ContainingType": "EmoTagger.Controllers.AIController",
+    "Method": "AnalyzeMusic",
+    "RelativePath": "AI/AnalyzeMusic",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "musicId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "EmoTagger.Controllers.PlaylistController",
-    "Method": "AddToPlaylist",
-    "RelativePath": "Playlist/Add",
+    "Method": "GetPlaylist",
+    "RelativePath": "Playlist/{playlistId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "playlistId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "DeletePlaylist",
+    "RelativePath": "Playlist/{playlistId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "playlistId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "AddMusicToPlaylist",
+    "RelativePath": "Playlist/AddMusic",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "EmoTagger.Controllers.PlaylistController\u002BPlaylistRequest",
+        "Type": "EmoTagger.Controllers.AddMusicRequest",
         "IsRequired": true
       }
     ],
@@ -17,15 +65,31 @@
   },
   {
     "ContainingType": "EmoTagger.Controllers.PlaylistController",
-    "Method": "RemoveFromPlaylist",
-    "RelativePath": "Playlist/Remove",
+    "Method": "CreatePlaylist",
+    "RelativePath": "Playlist/Create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "EmoTagger.Controllers.CreatePlaylistRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "RemoveMusicFromPlaylist",
+    "RelativePath": "Playlist/RemoveMusic",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "EmoTagger.Controllers.PlaylistController\u002BPlaylistRequest",
+        "Type": "EmoTagger.Controllers.RemoveMusicRequest",
         "IsRequired": true
       }
     ],
@@ -33,7 +97,39 @@
   },
   {
     "ContainingType": "EmoTagger.Controllers.PlaylistController",
-    "Method": "GetPlaylistByUser",
+    "Method": "UpdatePlaylistDescription",
+    "RelativePath": "Playlist/UpdateDescription",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "EmoTagger.Controllers.UpdatePlaylistDescriptionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "UpdatePlaylistName",
+    "RelativePath": "Playlist/UpdateName",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "EmoTagger.Controllers.UpdatePlaylistNameRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.PlaylistController",
+    "Method": "GetUserPlaylists",
     "RelativePath": "Playlist/User/{userId}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -43,6 +139,27 @@
         "Name": "userId",
         "Type": "System.Int32",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmoTagger.Controllers.SpotifyAnalysisController",
+    "Method": "Analyze",
+    "RelativePath": "SpotifyAnalysis/Analyze",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "songName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "artist",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

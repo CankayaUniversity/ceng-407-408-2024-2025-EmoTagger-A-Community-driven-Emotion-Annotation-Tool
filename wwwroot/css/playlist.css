@@ -1,4 +1,4 @@
-﻿<style >
+﻿
 :root {
     --primary-color: #8e44ad;
     --secondary-color: #f39c12;
@@ -37,6 +37,15 @@ body {
     margin-bottom: 30px;
     color: var(--text-light);
     box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
 }
 
 .playlist-card {
@@ -46,6 +55,7 @@ body {
     box-shadow: var(--box-shadow);
     margin-bottom: 30px;
     transition: var(--transition);
+    height: 100%;
 }
 
     .playlist-card:hover {
@@ -67,63 +77,58 @@ body {
 
 .playlist-info {
     padding: 25px;
-    color: white;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    flex: 1;
+    height: 100%;
 }
 
 .playlist-title {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     margin: 0 0 15px 0;
-    font-weight: 700;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 .playlist-description {
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 20px;
-    opacity: 0.9;
+    color: #666;
+    flex-grow: 1;
 }
 
 .playlist-stats {
     display: flex;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .playlist-count {
     padding-left: 15px;
     margin-right: 20px;
-    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    border-left: 3px solid var(--primary-color);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    color: var(--text-dark);
 }
 
 .search-form {
     position: relative;
-    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .search-input {
     width: 100%;
     padding: 15px 20px;
-    border: none;
+    border: 2px solid #eee;
     border-radius: 50px;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: var(--transition);
 }
 
-    .search-input::placeholder {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
     .search-input:focus {
         outline: none;
-        background: rgba(255, 255, 255, 0.3);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
     }
 
 .search-button {
@@ -149,8 +154,7 @@ body {
 .search-results {
     background: white;
     border-radius: var(--border-radius);
-    padding: 25px;
-    margin-bottom: 30px;
+    padding: 20px;
     box-shadow: var(--box-shadow);
 }
 
@@ -362,15 +366,7 @@ body {
         background-color: rgba(232, 67, 147, 0.1);
     }
 
-.player-controls {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    margin-top: 30px;
-}
+
 
 .control-button {
     border: none;
@@ -412,10 +408,23 @@ body {
 }
 
 @media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .main-header h1 {
+        font-size: 2rem;
+    }
+
+    .playlist-card {
+        margin-bottom: 20px;
+    }
+
     .playlist-table th:nth-child(2),
     .playlist-table td:nth-child(2) {
         display: none;
     }
 }
 
-</style >

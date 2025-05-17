@@ -236,6 +236,94 @@ export default {
     const audio = new Audio();
     const trackSlider = ref(0);
 
+    // --- Dinamik Playlist ve Kontrol ---
+    const musics = ref([]); // Dinamik playlist
+    const currentPlaylistIndex = ref(0);
+
+    const playTrackAtIndex = (index) => {
+      if (musics.value.length === 0 || index < 0 || index >= musics.value.length) {
+        console.warn("playTrackAtIndex: Index out of bounds or empty playlist.", index, musics.value.length);
+        return;
+      }
+      currentPlaylistIndex.value = index;
+      track.value = musics.value[index];
+      
+      console.log("Footer is preparing to play:", track.value.name, "at index", currentPlaylistIndex.value, "with path:", track.value.path);
+
+      loadTrack(); // Mevcut sesi durdurur, isPlaying.value'yu false yapar, yeni ses kaynağını ayarlar.
+
+      audio.play().then(() => {
+          isPlaying.value = true;
+          playButtonClass.value = 'pause';
+          console.log("Audio playback has started for:", track.value.name);
+
+          window.currentMusicId = track.value.id; // Global şarkı ID'sini güncelle
+          const event = new CustomEvent('songChanged', { 
+              detail: { 
+                  musicId: track.value.id, 
+                  title: track.value.name, 
+                  artist: track.value.artist,
+                  filename: track.value.path ? track.value.path.substring(track.value.path.lastIndexOf('/') + 1) : null
+              }
+          });
+          document.dispatchEvent(event);
+          console.log("Dispatched songChanged event from footer for musicId:", track.value.id);
+
+      }).catch(error => {
+          console.error("Error trying to play audio in footer:", track.value.name, error);
+          isPlaying.value = false;
+          playButtonClass.value = 'play';
+          // Hata durumunda kullanıcıya bilgi verilebilir.
+      });
+    };
+
+    window.setFooterPlaylist = function(playlist, startIndex) {
+      if (!Array.isArray(playlist)) {
+          console.error("setFooterPlaylist error: playlist is not an array.");
+          return;
+      }
+      if (playlist.length === 0 && startIndex === 0) {
+        // Eğer boş bir playlist gelirse (örn. tüm şarkılar filtrelendi ve hiçbiri kalmadı)
+        // mevcut şarkıyı durdur ve arayüzü sıfırla gibi bir işlem yapılabilir.
+        console.warn("setFooterPlaylist called with an empty playlist. Clearing current track.");
+        audio.pause();
+        resetValues();
+        track.value = { name: '-', artist: '-', image: '', path: '' }; // Arayüzü temizle
+        musics.value = [];
+        currentPlaylistIndex.value = 0;
+        window.currentMusicId = null;
+        const event = new CustomEvent('songChanged', { detail: { musicId: null } });
+        document.dispatchEvent(event);
+        return;
+      }
+       if (playlist.length === 0 || startIndex < 0 || startIndex >= playlist.length) {
+          console.error("setFooterPlaylist error: Invalid startIndex or empty playlist after checks.", startIndex, playlist.length);
+          return;
+      }
+
+      console.log("Footer: setFooterPlaylist received playlist of length:", playlist.length, "and startIndex:", startIndex);
+      musics.value = playlist.map(item => ({
+        id: item.id, 
+        name: item.title,
+        artist: item.artist,
+        image: generateImgPath('assets/images/dashboard/audio/01.png'), // Varsayılan veya dinamik bir resim yolu
+        path: '/uploads/' + item.filename 
+      }));
+      playTrackAtIndex(startIndex);
+    };
+
+    const prevTrack = () => {
+      if (musics.value.length === 0) return;
+      let newIndex = (currentPlaylistIndex.value - 1 + musics.value.length) % musics.value.length;
+      playTrackAtIndex(newIndex);
+    };
+
+    const nextTrack = () => {
+      if (musics.value.length === 0) return;
+      let newIndex = (currentPlaylistIndex.value + 1) % musics.value.length;
+      playTrackAtIndex(newIndex);
+    };
+
     const loadTrack = () => {
       audio.pause();
       resetValues();
@@ -302,57 +390,19 @@ export default {
       totalDuration.value = durationMinutes + ':' + durationSeconds;
     };
 
-    const beforePrevTrackLoad = () => {
-      track.value = musics.value[0]
-    }
-    
-    const beforeNextTrackLoad = () => {
-      track.value = musics.value[1]
-    }
-    
-    const prevTrack = () => {
-      beforePrevTrackLoad();
-      loadTrack();
-    };
-    
-    const nextTrack = () => {
-      beforeNextTrackLoad();
-      audio.pause();
-      loadTrack();
-    };
-
     const setVolume = (e) => {
       audio.volume = e.target.value / 100;
     };
 
     onMounted(() => {
-      isPlaying.value = false;
+      // isPlaying.value = false; // resetValues içinde zaten yapılıyor.
+      // Başlangıçta boş bir player durumu için:
+      resetValues();
+      track.value = { name: '-', artist: '-', image: '', path: '' }; 
+      // window.setCurrentTrack = (trackData, autoPlay) => { ... } eski global fonksiyonun yerine
+      // artık window.setFooterPlaylist kullanılıyor olacak ListenMixed tarafından.
+      // Diğer sayfalardan tekil şarkı çalma ihtiyacı olursa, ona göre bir window.playSingleTrack gibi bir fonksiyon eklenebilir.
     });
-
-    const musics = ref([
-      {
-        name: 'Pop Smoke',
-        artist: 'Cascada',
-        image: generateImgPath('assets/images/dashboard/audio/01.png'),
-        path: generateImgPath('assets/images/dashboard/audio/audio.mp3')
-      },
-      {
-        name: 'Gabby Barrett',
-        artist: 'Emeli Sande',
-        image: generateImgPath('assets/images/dashboard/audio/02.png'),
-        path: generateImgPath('assets/images/dashboard/audio/audio.mp3')
-      },
-      {
-        name: 'Megan Thee',
-        artist: 'Jessie J',
-        image: generateImgPath('assets/images/dashboard/audio/03.png'),
-        path: generateImgPath('assets/images/dashboard/audio/audio.mp3')
-      }
-    ])
-
-    track.value = musics.value[0]
-
-    loadTrack()
 
     return {
       footerStyle,
@@ -370,12 +420,9 @@ export default {
       resetValues,
       playPauseTrack,
       seekTo,
-      seekUpdate: () => {},
       updateTime,
-      prevTrack,
-      beforePrevTrackLoad,
       nextTrack,
-      beforeNextTrackLoad,
+      prevTrack,
       setVolume
     }
   },

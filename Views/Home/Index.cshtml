@@ -1,8 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Ana Sayfa - EmoTagger";
 }
-<link rel="stylesheet" href="~/css/index.css">
-
+<link rel="stylesheet" href="~/css/indexx.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <div class="container-fluid p-0">
     <!-- Hero Section -->
@@ -10,7 +10,7 @@
         <div class="container">
             <div class="row align-items-center justify-content-center text-center">
                 <div class="col-lg-8">
-                    <h1 class="display-4 fw-bold mb-4 animated fadeIn">Müziği Duygularla Keşfet</h1>
+                    <h1 class="display-4 fw-bold mb-4 animated fadeIn neon-text">Müziği Duygularla Keşfet</h1>
                     <p class="lead mb-4 animated fadeIn delay-1">EmoTagger, müzik deneyiminizi duygular üzerinden yeniden tanımlayan yenilikçi bir platformdur. Şarkıları duygusal boyutuyla keşfedin ve müziği hissedin.</p>
                     <div class="d-flex gap-3 justify-content-center animated fadeIn delay-2">
                         <a asp-controller="Dashboard" asp-action="ListenTag" class="btn btn-primary btn-lg pulse-btn">
@@ -25,7 +25,7 @@
     <!-- Features Section -->
     <section id="features" class="py-5">
         <div class="container">
-            <div class="text-center mb-5 section-header">
+            <div class="text-center mb-4 section-header">
                 <h2 class="fw-bold">Müziği Duygularıyla Yaşayın</h2>
                 <div class="divider mx-auto"></div>
                 <p class="lead text-muted">Her müzik parçası, içinde bir duygu barındırır. EmoTagger ile bu duyguları keşfedin.</p>
@@ -35,29 +35,29 @@
                 <div class="col-md-4">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 pulse">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
                                 <i class="fas fa-headphones-alt"></i>
                             </div>
                             <h4 class="card-title">Dinle & Etiketle</h4>
-                            <p class="card-text">Farklı duygu kategorilerindeki şarkıları dinleyerek kendi duygusal etiketlerinizi ekleyin ve müzik dünyasına katkıda bulunun.</p>
+                            <p class="card-text">Farklı duygu kategorilerindeki şarkıları dinleyerek kendi duygusal etiketlerinizi ekleyin.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3 pulse">
+                            <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3">
                                 <i class="fas fa-heart"></i>
                             </div>
                             <h4 class="card-title">Favorilerinizi Oluşturun</h4>
-                            <p class="card-text">Beğendiğiniz şarkıları favorilerinize ekleyerek kişisel bir müzik kütüphanesi oluşturun ve her an erişim sağlayın.</p>
+                            <p class="card-text">Beğendiğiniz şarkıları favorilerinize ekleyerek kişisel bir müzik kütüphanesi oluşturun.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4">
-                            <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3 pulse">
+                            <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3">
                                 <i class="fas fa-compact-disc"></i>
                             </div>
                             <h4 class="card-title">Çalma Listeleri</h4>
@@ -72,7 +72,7 @@
     <!-- How it Works Section -->
     <section class="py-5 bg-light">
         <div class="container">
-            <div class="text-center mb-5 section-header">
+            <div class="text-center mb-4 section-header">
                 <h2 class="fw-bold">Nasıl Çalışır?</h2>
                 <div class="divider mx-auto"></div>
                 <p class="lead text-muted">EmoTagger ile müzik deneyiminizi kişiselleştirmek çok kolay.</p>
@@ -114,7 +114,7 @@
     <!-- Testimonials -->
     <section class="py-5">
         <div class="container">
-            <div class="text-center mb-5 section-header">
+            <div class="text-center mb-4 section-header">
                 <h2 class="fw-bold">Kullanıcılarımız Ne Diyor?</h2>
                 <div class="divider mx-auto"></div>
                 <p class="lead text-muted">EmoTagger kullanıcılarının deneyimleri.</p>
@@ -153,7 +153,7 @@
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star-half-alt"></i>
                             </div>
-                            <p class="card-text">"Müzik dinlemeyi seviyorum ve EmoTagger ile bu deneyimi daha da keyifli hale getirdim. Duygulara göre kategorize edilmiş müzikler harika!"</p>
+                            <p class="card-text">"Müzik dinlemeyi seviyorum ve EmoTagger ile bu deneyimi daha da keyifli hale getirdim."</p>
                         </div>
                     </div>
                 </div>
@@ -183,18 +183,9 @@
     <section class="py-5">
         <div class="container">
             <div class="cta-section rounded-4 p-5 text-center text-white">
-                <h2 class="fw-bold mb-3 animated pulse">Müziğin Dünyasına Duygularla Adım Atın</h2>
+                <h2 class="fw-bold mb-3 animated pulse neon-text">Müziğin Dünyasına Duygularla Adım Atın</h2>
                 <p class="lead mb-4">Hemen kaydolun ve binlerce şarkıyı duygusal boyutlarıyla keşfedin.</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <a asp-controller="Dashboard" asp-action="Register" class="btn btn-light btn-lg px-4 glow-btn">
-                        <i class="fas fa-user-plus me-2"></i> Hemen Kaydol
-                    </a>
-                    <a asp-controller="Dashboard" asp-action="Login" class="btn btn-outline-light btn-lg px-4 glow-outline-btn">
-                        <i class="fas fa-sign-in-alt me-2"></i> Giriş Yap
-                    </a>
-                </div>
             </div>
         </div>
     </section>
 </div>
-

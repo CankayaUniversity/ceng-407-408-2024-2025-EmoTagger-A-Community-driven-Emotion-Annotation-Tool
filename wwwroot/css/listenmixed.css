@@ -119,6 +119,7 @@
         box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ffff00, 0 0 20px #ffff00;
     }
 }
+
 /* Animation */
 @keyframes pulse {
     0% {
@@ -131,4 +132,38 @@
         opacity: 0.6;
     }
 }
-
+<style>
+    .table-dark {
+        background-color: #ff4444 !important;
+    }
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .pagination .page-item {
+        margin-bottom: 5px;
+    }
+    .music-row {
+        transition: all 0.3s ease;
+    }
+    .music-row:hover {
+        background-color: rgba(255, 255, 0, 0.1) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .playing-now {
+        background-color: rgba(255, 255, 0, 0.6) !important;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+        color: #000;
+        font-weight: bold;
+        animation: pulsate 1.5s infinite alternate;
+    }
+    .row-flash-effect {
+        animation: rowFlash 0.7s;
+    }
+    @keyframes rowFlash {
+        0%   { background-color: #fffbe6; }
+        50%  { background-color: #ffe066; }
+        100% { background-color: inherit; }
+    }
+</style>

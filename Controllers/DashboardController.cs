@@ -34,6 +34,95 @@ namespace EmoTagger.Controllers
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetComments(int musicId)
+        {
+            try
+            {
+                // Debug bilgisi
+                Console.WriteLine($"GetComments çağrıldı, müzik ID: {musicId}");
+
+                // Bu müzik ID için yorumları getir - lowercase property adlarıyla
+                var comments = await _context.Comments
+                    .Where(c => c.music_id == musicId)
+                    .OrderByDescending(c => c.created_at)
+// GetComments metodundaki Select içerisinde
+.Select(c => new
+{
+    Id = c.id,                 // 'Id' yerine 'id' kullanın
+    Comment = c.comment_text,
+    UserId = c.user_id,
+    UserName = c.user_id.HasValue ?
+        (_context.Users.FirstOrDefault(u => u.Id == c.user_id) != null ?
+            _context.Users.FirstOrDefault(u => u.Id == c.user_id).FirstName + " " +
+            _context.Users.FirstOrDefault(u => u.Id == c.user_id).LastName :
+            "Kullanıcı Bulunamadı") :
+        "Anonim",
+    CreatedAt = c.created_at,
+    IsCurrentUser = c.user_id.HasValue && HttpContext.Session.GetInt32("UserId") == c.user_id
+})
+                    .ToListAsync();
+
+                Console.WriteLine($"Bulunan yorum sayısı: {comments.Count}");
+                return Json(new { success = true, comments });
+            }
+            catch (Exception ex)
+            {
+                // Hata detaylarını logla
+                Console.WriteLine($"GetComments hatası: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"İç hata: {ex.InnerException.Message}");
+                }
+                // Stack trace da ekle
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = "Yorumlar alınırken bir hata oluştu", error = ex.Message });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddComment([FromBody] AddCommentModel model)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.Comment))
+                {
+                    return Json(new { success = false, message = "Yorum boş olamaz" });
+                }
+
+                int? userId = HttpContext.Session.GetInt32("UserId");
+
+                // Eğer anonim gönderiliyorsa userId null olmalı
+                if (model.IsAnonymous || !userId.HasValue)
+                {
+                    userId = null;
+                }
+
+                var comment = new Comment
+                {
+                    music_id = model.MusicId,      // music_id kullanın
+                    user_id = userId,              // user_id kullanın 
+                    comment_text = model.Comment,  // comment_text kullanın
+                    created_at = DateTime.UtcNow   // created_at kullanın
+                };
+                _context.Comments.Add(comment);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                var innerError = ex.InnerException != null ? ex.InnerException.Message : "Yok";
+                return Json(new
+                {
+                    success = false,
+                    message = "Yorum eklenirken bir hata oluştu",
+                    error = ex.Message,
+                    innerError = innerError
+                });
+            }
+        }
+
         // Add this method to the DashboardController class
         [HttpPost]
         public IActionResult ToggleFavorite([FromBody] FavoriteModel model)
@@ -91,22 +180,16 @@ namespace EmoTagger.Controllers
         [HttpGet]
         public async Task<IActionResult> CheckFavorite(int musicId)
         {
-            if (!User.Identity.IsAuthenticated)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
                 return Json(new { isFavorite = false });
             }
 
             try
             {
-                var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (!int.TryParse(userIdStr, out int userId))
-                {
-                    return Json(new { isFavorite = false });
-                }
-
                 var isFavorite = await _context.Favorites
-                    .AnyAsync(f => f.user_id == userId && f.music_id == musicId);
+                    .AnyAsync(f => f.user_id == userId.Value && f.music_id == musicId);
 
                 return Json(new { isFavorite });
             }
@@ -194,6 +277,7 @@ namespace EmoTagger.Controllers
                               id = m.musicid,
                               title = m.title,
                               artist = m.artist,
+                              filename = m.filename, // filename alanı eklendi
                               addedAt = f.added_at
                           })
                     .OrderByDescending(f => f.addedAt)
@@ -419,6 +503,31 @@ namespace EmoTagger.Controllers
             int skip = (page - 1) * pageSize;
             var pagedTracks = sortedMusics.Skip(skip).Take(pageSize).ToList();
 
+            // Gerçek dinlenme sayılarını PlayCounts tablosundan toplayarak ekle
+            var playCountsDict = _context.PlayCounts
+                .GroupBy(pc => pc.MusicId)
+                .Select(g => new { MusicId = g.Key, Total = g.Sum(x => x.Count) })
+                .ToDictionary(x => x.MusicId, x => x.Total);
+
+            var tracksWithCounts = pagedTracks.Select(m => new EmoTagger.Models.ListenMixedTrackViewModel
+            {
+                MusicId = m.musicid,
+                Title = m.title,
+                Artist = m.artist,
+                Filename = m.filename,
+                PlayCount = playCountsDict.ContainsKey(m.musicid) ? playCountsDict[m.musicid] : 0
+            }).ToList();
+
+            // Tüm müzikleri sıralı şekilde al (footer player için)
+            var allTracks = sortedMusics.Select(m => new EmoTagger.Models.ListenMixedTrackViewModel
+            {
+                MusicId = m.musicid,
+                Title = m.title,
+                Artist = m.artist,
+                Filename = m.filename,
+                PlayCount = playCountsDict.ContainsKey(m.musicid) ? playCountsDict[m.musicid] : 0
+            }).ToList();
+
             // CurrentTrack işlemi (isteğe bağlı)
             Music currentTrack = null;
             if (HttpContext.Session.TryGetValue("CurrentMusicId", out byte[] trackIdBytes))
@@ -432,13 +541,14 @@ namespace EmoTagger.Controllers
 
             var viewModel = new ListenMixedViewModel
             {
-                Tracks = pagedTracks,
+                Tracks = tracksWithCounts,
+                AllTracks = allTracks, // Tüm müzikleri ekle
                 CurrentPage = page,
                 TotalPages = totalPages,
                 CurrentTrack = currentTrack
             };
 
-            return View(viewModel);  // HATA BURADA GENELLİKLE ANONİM TYPE DÖNÜYORSA OLUR
+            return View(viewModel);
         }
 
 
@@ -539,26 +649,114 @@ namespace EmoTagger.Controllers
         }
 
         // 🎧 Dinleme Geçmişi
-        public async Task<IActionResult> ListeningHistory()
+        public async Task<IActionResult> ListeningHistory(int page = 1, int pageSize = 10)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
 
+            var historyQuery = _context.RecentlyPlayed
+                .Include(h => h.Music)
+                .Where(h => h.UserId == userId)
+                .OrderByDescending(h => h.PlayedAt);
 
-            return View(); // ListeningHistory.cshtml
+            var totalCount = await historyQuery.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            var history = await historyQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(h => new EmoTagger.Models.ListeningHistoryItem
+                {
+                    Title = h.Music.title,
+                    Artist = h.Music.artist,
+                    PlayedAt = h.PlayedAt.ToString("dd.MM.yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            var model = new EmoTagger.Models.ListeningHistoryViewModel
+            {
+                History = history,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(model);
         }
     
 
         // 🏆 Liderlik Tablosu
         public IActionResult Leaderboard()
         {
-            return View();
+            // En çok müzik dinleyenler (PlayCounts tablosu üzerinden)
+            var topListeners = _context.PlayCounts
+                .GroupBy(pc => pc.UserId)
+                .Select(g => new {
+                    UserId = g.Key,
+                    Count = g.Sum(x => x.Count)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(10)
+                .ToList()
+                .Join(_context.Users,
+                    stat => stat.UserId,
+                    user => user.Id,
+                    (stat, user) => new EmoTagger.ViewModels.LeaderboardUserViewModel
+                    {
+                        UserId = user.Id,
+                        UserName = user.FirstName + " " + user.LastName,
+                        ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImageUrl) ? "/assets/images/default-profile.png" : user.ProfileImageUrl,
+                        Count = stat.Count
+                    })
+                .ToList();
+
+            // En çok tag atanlar (MusicTags tablosu üzerinden)
+            var topTaggers = _context.MusicTags
+                .GroupBy(mt => mt.UserId)
+                .Select(g => new {
+                    UserId = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(10)
+                .ToList()
+                .Join(_context.Users,
+                    stat => stat.UserId,
+                    user => user.Id,
+                    (stat, user) => new EmoTagger.ViewModels.LeaderboardUserViewModel
+                    {
+                        UserId = user.Id,
+                        UserName = user.FirstName + " " + user.LastName,
+                        ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImageUrl) ? "/assets/images/default-profile.png" : user.ProfileImageUrl,
+                        Count = stat.Count
+                    })
+                .ToList();
+
+            var model = new EmoTagger.ViewModels.LeaderboardViewModel
+            {
+                TopListeners = topListeners,
+                TopTaggers = topTaggers
+            };
+
+            return View(model);
         }
 
         // 🎧 Playlist Sayfası
         public IActionResult Playlist()
         {
-            return View();
-        }
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Dashboard");
 
+            var model = new MusicViewModel
+            {
+                UserId = userId.Value
+            };
+            return View(model);
+        }
 
 
        
@@ -577,26 +775,100 @@ namespace EmoTagger.Controllers
         }
         // Controller içinde
         [HttpGet]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> Profile(int friendsPage = 1, int requestsPage = 1)
         {
-            // Oturumdaki kullanıcı e-postasını al
-            var userEmail = HttpContext.Session.GetString("UserEmail");
-
-            if (string.IsNullOrEmpty(userEmail))
-            {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return RedirectToAction("Login", "Dashboard");
-            }
 
-            // Veritabanından kullanıcıyı sorgula
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == userEmail);
-
+            var user = await _context.Users.FindAsync(userId.Value);
             if (user == null)
+                return RedirectToAction("Login", "Dashboard");
+
+            // Get user's music statistics
+            var mostTaggedGenre = await _context.MusicTags
+                .Where(t => t.UserId == userId.Value)
+                .GroupBy(t => t.Tag)
+                .Select(g => new { Tag = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .Select(x => x.Tag)
+                .FirstOrDefaultAsync();
+
+            var mostTaggedCount = 0;
+            if (!string.IsNullOrEmpty(mostTaggedGenre))
             {
-                return NotFound();
+                mostTaggedCount = await _context.MusicTags
+                    .Where(t => t.UserId == userId.Value && t.Tag == mostTaggedGenre)
+                    .CountAsync();
             }
 
-            // ProfileViewModel oluştur
+            var totalTagCount = await _context.MusicTags
+                .Where(t => t.UserId == userId.Value)
+                .CountAsync();
+
+            var totalPlayedMusic = await _context.RecentlyPlayed
+                .Where(p => p.UserId == userId.Value)
+                .Select(p => p.MusicId)
+                .Distinct()
+                .CountAsync();
+
+            var favoriteCount = await _context.Favorites
+                .Where(f => f.user_id == userId.Value)
+                .CountAsync();
+
+            // Get friends with pagination
+            var pageSize = 5;
+            var friends = await _context.FriendRequests
+                .Where(f => (f.FromUserId == userId.Value || f.ToUserId == userId.Value) && f.IsAccepted)
+                .Select(f => f.FromUserId == userId.Value ? f.ToUserId : f.FromUserId)
+                .ToListAsync();
+
+            var friendsListRaw = await _context.Users
+                .Where(u => friends.Contains(u.Id))
+                .OrderBy(u => u.FirstName)
+                .ToListAsync();
+
+            var uniqueFriends = friendsListRaw
+                .GroupBy(f => f.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            var totalFriends = uniqueFriends.Count;
+            var friendsTotalPages = (int)Math.Ceiling(totalFriends / (double)pageSize);
+
+            var friendsList = uniqueFriends
+                .Skip((friendsPage - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new FriendViewModel
+                {
+                    Id = u.Id,
+                    Name = u.FirstName + " " + u.LastName,
+                    ProfileImageUrl = u.ProfileImageUrl,
+                    IsOnline = u.IsOnline
+                }).ToList();
+
+            // 1. Adım: Sorguyu veritabanından çek
+            var allRequests = await _context.FriendRequests
+                .Where(f => f.ToUserId == userId.Value && !f.IsAccepted)
+                .OrderByDescending(f => f.RequestedAt)
+                .ToListAsync();
+
+            // 2. Adım: C# tarafında tekilleştir
+            var requestsList = allRequests
+                .GroupBy(f => f.FromUserId)
+                .Select(g => g.First())
+                .Select(f => new FriendRequestViewModel
+                {
+                    RequestId = f.Id,
+                    FromUserId = f.FromUserId,
+                    FromUserName = _context.Users.Where(u => u.Id == f.FromUserId).Select(u => u.FirstName + " " + u.LastName).FirstOrDefault(),
+                    ProfileImageUrl = _context.Users.Where(u => u.Id == f.FromUserId).Select(u => u.ProfileImageUrl).FirstOrDefault()
+                }).ToList();
+
+            var totalRequests = requestsList.Count;
+            var requestsTotalPages = (int)Math.Ceiling(totalRequests / (double)pageSize);
+
+            // Create ProfileViewModel
             var profileViewModel = new ProfileViewModel
             {
                 FirstName = user.FirstName,
@@ -604,114 +876,89 @@ namespace EmoTagger.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Country = user.Country,
-                // Profil resmini veritabanından al, yoksa varsayılan resmi kullan
-                ProfileImageUrl = user.ProfileImageUrl ?? "/assets/images/default-profile.png"
+                ProfileImageUrl = user.ProfileImageUrl ?? "/assets/images/default-profile.png",
+                IncomingRequestsCount = totalRequests,
+                MostTaggedGenre = mostTaggedGenre,
+                MostTaggedCount = mostTaggedCount,
+                TotalTagCount = totalTagCount,
+                TotalPlayedMusic = totalPlayedMusic,
+                FavoriteCount = favoriteCount,
+                Friends = friendsList,
+                IncomingRequests = requestsList,
+                FriendsPage = friendsPage,
+                RequestsPage = requestsPage,
+                FriendsTotalPages = friendsTotalPages,
+                RequestsTotalPages = requestsTotalPages,
+                PageSize = pageSize
             };
 
             return View(profileViewModel);
         }
-
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                // Model doğrulama hatalarını detaylı olarak logla
-                foreach (var state in ModelState)
-                {
-                    if (state.Value.Errors.Count > 0)
-                    {
-                        foreach (var error in state.Value.Errors)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Doğrulama hatası: {state.Key} - {error.ErrorMessage}");
-                        }
-                    }
-                }
-                TempData["ErrorMessage"] = "Geçersiz giriş! Lütfen bilgilerinizi kontrol edin.";
-                return View("Profile", model);
-            }
-
-            // Gelen verileri kontrol için logla
-            System.Diagnostics.Debug.WriteLine($"GELEN VERİ: {model.FirstName}, {model.LastName}, {model.Email}, {model.PhoneNumber}, {model.Country}");
-
-            // Kullanıcıyı e-posta ile bul
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-            if (user == null)
-            {
-                TempData["ErrorMessage"] = "Kullanıcı bulunamadı!";
+            // Kullanıcı kimlik doğrulama kontrolü
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return RedirectToAction("Login", "Dashboard");
-            }
 
-            // Değişiklikleri kontrol et ve sadece değişenleri güncelle
-            bool hasChanges = false;
-
-            if (user.FirstName != model.FirstName)
+            // Model doğrulama kontrolü
+            if (string.IsNullOrWhiteSpace(model.FirstName) || string.IsNullOrWhiteSpace(model.LastName))
             {
-                user.FirstName = model.FirstName;
-                hasChanges = true;
+                TempData["ErrorMessage"] = "Ad ve soyad alanları boş bırakılamaz.";
+                return RedirectToAction("Profile", new { friendsPage = model.FriendsPage, requestsPage = model.RequestsPage });
             }
 
-            if (user.LastName != model.LastName)
-            {
-                user.LastName = model.LastName;
-                hasChanges = true;
-            }
-
-            if (user.PhoneNumber != model.PhoneNumber)
-            {
-                user.PhoneNumber = model.PhoneNumber;
-                hasChanges = true;
-            }
-
-            if (user.Country != model.Country)
-            {
-                user.Country = model.Country;
-                hasChanges = true;
-            }
-
-            // Profil resmi güncellemesi
-            if (!string.IsNullOrEmpty(model.ProfileImageUrl) && user.ProfileImageUrl != model.ProfileImageUrl)
-            {
-                user.ProfileImageUrl = model.ProfileImageUrl;
-                hasChanges = true;
-            }
-
-            // Eğer değişiklik yoksa, veritabanına yazma
-            if (!hasChanges)
-            {
-                TempData["WarningMessage"] = "Herhangi bir değişiklik yapılmadı.";
-                return RedirectToAction("Profile");
-            }
-
-            // Kaydet
             try
             {
-                var result = await _context.SaveChangesAsync();
-                System.Diagnostics.Debug.WriteLine("SaveChanges sonucu: " + result);
-
-                if (result > 0)
-                {
-                    // Session bilgilerini güncelle
-                    HttpContext.Session.SetString("UserName", user.FirstName);
-                    HttpContext.Session.SetString("UserProfileImage", user.ProfileImageUrl ?? "/assets/images/default-profile.png");
-
-                    // Navbar'daki profil resminin güncellenmesi için
-                    TempData["RefreshPage"] = true;
-                    TempData["SuccessMessage"] = "Profil başarıyla güncellendi!";
+                // Kullanıcıyı veritabanından al
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Id == userId);
+            if (user == null)
+            {
+                    TempData["ErrorMessage"] = "Kullanıcı bulunamadı.";
+                    return RedirectToAction("Login");
                 }
-                else
+
+                // Kullanıcı bilgilerini güncelle
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Country = model.Country;
+
+                // UpdatedAt alanını güncelleme
+                try
                 {
-                    TempData["WarningMessage"] = "Değişiklik yapılmadı veya kaydedilemedi.";
+                    user.UpdatedAt = DateTime.UtcNow; // UTC kullanın
+                }
+                catch (Exception updateEx)
+                {
+                    TempData["ErrorMessage"] = $"UpdatedAt güncellemesi başarısız: {updateEx.Message}";
+                    return RedirectToAction("Profile", new { friendsPage = model.FriendsPage, requestsPage = model.RequestsPage });
+                }
+
+                // Değişiklikleri veritabanına kaydet
+                try
+                {
+                    _context.Entry(user).State = EntityState.Modified; // Entity'nin durumunu açıkça belirt
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Profil bilgileriniz başarıyla güncellendi.";
+                }
+                catch (DbUpdateException dbEx)
+                {
+                    var innerMsg = dbEx.InnerException != null ? dbEx.InnerException.Message : "İç hata yok";
+                    TempData["ErrorMessage"] = $"Veritabanı güncellemesi başarısız: {dbEx.Message} | İç hata: {innerMsg}";
+                    return RedirectToAction("Profile", new { friendsPage = model.FriendsPage, requestsPage = model.RequestsPage });
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Güncelleme hatası: {ex.Message}");
-                TempData["ErrorMessage"] = $"Profil güncellenirken bir hata oluştu: {ex.Message}";
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "İç hata yok";
+                TempData["ErrorMessage"] = $"Profil güncellenirken bir hata oluştu: {ex.Message} | İç hata: {innerMsg}";
             }
 
-            return RedirectToAction("Profile");
+            return RedirectToAction("Profile", new { friendsPage = model.FriendsPage, requestsPage = model.RequestsPage });
         }
+
         [HttpGet]
         public IActionResult GetProfileImageUrl()
         {
@@ -724,86 +971,106 @@ namespace EmoTagger.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadProfilePicture(IFormFile profileImage)
         {
+            try
+            {
+                // 1. Kullanıcı kimliğini al
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (userId == null)
+                {
+                    TempData["ErrorMessage"] = "Oturum bulunamadı. Lütfen tekrar giriş yapın.";
+                    return RedirectToAction("Login", "Dashboard");
+                }
+
+                // 2. Dosya kontrolleri
             if (profileImage == null || profileImage.Length == 0)
             {
                 TempData["ErrorMessage"] = "Dosya seçilmedi.";
                 return RedirectToAction("Profile");
             }
-            var userEmail = HttpContext.Session.GetString("UserEmail");
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return RedirectToAction("Login", "Dashboard");
-            }
-            // Dosya türünü kontrol et
-            var extension = Path.GetExtension(profileImage.FileName).ToLower();
+
+                // 3. Dosya türünü kontrol et
+                var extension = Path.GetExtension(profileImage.FileName).ToLowerInvariant();
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
             if (!allowedExtensions.Contains(extension))
             {
                 TempData["ErrorMessage"] = "Sadece resim dosyaları kabul edilmektedir (.jpg, .jpeg, .png, .gif).";
                 return RedirectToAction("Profile");
             }
-            try
-            {
-                // Veritabanından kullanıcıyı bul
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == userEmail);
+
+                // 4. Kullanıcıyı veritabanından bul
+                var user = await _context.Users.FindAsync(userId);
                 if (user == null)
                 {
                     TempData["ErrorMessage"] = "Kullanıcı bulunamadı.";
-                    return RedirectToAction("Profile");
+                    return RedirectToAction("Login", "Dashboard");
                 }
-                // Önceki resmi hatırla
+
+                // 5. Önceki resmi hatırla
                 var oldImageUrl = user.ProfileImageUrl;
                 System.Diagnostics.Debug.WriteLine($"Önceki profil resmi: {oldImageUrl}");
 
-                // Önbellek sorununu önlemek için timestamp ekle
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-
-                // Benzersiz dosya adı oluştur
-                var fileName = $"{Guid.NewGuid()}_{timestamp}{extension}";
-                // Yükleme klasörü yolunu al
+                // 6. Yükleme klasörü ve dosya adı
+                var timestamp = DateTime.Now.Ticks; // Önbellek sorunu için timestamp
+                var fileName = $"user_{userId}_{timestamp}{extension}";
                 var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "profiles");
-                // Klasör yoksa oluştur
+
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
+
                 var filePath = Path.Combine(uploadsFolder, fileName);
-                // Dosyayı kaydet
+
+                // 7. Dosyayı kaydet
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await profileImage.CopyToAsync(fileStream);
                 }
-                // Dosya yolunu oluştur - önbellek parametresi ekle
-                var fileUrl = $"/uploads/profiles/{fileName}?v={timestamp}";
-                // Kullanıcının profil resmini veritabanında güncelle
+
+                // 8. Dosya yolu
+                var fileUrl = $"/uploads/profiles/{fileName}";
+
+                // 9. Kullanıcı bilgilerini güncelle
                 user.ProfileImageUrl = fileUrl;
-                // Değişiklikleri kaydet ve etkilenen satır sayısını al
+
+                // 10. UpdatedAt alanını güncelle (eğer varsa)
+                if (user.GetType().GetProperty("UpdatedAt") != null)
+                {
+                    // Reflection kullanarak dinamik olarak UpdatedAt özelliğini güncelle
+                    var updatedAtProperty = user.GetType().GetProperty("UpdatedAt");
+                    updatedAtProperty.SetValue(user, DateTime.UtcNow);
+                }
+
+                // 11. Değişiklikleri kaydet
+                _context.Entry(user).State = EntityState.Modified;
                 var result = await _context.SaveChangesAsync();
-                // Debug için
+
+                // 12. Debug için bilgi
                 System.Diagnostics.Debug.WriteLine($"Etkilenen satır sayısı: {result}");
                 System.Diagnostics.Debug.WriteLine($"Yeni profil resmi: {fileUrl}");
+
                 if (result > 0)
                 {
-                    // Session'daki profil resmini güncelle - bu çok önemli!
+                    // 13. Session'daki profil resmini güncelle
                     HttpContext.Session.SetString("UserProfileImage", fileUrl);
 
+                    // 14. Başarı mesajı
                     TempData["SuccessMessage"] = "Profil resmi başarıyla güncellendi!";
-                    // Sayfanın yenilenmesi için flag ekle
-                    TempData["RefreshPage"] = true;
 
-                    // Eğer önceki resim varsayılan değilse ve mevcut disk üzerinde ise, silebiliriz
+                    // 15. JavaScript ile sayfanın yenilenmesini sağla
+                    TempData["RefreshScript"] = "window.location.href = window.location.pathname + '?refresh=" + timestamp + "';";
+
+                    // 16. Eski resmi temizle
                     if (!string.IsNullOrEmpty(oldImageUrl) &&
                         !oldImageUrl.Contains("default-profile.png") &&
                         oldImageUrl.StartsWith("/uploads/profiles/"))
                     {
                         try
                         {
-                            // URL'den dosya adını çıkar
+                            // Eski dosyayı bul ve sil
                             var oldFileName = Path.GetFileName(oldImageUrl.Split('?')[0]);
                             var oldFilePath = Path.Combine(uploadsFolder, oldFileName);
 
-                            // Dosya varsa sil
                             if (System.IO.File.Exists(oldFilePath))
                             {
                                 System.IO.File.Delete(oldFilePath);
@@ -813,25 +1080,26 @@ namespace EmoTagger.Controllers
                         catch (Exception ex)
                         {
                             System.Diagnostics.Debug.WriteLine($"Eski resim silinirken hata: {ex.Message}");
-                            // Eski resim silinemedi ama bu kritik bir hata değil, devam edebiliriz
                         }
                     }
                 }
                 else
                 {
-                    TempData["WarningMessage"] = "Profil resmi güncellenemedi. Hiçbir değişiklik kaydedilmedi.";
+                    TempData["ErrorMessage"] = "Profil resmi güncellenemedi. Hiçbir değişiklik kaydedilmedi.";
                 }
             }
             catch (Exception ex)
             {
-                var innerErrorMsg = ex.InnerException?.Message ?? "İç hata yok";
-                TempData["ErrorMessage"] = $"Resim yüklenirken hata oluştu: {ex.Message} - {innerErrorMsg}";
+                var innerExMessage = ex.InnerException != null ? ex.InnerException.Message : "İç hata yok";
+                TempData["ErrorMessage"] = $"Profil resmi yüklenirken bir hata oluştu: {ex.Message} | {innerExMessage}";
+
                 // Debug için
                 System.Diagnostics.Debug.WriteLine($"UploadProfilePicture hatası: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"İç hata: {innerErrorMsg}");
+                System.Diagnostics.Debug.WriteLine($"İç hata: {innerExMessage}");
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
             }
 
-            // Sayfayı yenileme parametresi ekle
+            // Sayfayı refresh parametresi ile yenile
             return RedirectToAction("Profile", new { refresh = DateTime.Now.Ticks });
         }
 
@@ -962,24 +1230,25 @@ namespace EmoTagger.Controllers
                 return Json(new { success = false, message = "Sunucu hatası" });
             }
         }
+
         [HttpGet]
         public IActionResult GetRecentlyPlayed()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-
             if (userId == null)
             {
                 return Unauthorized();
             }
 
-            var lastPlays = _context.PlayCounts
+            // PlayCounts tablosu yerine RecentlyPlayed tablosunu sorgulayın
+            var lastPlays = _context.RecentlyPlayed
                 .Where(p => p.UserId == userId)
-                .OrderByDescending(p => p.LastPlayed)
+                .OrderByDescending(p => p.PlayedAt)
                 .Take(10)
                 .Select(p => new {
                     Title = p.Music.title,
                     Artist = p.Music.artist,
-                    PlayedAt = p.LastPlayed
+                    PlayedAt = p.PlayedAt
                 }).ToList();
 
             return Json(new { success = true, played = lastPlays });
@@ -1096,6 +1365,405 @@ namespace EmoTagger.Controllers
                 _logger.LogError("Stack Trace: {StackTrace}", ex.StackTrace);
                 return Json(new { error = "Sunucu hatası: " + ex.Message, played = new List<object>() });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOnlineStatus(bool isOnline)
+        {
+            try
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (userId == null)
+                {
+                    return Json(new { success = false, message = "Oturum açmanız gerekiyor." });
+                }
+
+                var user = await _context.Users.FindAsync(userId.Value);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+                }
+
+                user.IsOnline = isOnline;
+                user.LastSeen = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOnlineUsers()
+        {
+            try
+            {
+                var onlineUsers = await _context.Users
+                    .Where(u => u.IsOnline)
+                    .Select(u => new {
+                        id = u.Id,
+                        firstName = u.FirstName,
+                        lastName = u.LastName,
+                        profileImageUrl = u.ProfileImageUrl,
+                        lastSeen = u.LastSeen
+                    })
+                    .ToListAsync();
+
+                return Json(new { success = true, onlineUsers });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult SearchUsers(string query)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null || string.IsNullOrWhiteSpace(query))
+                return Json(new { success = false, users = new List<object>() });
+
+            var friends = _context.FriendRequests
+                .Where(f => (f.FromUserId == userId || f.ToUserId == userId) && f.IsAccepted)
+                .Select(f => f.FromUserId == userId ? f.ToUserId : f.FromUserId)
+                .ToList();
+
+            var requests = _context.FriendRequests
+                .Where(f => (f.FromUserId == userId || f.ToUserId == userId) && !f.IsAccepted)
+                .ToList();
+
+            var users = _context.Users
+                .Where(u => (u.FirstName + " " + u.LastName).ToLower().Contains(query.ToLower())
+                            && u.Id != userId)
+                .Take(10)
+                .ToList()
+                .Select(u => new {
+                    id = u.Id,
+                    firstName = u.FirstName,
+                    lastName = u.LastName,
+                    profileImageUrl = u.ProfileImageUrl,
+                    isOnline = u.IsOnline,
+                    requested = requests.Any(r => (r.FromUserId == userId && r.ToUserId == u.Id) || (r.FromUserId == u.Id && r.ToUserId == userId)),
+                    isFriend = friends.Contains(u.Id)
+                })
+                .ToList();
+
+            return Json(new { success = true, users });
+        }
+
+        [HttpPost]
+        public IActionResult AddFriend([FromBody] System.Text.Json.JsonElement data)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            int friendId = data.GetProperty("friendId").GetInt32();
+
+            if (userId == null || friendId == userId)
+                return Json(new { success = false });
+
+            // Zaten istek var mı?
+            var existing = _context.FriendRequests
+                .FirstOrDefault(f =>
+                    (f.FromUserId == userId && f.ToUserId == friendId) ||
+                    (f.FromUserId == friendId && f.ToUserId == userId));
+
+            if (existing != null)
+                return Json(new { success = false, message = "Zaten istek var." });
+
+            var request = new FriendRequest
+            {
+                FromUserId = userId.Value,
+                ToUserId = friendId,
+                IsAccepted = false
+            };
+            _context.FriendRequests.Add(request);
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AcceptRequest(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Dashboard");
+
+            var request = await _context.FriendRequests.FirstOrDefaultAsync(f => f.Id == id && f.ToUserId == userId.Value && !f.IsAccepted);
+            if (request == null)
+            {
+                TempData["ErrorMessage"] = "İstek bulunamadı veya zaten kabul edilmiş.";
+                return RedirectToAction("Profile");
+            }
+            request.IsAccepted = true;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Arkadaş isteği kabul edildi.";
+            return RedirectToAction("Profile");
+        }
+
+        [HttpGet]
+        public IActionResult GetFriends()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Json(new { success = false, friends = new List<object>() });
+
+            var friends = _context.FriendRequests
+                .Where(f => (f.FromUserId == userId || f.ToUserId == userId) && f.IsAccepted)
+                .Select(f => f.FromUserId == userId ? f.ToUserId : f.FromUserId)
+                .ToList();
+
+            var users = _context.Users
+                .Where(u => friends.Contains(u.Id))
+                .Select(u => new {
+                    id = u.Id,
+                    name = u.FirstName + " " + u.LastName,
+                    profileImageUrl = u.ProfileImageUrl,
+                    isOnline = u.IsOnline
+                })
+                .ToList();
+
+            return Json(new { success = true, friends = users });
+        }
+
+        [HttpPost]
+        public IActionResult CancelFriendRequest([FromBody] System.Text.Json.JsonElement data)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            int friendId = data.GetProperty("friendId").GetInt32();
+
+            var request = _context.FriendRequests.FirstOrDefault(f =>
+                !f.IsAccepted &&
+                ((f.FromUserId == userId && f.ToUserId == friendId) || (f.FromUserId == friendId && f.ToUserId == userId)));
+            if (request == null)
+                return Json(new { success = false });
+
+            _context.FriendRequests.Remove(request);
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        public IActionResult GetIncomingFriendRequests()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Json(new { success = false, requests = new List<object>() });
+
+            var requests = _context.FriendRequests
+                .Where(f => f.ToUserId == userId && !f.IsAccepted)
+                .Select(f => new {
+                    requestId = f.Id,
+                    fromUserId = f.FromUserId,
+                    fromUserName = _context.Users.Where(u => u.Id == f.FromUserId).Select(u => u.FirstName + " " + u.LastName).FirstOrDefault(),
+                    profileImageUrl = _context.Users.Where(u => u.Id == f.FromUserId).Select(u => u.ProfileImageUrl).FirstOrDefault()
+                })
+                .ToList();
+
+            return Json(new { success = true, requests });
+        }
+
+        [HttpPost]
+        public IActionResult RejectFriend([FromBody] System.Text.Json.JsonElement data)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            int requestId = data.GetProperty("requestId").GetInt32();
+
+            var request = _context.FriendRequests.FirstOrDefault(f => f.Id == requestId && f.ToUserId == userId && !f.IsAccepted);
+            if (request == null)
+                return Json(new { success = false });
+
+            _context.FriendRequests.Remove(request);
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult RemoveFriend([FromBody] System.Text.Json.JsonElement data)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            int friendId = data.GetProperty("friendId").GetInt32();
+
+            var request = _context.FriendRequests.FirstOrDefault(f =>
+                f.IsAccepted &&
+                ((f.FromUserId == userId && f.ToUserId == friendId) || (f.FromUserId == friendId && f.ToUserId == userId)));
+            if (request == null)
+                return Json(new { success = false });
+
+            _context.FriendRequests.Remove(request);
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult BlockFriend([FromBody] System.Text.Json.JsonElement data)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            int friendId = data.GetProperty("friendId").GetInt32();
+
+            // Engelleme için yeni bir tablo önerilir, burada sadece arkadaşlıktan çıkarıyoruz
+            var request = _context.FriendRequests.FirstOrDefault(f =>
+                ((f.FromUserId == userId && f.ToUserId == friendId) || (f.FromUserId == friendId && f.ToUserId == userId)));
+            if (request != null)
+            {
+                _context.FriendRequests.Remove(request);
+                _context.SaveChanges();
+            }
+            // Burada ayrıca bir BlockedUsers tablosuna ekleme yapılabilir
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        public IActionResult GetUserMusicStats()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Json(new { success = false });
+
+            // En çok tag verilen tür ve tag sayısı
+            var tagStats = _context.MusicTags
+                .Where(mt => mt.UserId == userId)
+                .GroupBy(mt => mt.Tag)
+                .Select(g => new { Tag = g.Key, Count = g.Count() })
+                .OrderByDescending(g => g.Count)
+                .ToList();
+
+            var mostTaggedGenre = tagStats.FirstOrDefault()?.Tag ?? "Yok";
+            var mostTaggedCount = tagStats.FirstOrDefault()?.Count ?? 0;
+            var totalTagCount = tagStats.Sum(x => x.Count);
+
+            // Toplam dinlenen müzik (recently_played tablosundan, farklı music_id sayısı)
+            var totalPlayedMusic = _context.RecentlyPlayed
+                .Where(rp => rp.UserId == userId)
+                .Select(rp => rp.MusicId)
+                .Distinct()
+                .Count();
+
+            // Favoriler (Favorites tablosu)
+            int favoriteCount = 0;
+            if (_context.GetType().GetProperty("Favorites") != null)
+            {
+                favoriteCount = _context.Favorites
+                    .Where(f => f.user_id == userId)
+                    .Count();
+            }
+
+            return Json(new
+            {
+                success = true,
+                mostTaggedGenre,
+                mostTaggedCount,
+                totalTagCount,
+                totalPlayedMusic,
+                favoriteCount
+            });
+        }
+
+        [HttpGet]
+        public IActionResult GetPlayCounts(int musicId)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Json(new { total = 0, user = 0 });
+
+            var total = _context.PlayCounts.Where(x => x.MusicId == musicId).Sum(x => x.Count);
+            var user = _context.PlayCounts.Where(x => x.MusicId == musicId && x.UserId == userId).Sum(x => x.Count);
+
+            return Json(new { total, user });
+        }
+
+        [HttpPost]
+        public IActionResult UzatLogPlayed([FromBody] LogPlayedRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    _logger.LogWarning("UzatLogPlayed: Geçersiz istek - null");
+                    return BadRequest(new { success = false, message = "Geçersiz istek" });
+                }
+                if (request.MusicId <= 0)
+                {
+                    _logger.LogWarning($"UzatLogPlayed: Geçersiz MusicId - {request.MusicId}");
+                    return BadRequest(new { success = false, message = "Geçersiz müzik ID" });
+                }
+                _logger.LogInformation($"UzatLogPlayed: MusicId = {request.MusicId}");
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (userId == null)
+                {
+                    _logger.LogWarning("UzatLogPlayed: Oturum bulunamadı");
+                    return Json(new { success = false, message = "Oturum açmanız gerekiyor" });
+                }
+                var music = _context.Musics.FirstOrDefault(m => m.musicid == request.MusicId);
+                if (music == null)
+                {
+                    _logger.LogWarning($"UzatLogPlayed: Müzik bulunamadı - ID: {request.MusicId}");
+                    return Json(new { success = false, message = "Müzik bulunamadı" });
+                }
+                try
+                {
+                    var oneMinuteAgo = DateTime.UtcNow.AddMinutes(-1);
+                    var exists = _context.RecentlyPlayed
+                        .Any(r => r.UserId == userId && r.MusicId == request.MusicId && r.PlayedAt >= oneMinuteAgo);
+                    if (!exists)
+                    {
+                        var recentlyPlayed = new RecentlyPlayed
+                        {
+                            UserId = userId.Value,
+                            MusicId = request.MusicId,
+                            PlayedAt = DateTime.UtcNow
+                        };
+                        _context.RecentlyPlayed.Add(recentlyPlayed);
+                        _context.SaveChanges();
+                        _logger.LogInformation($"UzatLogPlayed: Başarılı - UserId: {userId}, MusicId: {request.MusicId}");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"UzatLogPlayed: Zaten var - UserId: {userId}, MusicId: {request.MusicId}");
+                    }
+                    return Json(new { success = true });
+                }
+                catch (Exception dbEx)
+                {
+                    _logger.LogError(dbEx, $"UzatLogPlayed: DB hatası - UserId: {userId}, MusicId: {request.MusicId}");
+                    return Json(new { success = false, message = "Veritabanı hatası" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UzatLogPlayed: Genel hata");
+                return Json(new { success = false, message = "Sunucu hatası" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMusic(string query, int page = 1, int pageSize = 15)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Json(new { musics = new List<object>(), totalPages = 0, currentPage = 1 });
+
+            var musicsQuery = _context.Musics
+                .Where(m => m.title.ToLower().Contains(query.ToLower()) || m.artist.ToLower().Contains(query.ToLower()));
+
+            int totalCount = await musicsQuery.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var musics = await musicsQuery
+                .OrderBy(m => m.title)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(m => new {
+                    MusicId = m.musicid,
+                    Title = m.title,
+                    Artist = m.artist,
+                    Filename = m.filename,
+                    PlayCount = m.playcount
+                })
+                .ToListAsync();
+
+            return Json(new { musics, totalPages, currentPage = page });
         }
     }
 }

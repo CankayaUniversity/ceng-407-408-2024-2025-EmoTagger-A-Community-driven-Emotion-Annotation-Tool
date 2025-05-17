@@ -1,4 +1,5 @@
-﻿@model EmoTagger.Models.ProfileViewModel
+﻿@using Newtonsoft.Json
+@model EmoTagger.Models.ProfileViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Profilim";
@@ -23,14 +24,22 @@
     </div>
 }
 
+<!-- RefreshScript ekleyelim -->
+@if (TempData["RefreshScript"] != null)
+{
+    <script>
+        @Html.Raw(TempData["RefreshScript"])
+    </script>
+}
+
 <div class="profile-container">
-    <div class="profile-grid">
+    <div class="row">
         <!-- Sol Sütun: Kullanıcı Resmi ve Hızlı Bilgiler -->
-        <div class="left-column">
+        <div class="col-md-4">
             <div class="profile-card">
                 <div class="profile-image-container">
                     <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "/assets/images/default-profile.png" : Model.ProfileImageUrl + "?v=" + cacheBuster)"
-                         alt="Profil Resmi" class="profile-image">
+                         alt="Profil Resmi" class="profile-image" id="profileImagePreview">
                     <h3 class="profile-name">@($"{Model.FirstName} {Model.LastName}")</h3>
                     <p class="profile-email">@Model.Email</p>
 
@@ -45,212 +54,167 @@
             </div>
 
             <!-- Müzik İstatistikleri Kartı -->
-            <div class="profile-card">
+            <div class="profile-card mt-4">
                 <div class="card-header">
                     <h4>Müzik İstatistikleri</h4>
                 </div>
                 <div class="card-body">
-                    <div style="margin-bottom: 15px;">
-                        <h5>En Çok Dinlenen Türler</h5>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                            <span>Pop</span>
-                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
-                                <div style="width: 75%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">En Çok Etiketlenen Tür:</span>
+                        <span class="stat-value">@(string.IsNullOrEmpty(Model.MostTaggedGenre) ? "Yok" : Model.MostTaggedGenre)</span>
                             </div>
-                            <span>75%</span>
+                    <div class="stat-item">
+                        <span class="stat-label">Etiket Sayısı:</span>
+                        <span class="stat-value">@Model.TotalTagCount</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                            <span>Rock</span>
-                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
-                                <div style="width: 60%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
-                            </div>
-                            <span>60%</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                            <span>R&B</span>
-                            <div style="width: 60%; background-color: #f0f0f0; height: 8px; border-radius: 4px; margin-top: 6px;">
-                                <div style="width: 45%; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100%; border-radius: 4px;"></div>
-                            </div>
-                            <span>45%</span>
-                        </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Toplam Çalınan Müzik:</span>
+                        <span class="stat-value">@Model.TotalPlayedMusic</span>
                     </div>
-
-                    <div>
-                        <h5>Aktivite</h5>
-                        <p><strong>Çalınan şarkılar: </strong> 428</p>
-                        <p><strong>Oluşturulan çalma listeleri: </strong> 12</p>
-                        <p><strong>Favoriler: </strong> 86 şarkı</p>
+                    <div class="stat-item">
+                        <span class="stat-label">Favori Sayısı:</span>
+                        <span class="stat-value">@Model.FavoriteCount</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sağ Sütun: Profil, Müzik Geçmişi ve Arkadaşlar için Sekmeler -->
-        <div class="right-column">
+        <!-- Sağ Sütun: Hesap Bilgileri -->
+        <div class="col-md-8">
             <div class="profile-card">
-                <div class="profile-tabs">
-                    <button class="tab-link active" data-tab="profile-info" tabindex="0">Profil Bilgisi</button>
-                    <button class="tab-link" data-tab="music-history" tabindex="0">Müzik Geçmişi</button>
-                    <button class="tab-link" data-tab="friends" tabindex="0">Arkadaşlar</button>
+                <div class="card-header">
+                    <h4>Hesap Bilgileri</h4>
                 </div>
-
                 <div class="card-body">
-                    <!-- Profil Bilgisi Sekmesi -->
-                    <div id="profile-info" class="tab-content active">
-                        <h4>Hesap Bilgileri</h4>
-                        <form method="post" asp-controller="Dashboard" asp-action="UpdateProfile" id="profileForm">
-                            <!-- GİZLİ GÖNDERİLEN ALANLAR -->
+                    <form method="post" action="/Dashboard/UpdateProfile" id="profileForm">
                             <input type="hidden" name="Email" value="@Model.Email" />
                             <input type="hidden" name="ProfileImageUrl" value="@Model.ProfileImageUrl" />
+                        <input type="hidden" name="FriendsPage" value="@Model.FriendsPage" />
+                        <input type="hidden" name="RequestsPage" value="@Model.RequestsPage" />
 
-                            <div class="form-group">
+                        <div class="form-group mb-3">
                                 <label class="form-label">Ad</label>
-                                <input type="text" name="FirstName" class="form-control" value="@Model.FirstName" readonly />
+                            <input type="text" name="FirstName" class="form-control" value="@Model.FirstName" />
                             </div>
-
-                            <div class="form-group">
+                        <div class="form-group mb-3">
                                 <label class="form-label">Soyad</label>
-                                <input type="text" name="LastName" class="form-control" value="@Model.LastName" readonly />
+                            <input type="text" name="LastName" class="form-control" value="@Model.LastName" />
                             </div>
-
-                            <div class="form-group">
+                        <div class="form-group mb-3">
                                 <label class="form-label">Telefon</label>
-                                <input type="text" name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" readonly />
+                            <input type="text" name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" />
                             </div>
-
-                            <div class="form-group">
+                        <div class="form-group mb-3">
                                 <label class="form-label">Ülke</label>
-                                <input type="text" name="Country" class="form-control" value="@Model.Country" readonly />
+                            <input type="text" name="Country" class="form-control" value="@Model.Country" />
                             </div>
-
-                            <div style="text-align: right;">
-                                <button type="button" id="editBtn" class="btn btn-primary">Profili Düzenle</button>
-                                <button type="submit" id="saveBtn" class="btn btn-success" style="display:none;">Değişiklikleri Kaydet</button>
-                                <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">İptal</button>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success">Kaydet</button>
                             </div>
                         </form>
-                    </div>
-
-                    <!-- Müzik Geçmişi Sekmesi -->
-                    <div id="music-history" class="tab-content">
-                        <h4>Son Çalınanlar</h4>
-                        <div class="music-history">
-                            <div class="music-item">
-                                <img src="/assets/images/album-covers/album1.jpg" alt="Albüm kapağı" class="music-artwork">
-                                <div class="music-info">
-                                    <div class="music-title">Blinding Lights</div>
-                                    <div class="music-artist">The Weeknd</div>
-                                </div>
-                                <div class="music-play-count">
-                                    42 çalma
                                 </div>
                             </div>
 
-                            <div class="music-item">
-                                <img src="/assets/images/album-covers/album2.jpg" alt="Albüm kapağı" class="music-artwork">
-                                <div class="music-info">
-                                    <div class="music-title">Dance Monkey</div>
-                                    <div class="music-artist">Tones and I</div>
-                                </div>
-                                <div class="music-play-count">
-                                    38 çalma
-                                </div>
-                            </div>
-
-                            <div class="music-item">
-                                <img src="/assets/images/album-covers/album3.jpg" alt="Albüm kapağı" class="music-artwork">
-                                <div class="music-info">
-                                    <div class="music-title">Watermelon Sugar</div>
-                                    <div class="music-artist">Harry Styles</div>
-                                </div>
-                                <div class="music-play-count">
-                                    29 çalma
-                                </div>
-                            </div>
-
-                            <div class="music-item">
-                                <img src="/assets/images/album-covers/album4.jpg" alt="Albüm kapağı" class="music-artwork">
-                                <div class="music-info">
-                                    <div class="music-title">Levitating</div>
-                                    <div class="music-artist">Dua Lipa ft. DaBaby</div>
-                                </div>
-                                <div class="music-play-count">
-                                    23 çalma
-                                </div>
-                            </div>
-
-                            <div class="music-item">
-                                <img src="/assets/images/album-covers/album5.jpg" alt="Albüm kapağı" class="music-artwork">
-                                <div class="music-info">
-                                    <div class="music-title">Save Your Tears</div>
-                                    <div class="music-artist">The Weeknd</div>
-                                </div>
-                                <div class="music-play-count">
-                                    18 çalma
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Arkadaşlar Sekmesi -->
-                    <div id="friends" class="tab-content">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <!-- Arkadaşlar ve İstekler -->
+            <div class="row mt-4">
+                <!-- Arkadaşlar -->
+                <div class="col-md-6">
+                    <div class="profile-card">
+                        <div class="card-header">
                             <h4>Arkadaşlar</h4>
-                            <button class="btn btn-primary">Arkadaş Ekle</button>
+                                </div>
+                        <div class="card-body">
+                            <div id="friends-list" class="friends-list">
+                                @if (Model.Friends != null && Model.Friends.Any())
+                                {
+                                    @foreach (var friend in Model.Friends)
+                                    {
+                                        <div class="friend-item d-flex align-items-center justify-content-between mb-2">
+                                            <div class="friend-info d-flex align-items-center">
+                                                <span class="friend-name me-2">@friend.Name</span>
+                                                <span class="friend-status @(friend.IsOnline ? "online" : "offline")"></span>
+                                                <span class="status-text ms-1 @(friend.IsOnline ? "online-text" : "offline-text")">@(friend.IsOnline ? "Online" : "Offline")</span>
+                                </div>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    onclick="removeFriendConfirm(@friend.Id, '@friend.Name')">
+                                                Kaldır
+                                            </button>
+                            </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-center">Henüz arkadaşınız yok.</p>
+                                }
+                            </div>
+
+                            @if (Model.FriendsTotalPages > 1)
+                            {
+                                <div id="friends-pagination" class="pagination-controls mt-3">
+                                    <ul class="pagination justify-content-center">
+                                        @for (int i = 1; i <= Math.Max(1, Model.FriendsTotalPages); i++)
+                                        {
+                                            <li class="page-item @(i == Model.FriendsPage ? "active" : "")">
+                                                <a class="page-link" href="@Url.Action("Profile", new { friendsPage = i, requestsPage = Model.RequestsPage })">@i</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="friends-list">
-                            <div class="friend-card">
-                                <img src="/assets/images/users/user1.jpg" alt="Arkadaş" class="friend-image">
-                                <div class="friend-info">
-                                    <div class="friend-name">Emma Thompson</div>
-                                    <div class="friend-status">Çevrimiçi</div>
+                <!-- Gelen İstekler -->
+                <div class="col-md-6">
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h4>Gelen İstekler</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="requests-list" class="requests-list">
+                                @if (Model.IncomingRequests != null && Model.IncomingRequests.Any())
+                                {
+                                    @foreach (var request in Model.IncomingRequests)
+                                    {
+                                        <div class="request-item d-flex align-items-center justify-content-between">
+                                            @if (!string.IsNullOrEmpty(request.ProfileImageUrl))
+                                            {
+                                                <img src="@request.ProfileImageUrl" alt="@request.FromUserName" class="request-avatar me-2" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" />
+                                            }
+                                            <div class="request-info flex-grow-1">
+                                                <span class="request-name">@request.FromUserName</span>
                                 </div>
-                                <div class="friend-actions">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
+                                            <div class="request-actions ms-2">
+                                                <form asp-action="AcceptRequest" asp-route-id="@request.RequestId" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-success btn-sm">Kabul Et</button>
+                                                </form>
+                                                <form asp-action="RejectRequest" asp-route-id="@request.RequestId" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-secondary btn-sm">Reddet</button>
+                                                </form>
                                 </div>
                             </div>
-
-                            <div class="friend-card">
-                                <img src="/assets/images/users/user2.jpg" alt="Arkadaş" class="friend-image">
-                                <div class="friend-info">
-                                    <div class="friend-name">James Wilson</div>
-                                    <div class="friend-status">Çevrimdışı</div>
-                                </div>
-                                <div class="friend-actions">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-center">Bekleyen istek bulunmuyor.</p>
+                                }
                             </div>
 
-                            <div class="friend-card">
-                                <img src="/assets/images/users/user3.jpg" alt="Arkadaş" class="friend-image">
-                                <div class="friend-info">
-                                    <div class="friend-name">Olivia Parker</div>
-                                    <div class="friend-status">Şimdi dinliyor</div>
+                            @if (Model.RequestsTotalPages > 1)
+                            {
+                                <div id="requests-pagination" class="pagination-controls mt-3">
+                                    <ul class="pagination justify-content-center">
+                                        @for (int i = 1; i <= Math.Max(1, Model.RequestsTotalPages); i++)
+                                        {
+                                            <li class="page-item @(i == Model.RequestsPage ? "active" : "")">
+                                                <a class="page-link" href="@Url.Action("Profile", new { friendsPage = Model.FriendsPage, requestsPage = i })">@i</a>
+                                            </li>
+                                        }
+                                    </ul>
                                 </div>
-                                <div class="friend-actions">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="friend-card">
-                                <img src="/assets/images/users/user4.jpg" alt="Arkadaş" class="friend-image">
-                                <div class="friend-info">
-                                    <div class="friend-name">Noah Martinez</div>
-                                    <div class="friend-status">Çevrimiçi</div>
-                                </div>
-                                <div class="friend-actions">
-                                    <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -259,60 +223,13 @@
     </div>
 </div>
 
+@section Scripts {
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Profil düzenleme butonları
-        const editBtn = document.getElementById("editBtn");
-        const saveBtn = document.getElementById("saveBtn");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const inputs = document.querySelectorAll(".form-control");
-        let isFormEdited = false;
-
-        if (editBtn && saveBtn && cancelBtn && inputs.length > 0) {
-            editBtn.addEventListener("click", function () {
-                inputs.forEach(input => input.removeAttribute("readonly"));
-                editBtn.style.display = "none";
-                saveBtn.style.display = "inline-block";
-                cancelBtn.style.display = "inline-block";
-            });
-
-            cancelBtn.addEventListener("click", function() {
-                document.getElementById('profileForm').reset();
-                inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
-                editBtn.style.display = 'inline-block';
-                saveBtn.style.display = 'none';
-                cancelBtn.style.display = 'none';
-                isFormEdited = false;
-            });
-
-            inputs.forEach(input => {
-                input.addEventListener("input", () => {
-                    isFormEdited = true;
-                });
-            });
-        }
-
-        // Sayfadan çıkarken uyar
-        window.addEventListener("beforeunload", function (e) {
-            if (isFormEdited) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-
-        // Form gönderildiğinde
-        document.getElementById('profileForm')?.addEventListener('submit', function() {
-            if (!isFormEdited) {
-                alert('Hiçbir değişiklik yapmadınız.');
-                return false;
-            }
-            return true;
-        });
-
-        // Profil resmi değiştirme işlemi
+            // Profil resmi yükleme işlemi
         const profileImageInput = document.getElementById('profileImage');
         if (profileImageInput) {
-            profileImageInput.addEventListener('change', function() {
+                profileImageInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     // Dosya tipini kontrol et
                     const fileType = this.files[0].type;
@@ -331,7 +248,7 @@
 
                     // Resmi önizleme göster
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                        reader.onload = function (e) {
                         const profileImage = document.querySelector('.profile-image');
                         if (profileImage) {
                             profileImage.src = e.target.result;
@@ -351,51 +268,371 @@
                 }
             });
         }
-
-        // Sekmeler arası geçiş
-        const tabLinks = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-
-                // Aktif sekme sınıfını kaldır
-                tabLinks.forEach(link => link.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-
-                // Tıklanan sekmeyi aktif yap
-                this.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
-            });
         });
 
-        // Layout'daki profil resmini de güncelle (bu fonksiyon _Layout.cshtml'de tanımlanmış olmalı)
-        if (typeof window.updateProfileImageInNavbar === 'function') {
-            // Mevcut profil resmini al
-            const currentProfileImage = document.querySelector('.profile-image')?.src;
-            if (currentProfileImage) {
-                // Navbar'daki profil resmini güncelle
-                window.updateProfileImageInNavbar(currentProfileImage);
-            }
+        // Sayfadan ayrılmadan önce uyarı gösterme
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            let formEdited = false;
+
+            // Değişiklik takibi
+            const inputs = document.querySelectorAll('#profileForm .form-control');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    formEdited = true;
+                });
+            });
+
+            // Sayfadan ayrılmadan önce uyarı
+            window.addEventListener('beforeunload', function(e) {
+                if (formEdited) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                    return 'Değişiklikler kaydedilmedi! Sayfadan ayrılmak istediğinize emin misiniz?';
+                }
+            });
+
+            // Form gönderildiğinde uyarıyı kapat
+            profileForm.addEventListener('submit', function() {
+                formEdited = false;
+            });
         }
-    });
-</script>
-<script>
+
     // URL'den refresh parametresini kontrol et
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('refresh')) {
         // Tüm resim URL'lerini zorla güncelle
         const allImages = document.querySelectorAll('img');
         allImages.forEach(img => {
-            if (img.src && !img.src.includes('?v=')) {
-                img.src = img.src + '?v=' + new Date().getTime();
+                const currentSrc = img.src;
+                if (currentSrc && !currentSrc.includes('?v=')) {
+                    img.src = currentSrc + '?v=' + new Date().getTime();
+                } else if (currentSrc && currentSrc.includes('?v=')) {
+                    // Zaten önbellekten kaçınma parametresi varsa güncelle
+                    const baseUrl = currentSrc.split('?v=')[0];
+                    img.src = baseUrl + '?v=' + new Date().getTime();
             }
         });
-
-        // Ana sayfaya ve diğer kısımlara da bildir
-        if (window.parent && window.parent !== window) {
-            window.parent.location.reload();
         }
+
+        // Arkadaş işlemleri
+        function removeFriendConfirm(friendId, friendName) {
+            if (confirm(friendName + " kişisini arkadaş listenizden silmek istediğinize emin misiniz?")) {
+                fetch('/Dashboard/RemoveFriend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ friendId: friendId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Arkadaş başarıyla silindi.");
+                        location.reload();
+                    } else {
+                        alert("İşlem sırasında bir hata oluştu: " + (data.message || "Bilinmeyen hata"));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("İşlem sırasında bir hata oluştu!");
+                });
+            }
+        }
+
+        function acceptFriend(requestId) {
+            fetch('/Dashboard/AcceptRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: requestId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Arkadaşlık isteği kabul edildi.");
+                    location.reload();
+                } else {
+                    alert("İşlem sırasında bir hata oluştu: " + (data.message || "Bilinmeyen hata"));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("İşlem sırasında bir hata oluştu!");
+            });
+        }
+
+        function rejectFriend(requestId) {
+            fetch('/Dashboard/RejectRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: requestId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Arkadaşlık isteği reddedildi.");
+                    location.reload();
+                } else {
+                    alert("İşlem sırasında bir hata oluştu: " + (data.message || "Bilinmeyen hata"));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("İşlem sırasında bir hata oluştu!");
+            });
+        }
+
+        // Sayfalama işlemleri
+        const FRIENDS_PER_PAGE = 5;
+        const REQUESTS_PER_PAGE = 5;
+        let friendsData = @Html.Raw(JsonConvert.SerializeObject(Model.Friends ?? new List<EmoTagger.Models.FriendViewModel>()));
+        let requestsData = @Html.Raw(JsonConvert.SerializeObject(Model.IncomingRequests ?? new List<EmoTagger.Models.FriendRequestViewModel>()));
+    </script>
+}
+
+<style>
+    /* Temel profil stilleri */
+    .profile-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
     }
-</script>
+
+    .card-header {
+        background-color: #3f51b5;
+        color: white;
+        padding: 15px;
+    }
+
+        .card-header h4 {
+            color: #fff !important;
+            margin: 0;
+        }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .profile-image-container {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        margin-bottom: 15px;
+    }
+
+    .profile-name {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+
+    .profile-email {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .btn-upload {
+        background-color: #3f51b5;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-block;
+        transition: background-color 0.3s;
+    }
+
+        .btn-upload:hover {
+            background-color: #303f9f;
+        }
+
+    .stat-item {
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .stat-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .stat-value {
+        font-weight: 500;
+        color: #3f51b5;
+    }
+
+    .friend-status {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+        .friend-status.online {
+            background-color: #28a745;
+        }
+
+        .friend-status.offline {
+            background-color: #dc3545;
+        }
+
+    .status-text {
+        font-size: 0.95em;
+        font-weight: 500;
+        vertical-align: middle;
+    }
+
+        .status-text.online-text {
+            color: #28a745;
+        }
+
+        .status-text.offline-text {
+            color: #dc3545;
+        }
+
+    .friend-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .friend-name {
+        font-weight: 600;
+    }
+
+    .pagination-controls {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        .pagination-controls button {
+            margin: 0 2px;
+            padding: 2px 8px;
+            border: 1px solid #ccc;
+            background: #f8f8f8;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .pagination-controls button.active,
+            .pagination-controls button:disabled {
+                background: #e0e0e0;
+                color: #888;
+                cursor: default;
+            }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .request-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .request-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .request-info {
+        flex: 1;
+    }
+
+    .request-name {
+        font-weight: 600;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    /* Light mode (varsayılan) */
+    .profile-card, .card, .card-body {
+        background: #fff !important;
+        color: #222 !important;
+    }
+
+    /* Dark mode (örnek: theme-siyah) */
+    [data-theme="theme-siyah"] .profile-card,
+    [data-theme="theme-siyah"] .card,
+    [data-theme="theme-siyah"] .card-body,
+    [data-theme="theme-siyah"] .form-control {
+        background: #232323 !important;
+        color: #e0e0e0 !important;
+    }
+
+    /* KARŞI TEMA STİLLERİ - BURADAN SONRASI KARANLIK MOD İÇİN */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-card,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-image-container,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .card-body {
+        background-color: #222 !important;
+        color: #e0e0e0 !important;
+        }
+
+    /* Metin renkleri */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-item,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-label,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-name,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-email,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .friend-name,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .request-name {
+        color: #e0e0e0 !important;
+    }
+
+    /* Form alanları */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .form-control {
+        background-color: #333 !important;
+        color: #e0e0e0 !important;
+        border-color: #444 !important;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .form-label {
+        color: #e0e0e0 !important;
+    }
+
+    /* İstatistik değerleri */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-value {
+        color: #6e8aff !important;
+    }
+
+    /* Sayfalama kontrolleri */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .page-link {
+        background-color: #333 !important;
+        color: #e0e0e0 !important;
+        border-color: #444 !important;
+    }
+
+    /* Bu çözüm görüntüde gösterilen beyaz bölgeyi zorla düzeltir */
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-item,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .card-body,
+    [data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-card {
+        background-color: #222 !important;
+    }
+
+</style>
+    

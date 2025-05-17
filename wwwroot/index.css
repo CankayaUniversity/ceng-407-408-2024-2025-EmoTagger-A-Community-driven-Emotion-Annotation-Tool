@@ -1,22 +1,109 @@
-﻿<style >
-/* General Styles */
+﻿/* Ana Renkler ve Değişkenler */
+:root {
+    --primary-color: #6a5acd; /* Soft Slate Blue */
+    --primary-light: #9e91e8; /* Light Slate Blue */
+    --secondary-color: #ff7e5f; /* Soft Coral */
+    --secondary-light: #ffbe9b; /* Light Peach */
+    --accent-color: #5bccf6; /* Soft Sky Blue */
+    --success-color: #5fd39e; /* Soft Mint */
+    --info-color: #87ceeb; /* Sky Blue */
+    --warning-color: #ffce6a; /* Soft Amber */
+    --danger-color: #ff7675; /* Soft Coral Red */
+    --dark-color: #2d3748; /* Dark Slate */
+    --light-color: #f8f9fa; /* Off White */
+    --body-bg: #f5f7fa; /* Light Background */
+    --card-bg: #ffffff; /* Card Background */
+    --gradient-start: #6a5acd; /* Gradient Start */
+    --gradient-end: #ff7e5f; /* Gradient End */
+    --text-primary: #2d3748; /* Primary Text Color */
+    --text-secondary: #718096; /* Secondary Text Color */
+    --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease-in-out;
+}
+
+/* Genel Stiller */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
-.section-header {
-    margin-bottom: 50px;
+.container-fluid {
+    overflow-x: hidden;
 }
 
-.divider {
-    height: 3px;
-    width: 70px;
-    background: linear-gradient(to right, #7016d0, #ff69b4);
-    margin: 15px auto 25px;
-    border-radius: 50px;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--dark-color);
 }
 
-/* Animations */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+    a:hover {
+        color: var(--primary-light);
+    }
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    padding: 120px 0;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,64L48,80C96,96,192,128,288,122.7C384,117,480,75,576,64C672,53,768,75,864,101.3C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        background-size: cover;
+        background-position: center bottom;
+        opacity: 0.6;
+        z-index: 0;
+    }
+
+    .hero-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-section h1 {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+.neon-text {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3), 0 0 15px rgba(106, 90, 205, 0.3), 0 0 20px rgba(106, 90, 205, 0.2);
+    animation: neon-pulse 2s infinite alternate;
+}
+
+@keyframes neon-pulse {
+    from {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3), 0 0 15px rgba(106, 90, 205, 0.3), 0 0 20px rgba(106, 90, 205, 0.2);
+    }
+
+    to {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px rgba(106, 90, 205, 0.4), 0 0 40px rgba(106, 90, 205, 0.3);
+    }
+}
+
+/* Animasyonlar */
 .animated {
     animation-duration: 1s;
     animation-fill-mode: both;
@@ -27,26 +114,216 @@ body {
 }
 
 .delay-1 {
-    animation-delay: 0.3s;
+    animation-delay: 0.2s;
 }
 
 .delay-2 {
-    animation-delay: 0.6s;
-}
-
-.pulse {
-    animation: pulse 2s infinite;
+    animation-delay: 0.4s;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(20px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
+
+.pulse-btn {
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 0 rgba(106, 90, 205, 0.7);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(106, 90, 205, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(106, 90, 205, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(106, 90, 205, 0);
+    }
+}
+
+/* Buttonlar */
+.btn {
+    border-radius: 30px;
+    padding: 10px 25px;
+    transition: var(--transition);
+    font-weight: 500;
+    box-shadow: var(--box-shadow);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border: none;
+}
+
+    .btn-primary:hover, .btn-primary:focus {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+        box-shadow: var(--hover-shadow);
+        transform: translateY(-2px);
+    }
+
+.btn-lg {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+}
+
+/* Bölüm Başlıkları */
+.section-header {
+    margin-bottom: 3rem;
+}
+
+    .section-header h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+.divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    margin: 1.2rem auto;
+    border-radius: 2px;
+}
+
+/* Kart Stilleri */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--box-shadow);
+    background-color: var(--card-bg);
+}
+
+.hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--hover-shadow);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%) !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, #8ed8b4 100%) !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, var(--info-color) 0%, #a1e1ff 100%) !important;
+}
+
+/* Nasıl Çalışır Bölümü */
+.bg-light {
+    background-color: #f0f4f9 !important;
+}
+
+.process-card {
+    padding: 20px;
+    transition: var(--transition);
+}
+
+    .process-card:hover {
+        transform: translateY(-5px);
+    }
+
+.step-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
+    transition: var(--transition);
+}
+
+.process-card:hover .step-circle {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(106, 90, 205, 0.3);
+}
+
+/* Testimonials */
+.testimonial-card {
+    border-radius: 15px;
+    transition: var(--transition);
+}
+
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--hover-shadow);
+    }
+
+.testimonial-avatar img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 3px solid var(--primary-light);
+    padding: 3px;
+    box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+/* Call to Action */
+.cta-section {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    box-shadow: var(--box-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,154.7C384,128,480,96,576,117.3C672,139,768,213,864,218.7C960,224,1056,160,1152,144C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        background-size: cover;
+        background-position: center bottom;
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+    .cta-section h2 {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: white;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section p {
+        position: relative;
+        z-index: 1;
+    }
 
 @keyframes pulse {
     0% {
@@ -62,213 +339,40 @@ body {
     }
 }
 
-/* Hero Section */
-.hero-section {
-    padding: 100px 0;
-    background: linear-gradient(135deg, rgba(112, 22, 208, 0.15) 0%, rgba(255, 105, 180, 0.15) 100%);
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
+.animated.pulse {
+    animation: pulse 2s infinite;
 }
 
-    .hero-section:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%237016d0" fill-opacity="0.05" d="M0,192L48,208C96,224,192,256,288,261.3C384,267,480,245,576,234.7C672,224,768,224,864,213.3C960,203,1056,181,1152,186.7C1248,192,1344,224,1392,240L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-        background-repeat: no-repeat;
-        background-position: bottom;
-        z-index: 0;
+/* Responsive Ayarlamalar */
+@media (max-width: 767.98px) {
+    .hero-section {
+        padding: 80px 0;
     }
 
-.pulse-btn {
-    box-shadow: 0 0 0 0 rgba(112, 22, 208, 0.5);
-    animation: pulse-btn 2s infinite;
-    transition: all 0.3s ease;
-}
-
-@keyframes pulse-btn {
-    0% {
-        box-shadow: 0 0 0 0 rgba(112, 22, 208, 0.7);
-    }
-
-    70% {
-        box-shadow: 0 0 0 15px rgba(112, 22, 208, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(112, 22, 208, 0);
-    }
-}
-
-/* Feature Icons */
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    margin: 0 auto;
-    transition: all 0.3s ease;
-}
-
-.hover-card {
-    transition: all 0.3s ease;
-    transform: translateY(0);
-}
-
-    .hover-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-    }
-
-        .hover-card:hover .feature-icon {
-            transform: scale(1.1);
+        .hero-section h1 {
+            font-size: 2.2rem;
         }
 
-/* Process Cards */
-.process-card {
-    padding: 25px;
-    transition: all 0.3s ease;
-    border-radius: 10px;
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+
+    .step-circle {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .cta-section {
+        padding: 40px 20px !important;
+    }
 }
 
-    .process-card:hover {
-        background-color: white;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        transform: translateY(-5px);
+/* Medya sorguları */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
     }
-
-/* Step Circles */
-.step-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    font-weight: bold;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
 }
-
-    .step-circle:after {
-        content: '';
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: rgba(112, 22, 208, 0.1);
-        z-index: -1;
-    }
-
-.process-card:hover .step-circle {
-    transform: scale(1.1);
-}
-
-/* Testimonial Cards */
-.testimonial-card {
-    transition: all 0.3s ease;
-    border-radius: 15px;
-}
-
-    .testimonial-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
-    }
-
-.testimonial-avatar {
-    position: relative;
-}
-
-    .testimonial-avatar img {
-        border: 5px solid rgba(112, 22, 208, 0.1);
-        padding: 3px;
-    }
-
-/* CTA Section */
-.cta-section {
-    background: linear-gradient(135deg, #7016d0 0%, #ff69b4 100%);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-    .cta-section:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-        transform: translate(150px, -150px);
-    }
-
-    .cta-section:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-        transform: translate(-100px, 100px);
-    }
-
-.glow-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    z-index: 1;
-}
-
-    .glow-btn:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: all 0.6s ease;
-        z-index: -1;
-    }
-
-    .glow-btn:hover:after {
-        left: 100%;
-    }
-
-.glow-outline-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    z-index: 1;
-}
-
-    .glow-outline-btn:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: all 0.6s ease;
-        z-index: -1;
-    }
-
-    .glow-outline-btn:hover:after {
-        left: 100%;
-    }
-
-</style >

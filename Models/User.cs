@@ -37,6 +37,9 @@ namespace EmoTagger.Models
         public string Country { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Column("updated_at")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
 
         [NotMapped]
         [Required(ErrorMessage = "Şifre tekrarı zorunludur.")]
@@ -53,6 +56,13 @@ namespace EmoTagger.Models
         [Column("profile_image_url")]
         [StringLength(255)]
         public string? ProfileImageUrl { get; set; }
+
+        [Column("is_online")]
+        public bool IsOnline { get; set; } = false;
+
+        [Column("last_seen")]
+        public DateTime? LastSeen { get; set; }
+
         // Yeni eklenen ilişkisel özellikler
         public virtual ICollection<Music> Musics { get; set; }
         public bool IsAdmin { get; set; } = false;

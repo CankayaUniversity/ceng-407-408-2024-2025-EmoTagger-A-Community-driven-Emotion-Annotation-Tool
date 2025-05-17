@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - EmoTagger Admin</title>
+  
+ 
+    <style>
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <h3 class="mb-4">Admin Panel</h3>
+
+        <!-- İstatistik Kartları - İlk Satır -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-primary text-white mx-auto">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Total Users</h5>
+                        <h2 class="mb-0">@ViewBag.UserCount</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <div class="stat-icon bg-success text-white mx-auto">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h5 class="card-title">Total Music</h5>
+                        <h2 class="mb-0">@ViewBag.MusicCount</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İstatistik Kartları - İkinci Satır (3 Kart Yan Yana) -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">Most Played Music(s)</h5>
+                        @{
+                            var mostList = ViewBag.MostPlayedList as IEnumerable<dynamic>;
+                        }
+                        @if (mostList != null && mostList.Any())
+                        {
+                            foreach (var music in mostList)
+                            {
+                                <div>
+                                    <b>@music.title</b> - @music.artist
+                                    <span class="badge bg-primary">@music.Count play</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">No data</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">Least Played Music(s)</h5>
+                        @{
+                            int maxShow = 10;
+                            var leastList = ViewBag.LeastPlayedList as IEnumerable<dynamic>;
+                            int totalLeast = leastList != null ? leastList.Count() : 0;
+                            var leastArray = leastList?.ToList() ?? new List<dynamic>();
+                        }
+                        <div id="leastPlayedList">
+                            @for (int i = 0; i < leastArray.Count; i++)
+                            {
+                                <div class="least-item" data-index="@i" style="display:@(i < maxShow ? "block" : "none")">
+                                    <b>@leastArray[i].title</b> - @leastArray[i].artist
+                                    <span class="badge bg-secondary">@leastArray[i].Count play</span>
+                                </div>
+                            }
+                        </div>
+                        @if (totalLeast > maxShow)
+                        {
+                            <div class="mt-2">
+                                <button id="prevLeastBtn" class="btn btn-sm btn-outline-secondary me-2" disabled>Prev</button>
+                                <span id="leastPageInfo">1 / @((int)Math.Ceiling((double)totalLeast / maxShow))</span>
+                                <button id="nextLeastBtn" class="btn btn-sm btn-outline-secondary ms-2">Next</button>
+                            </div>
+                        }
+                        else if (totalLeast == 0)
+                        {
+                            <span class="text-muted">No data</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">Total Tag Count</h5>
+                        <h2 class="mb-0">@ViewBag.TotalTagCount</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Butonlar -->
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <a href="@Url.Action("Users", "Admin")" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-users me-2"></i> Kullanıcı Yönetimi
+                </a>
+                <a href="@Url.Action("Musics", "Admin")" class="btn btn-success btn-lg">
+                    <i class="fas fa-music me-2"></i> Müzik Yönetimi
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script>
+        // Least Played Music(s) Pagination
+        $(function () {
+            var maxShow = 10;
+            var total = $("#leastPlayedList .least-item").length;
+            var page = 1;
+            var totalPages = Math.ceil(total / maxShow);
+
+            function showPage(p) {
+                $("#leastPlayedList .least-item").hide();
+                var start = (p - 1) * maxShow;
+                var end = start + maxShow;
+                $("#leastPlayedList .least-item").slice(start, end).show();
+                $("#leastPageInfo").text(p + " / " + totalPages);
+                $("#prevLeastBtn").prop("disabled", p === 1);
+                $("#nextLeastBtn").prop("disabled", p === totalPages);
+            }
+            showPage(page);
+            $("#prevLeastBtn").click(function () {
+                if (page > 1) { page--; showPage(page); }
+            });
+            $("#nextLeastBtn").click(function () {
+                if (page < totalPages) { page++; showPage(page); }
+            });
+        });
+    </script>
+</body>
+</html>

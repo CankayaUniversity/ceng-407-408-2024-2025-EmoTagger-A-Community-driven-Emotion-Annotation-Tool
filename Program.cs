@@ -35,7 +35,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Logging.AddConsole(); // Konsol loglamayý ekle
 builder.Logging.AddDebug();   // Debug loglamayý ekle
-
+// HttpContextAccessor servisini ekleyelim
+builder.Services.AddHttpContextAccessor();
 // **Servisleri ekleyelim**
 builder.Services.AddControllersWithViews();
 

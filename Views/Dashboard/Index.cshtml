@@ -10,12 +10,12 @@
 <!-- Öne Çıkan Bölüm -->
 <div class="highlighted-section">
     <div class="content">
-        <h2>Müziğin Duygularını Keşfet</h2>
-        <p>Müzik ruh haline göre etiketlenmiş binlerce şarkı arasından seçim yap.</p>
-        <a asp-controller="Dashboard" asp-action="ListenTag" class="btn btn-discover">Keşfet <i class="fas fa-arrow-right ms-2"></i></a>
+        <h2>Discover the Emotions of Music</h2>
+        <p>Choose from thousands of songs tagged by musical mood.</p>
+        <a asp-controller="Dashboard" asp-action="ListenTag" class="btn btn-discover">Discover <i class="fas fa-arrow-right ms-2"></i></a>
     </div>
     <div class="image">
-        <img src="~/assets/images/music-discovery.jpg" alt="Müzik Deneyimi">
+       
     </div>
 </div>
 
@@ -23,7 +23,7 @@
 <div class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="section-title">Duygu Koleksiyonları</h3>
-        <a asp-controller="Categories" asp-action="Index" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
+       
     </div>
 
     <div class="row">
@@ -57,103 +57,7 @@
 </div>
 
 
-<div class="row">
-    <!-- Sol Sütun - En Çok Dinlenenler -->
-    <div class="col-lg-8">
-        <!-- En Çok Dinlenen Şarkılar -->
-        <div class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="section-title">Trend Şarkılar</h3>
-                <a asp-controller="Dashboard" asp-action="Trending" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
-            </div>
 
-            <div class="trending-track-list">
-                @foreach (var song in Model.TrendingSongs)
-                {
-                    <div class="trending-track" data-music-id="@song.MusicId">
-                        <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
-                        <div class="track-info">
-                            <div class="track-title">@song.Title</div>
-                            <div class="track-artist">@song.Artist</div>
-                        </div>
-                        <span class="tag-badge @song.MostCommonTag.ToLower()">@song.MostCommonTag</span>
-                        <div class="play-count">
-                            <i class="fas fa-headphones"></i>
-                            <span>@FormatNumber(song.PlayCount)</span>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- En Çok Etiketlenen Şarkılar -->
-        <div class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="section-title">En Çok Etiketlenen Şarkılar</h3>
-                <a asp-controller="Dashboard" asp-action="MostTagged" class="view-all">Tümünü Gör <i class="fas fa-arrow-right ms-1"></i></a>
-            </div>
-
-            <div class="row">
-                @foreach (var song in Model.MostTaggedSongs)
-                {
-                    <div class="col-lg-4 col-md-6">
-                        <div class="track-card" data-music-id="@song.MusicId" onclick="playMusic('@song.Filename', '@song.Title - @song.Artist', this)">
-                            <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
-                            <div class="track-info">
-                                <div class="track-title">@song.Title</div>
-                                <div class="track-artist">@song.Artist</div>
-                                <div class="track-tags">
-                                    @foreach (var tag in song.Tags)
-                                    {
-                                        <span class="tag-badge @tag.ToLower()">@tag</span>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Sağ Sütun - İstatistikler ve Öneriler -->
-    <div class="col-lg-4">
-        <!-- Etiket Dağılımı -->
-        <div class="tag-distribution">
-            <h4 class="mb-4">Etiket Dağılımı</h4>
-
-            @foreach (var tagStat in Model.TagDistribution)
-            {
-                <div class="tag-progress">
-                    <div class="tag-name">
-                        <span>@GetEmoji(tagStat.Tag) @tagStat.Tag</span>
-                        <span class="tag-percent">@tagStat.Percentage%</span>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar @tagStat.Tag.ToLower()" role="progressbar" style="width: @tagStat.Percentage%" aria-valuenow="@tagStat.Percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Senin İçin Önerilen -->
-        <div class="mb-4 mt-4">
-            <h4 class="mb-3">Senin İçin Önerilen</h4>
-
-            @foreach (var song in Model.RecommendedSongs)
-            {
-                <div class="trending-track" data-music-id="@song.MusicId" onclick="playMusic('@song.Filename', '@song.Title - @song.Artist', this)">
-                    <img src="~/assets/images/covers/@song.Filename.Replace(".mp3", ".jpg")" onerror="this.src='/assets/images/default-cover.jpg'" alt="@song.Title">
-                    <div class="track-info">
-                        <div class="track-title">@song.Title</div>
-                        <div class="track-artist">@song.Artist</div>
-                    </div>
-                    <span class="tag-badge @song.Tag.ToLower()">@song.Tag</span>
-                </div>
-            }
-        </div>
-    </div>
-</div>
 
 @functions {
     public string GetEmoji(string tag)
@@ -180,7 +84,7 @@
 
 @section Scripts {
     <script>
-       
+
              // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             // Otomatik sayfa yenileme varsa durdur
@@ -481,6 +385,14 @@
             // Kategori rengini belirle
             const categoryColor = getCategoryColor(categoryName);
 
+            // --- Şarkı listesini global değişkene ata ---
+            window.currentCategorySongs = songs.map(song => ({
+                id: song.musicId,
+                title: song.title,
+                artist: song.artist,
+                filename: song.filename
+            }));
+
             // İçeriği hazırla - Yatay kaydırmalı yapı
             let html = `
                 <div class="w-100 mb-4">
@@ -609,15 +521,14 @@
 
         // Karışık şarkı çalma fonksiyonu
         function playRandomSong() {
-            const trackCards = document.querySelectorAll('.track-card');
-            if (trackCards.length === 0) return;
+            const songs = window.currentCategorySongs;
+            if (!songs || songs.length === 0) return;
 
-            // Rastgele bir şarkı kartı seç
-            const randomIndex = Math.floor(Math.random() * trackCards.length);
-            const randomCard = trackCards[randomIndex];
-
-            // Seçili karta tıklama olayını tetikle
-            randomCard.click();
+            // Karışık sıraya sok
+            const shuffled = songs.slice().sort(() => Math.random() - 0.5);
+            if (typeof window.setFooterPlaylist === 'function') {
+                window.setFooterPlaylist(shuffled, 0); // 0. şarkıdan başla
+            }
         }
 
         // Seçilen kategoriyi vurgula
@@ -652,7 +563,11 @@
         }
                 document.addEventListener('click', function(e) {
             const link = e.target.closest('a');
-            if (link && link.getAttribute('href') === '/' || link.getAttribute('asp-controller') === 'Home') {
+            if (link && (link.getAttribute('href') === '/' || link.getAttribute('asp-controller') === 'Home')) {
+                // Home'a tıklanınca anında loading göster
+                document.querySelectorAll('.category-card .category-count').forEach(el => {
+                    el.textContent = 'Yükleniyor...';
+                });
                 setTimeout(() => {
                     loadCategoriesForHomepage(); // Home'a bastıktan sonra sayıları tekrar getir
                 }, 100); // çok küçük delay, sayfa yüklemesini bekliyoruz

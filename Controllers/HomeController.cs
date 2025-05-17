@@ -16,9 +16,18 @@ namespace EmoTagger.Controllers
 
         public IActionResult Index()
         {
+            // Kategoriler
+            var emotionTags = new[] { "Sad", "Happy", "Nostalgic", "Energetic", "Relaxing", "Romantic" };
+            var categories = emotionTags.Select(tag => new EmoTagger.ViewModels.EmotionCategoryViewModel
+            {
+                Tag = tag,
+                SongCount = _context.MusicTags.Where(mt => mt.Tag == tag).Select(mt => mt.MusicId).Distinct().Count(),
+                PopularityScore = 0 // Gerekirse doldur
+            }).ToList();
+
             var viewModel = new HomeViewModel
             {
-                // Trend þarkýlar (en çok dinlenen)
+                // Trend ï¿½arkï¿½lar (en ï¿½ok dinlenen)
                 TrendingSongs = _context.Musics
                     .OrderByDescending(m => m.playcount)
                     .Take(6)
@@ -28,11 +37,11 @@ namespace EmoTagger.Controllers
                         Title = m.title,
                         Artist = m.artist,
                         Filename = m.filename,
-                        MostCommonTag = "-", // Tag özelliði modelde yoksa "-" koy
+                        MostCommonTag = "-", // Tag ï¿½zelliï¿½i modelde yoksa "-" koy
                         PlayCount = m.playcount
                     }).ToList(),
 
-                // Önerilenler (en yeni eklenen)
+                // ï¿½nerilenler (en yeni eklenen)
                 RecommendedSongs = _context.Musics
                     .OrderByDescending(m => m.createdat)
                     .Take(4)
@@ -42,17 +51,17 @@ namespace EmoTagger.Controllers
                         Title = m.title,
                         Artist = m.artist,
                         Filename = m.filename,
-                        Tag = "-" // Henüz MostCommonTag gibi bir alan yoksa
+                        Tag = "-" // Henï¿½z MostCommonTag gibi bir alan yoksa
                     }).ToList(),
 
-                // Etiketli þarkýlar yoksa boþ liste dön
+                // Etiketli ï¿½arkï¿½lar yoksa boï¿½ liste dï¿½n
                 MostTaggedSongs = new List<MostTaggedSongViewModel>(),
 
-                // Etiket daðýlýmý boþ (JS ile güncelleniyor)
+                // Etiket daï¿½ï¿½lï¿½mï¿½ boï¿½ (JS ile gï¿½ncelleniyor)
                 TagDistribution = new List<TagDistributionViewModel>(),
 
-                // Kategoriler boþ (JS ile güncelleniyor)
-                EmotionCategories = new List<EmotionCategoryViewModel>()
+                // Kategoriler
+                EmotionCategories = categories
             };
 
             return View(viewModel);

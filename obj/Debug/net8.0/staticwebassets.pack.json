@@ -1777,6 +1777,14 @@
       "PackagePath": "staticwebassets\\assets\\vendor\\uppy\\uppy.min.js"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\adminindex.css",
+      "PackagePath": "staticwebassets\\css\\adminindex.css"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\ai.css",
+      "PackagePath": "staticwebassets\\css\\ai.css"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\core\\libs.min.css",
       "PackagePath": "staticwebassets\\css\\core\\libs.min.css"
     },
@@ -1813,8 +1821,20 @@
       "PackagePath": "staticwebassets\\css\\favorites.css"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\friend-search.css",
+      "PackagePath": "staticwebassets\\css\\friend-search.css"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\history.css",
+      "PackagePath": "staticwebassets\\css\\history.css"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\home.css",
       "PackagePath": "staticwebassets\\css\\home.css"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\indexx.css",
+      "PackagePath": "staticwebassets\\css\\indexx.css"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\layout.css",
@@ -1873,8 +1893,16 @@
       "PackagePath": "staticwebassets\\css\\myfavorites.cs"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\online-status.css",
+      "PackagePath": "staticwebassets\\css\\online-status.css"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\playlist.css",
       "PackagePath": "staticwebassets\\css\\playlist.css"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\profile-dark.css",
+      "PackagePath": "staticwebassets\\css\\profile-dark.css"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\profile.css",
@@ -2641,6 +2669,10 @@
       "PackagePath": "staticwebassets\\images\\vectormap\\weather.png"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\index.css",
+      "PackagePath": "staticwebassets\\index.css"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\charts\\dashboard.js",
       "PackagePath": "staticwebassets\\js\\charts\\dashboard.js"
     },
@@ -2665,6 +2697,14 @@
       "PackagePath": "staticwebassets\\js\\dual-tone-icon-search-filter.js"
     },
     {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\friend-profile.js",
+      "PackagePath": "staticwebassets\\js\\friend-profile.js"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\friend-search.js",
+      "PackagePath": "staticwebassets\\js\\friend-search.js"
+    },
+    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\iqonic-script\\setting.js",
       "PackagePath": "staticwebassets\\js\\iqonic-script\\setting.js"
     },
@@ -2685,20 +2725,12 @@
       "PackagePath": "staticwebassets\\js\\listentag.js"
     },
     {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\music-player.js",
-      "PackagePath": "staticwebassets\\js\\music-player.js"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\muzik.js",
-      "PackagePath": "staticwebassets\\js\\muzik.js"
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\online-status.js",
+      "PackagePath": "staticwebassets\\js\\online-status.js"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\outline-icon-search-filter.js",
       "PackagePath": "staticwebassets\\js\\outline-icon-search-filter.js"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\player-integration.js",
-      "PackagePath": "staticwebassets\\js\\player-integration.js"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\plugins\\apexcharts.js",
@@ -2775,6 +2807,10 @@
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\plugins\\uppy.js",
       "PackagePath": "staticwebassets\\js\\plugins\\uppy.js"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\profile-init.js",
+      "PackagePath": "staticwebassets\\js\\profile-init.js"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\js\\setting-init.js",
@@ -3017,206 +3053,6 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\01.mp3",
-      "PackagePath": "staticwebassets\\music\\01.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\02.m4a",
-      "PackagePath": "staticwebassets\\music\\02.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\03.m4a",
-      "PackagePath": "staticwebassets\\music\\03.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\04.m4a",
-      "PackagePath": "staticwebassets\\music\\04.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\05.m4a",
-      "PackagePath": "staticwebassets\\music\\05.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\06.m4a",
-      "PackagePath": "staticwebassets\\music\\06.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\07.m4a",
-      "PackagePath": "staticwebassets\\music\\07.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\08.m4a",
-      "PackagePath": "staticwebassets\\music\\08.m4a"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\09.mp3",
-      "PackagePath": "staticwebassets\\music\\09.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\10.mp3",
-      "PackagePath": "staticwebassets\\music\\10.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\11.mp3",
-      "PackagePath": "staticwebassets\\music\\11.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\12.mp3",
-      "PackagePath": "staticwebassets\\music\\12.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\13.mp3",
-      "PackagePath": "staticwebassets\\music\\13.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\14.mp3",
-      "PackagePath": "staticwebassets\\music\\14.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\15.mp3",
-      "PackagePath": "staticwebassets\\music\\15.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\16.mp3",
-      "PackagePath": "staticwebassets\\music\\16.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\17.mp3",
-      "PackagePath": "staticwebassets\\music\\17.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\18.mp3",
-      "PackagePath": "staticwebassets\\music\\18.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\19.mp3",
-      "PackagePath": "staticwebassets\\music\\19.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\20.mp3",
-      "PackagePath": "staticwebassets\\music\\20.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\21.mp3",
-      "PackagePath": "staticwebassets\\music\\21.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\22.mp3",
-      "PackagePath": "staticwebassets\\music\\22.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\23.mp3",
-      "PackagePath": "staticwebassets\\music\\23.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\24.mp3",
-      "PackagePath": "staticwebassets\\music\\24.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\25.mp3",
-      "PackagePath": "staticwebassets\\music\\25.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\26.mp3",
-      "PackagePath": "staticwebassets\\music\\26.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\27.mp3",
-      "PackagePath": "staticwebassets\\music\\27.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\28.mp3",
-      "PackagePath": "staticwebassets\\music\\28.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\29.mp3",
-      "PackagePath": "staticwebassets\\music\\29.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\30.mp3",
-      "PackagePath": "staticwebassets\\music\\30.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\31.mp3",
-      "PackagePath": "staticwebassets\\music\\31.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\32.mp3",
-      "PackagePath": "staticwebassets\\music\\32.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\33.mp3",
-      "PackagePath": "staticwebassets\\music\\33.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\34.mp3",
-      "PackagePath": "staticwebassets\\music\\34.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\35.mp3",
-      "PackagePath": "staticwebassets\\music\\35.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\36.mp3",
-      "PackagePath": "staticwebassets\\music\\36.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\37.mp3",
-      "PackagePath": "staticwebassets\\music\\37.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\38.mp3",
-      "PackagePath": "staticwebassets\\music\\38.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\39.mp3",
-      "PackagePath": "staticwebassets\\music\\39.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\40.mp3",
-      "PackagePath": "staticwebassets\\music\\40.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\41.mp3",
-      "PackagePath": "staticwebassets\\music\\41.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\42.mp3",
-      "PackagePath": "staticwebassets\\music\\42.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\43.mp3",
-      "PackagePath": "staticwebassets\\music\\43.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\44.mp3",
-      "PackagePath": "staticwebassets\\music\\44.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\45.mp3",
-      "PackagePath": "staticwebassets\\music\\45.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\46.mp3",
-      "PackagePath": "staticwebassets\\music\\46.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\47.mp3",
-      "PackagePath": "staticwebassets\\music\\47.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\48.mp3",
-      "PackagePath": "staticwebassets\\music\\48.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\49.mp3",
-      "PackagePath": "staticwebassets\\music\\49.mp3"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\music\\50.mp3",
-      "PackagePath": "staticwebassets\\music\\50.mp3"
-    },
-    {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\035a800b-2a70-4fe1-9f79-d94be7ce0015.jpg",
       "PackagePath": "staticwebassets\\uploads\\profiles\\035a800b-2a70-4fe1-9f79-d94be7ce0015.jpg"
     },
@@ -3265,8 +3101,8 @@
       "PackagePath": "staticwebassets\\uploads\\profiles\\57a9ea2b-02d6-47c3-950b-a8d0056b6b45.jpeg"
     },
     {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\5cecdc7e-d573-4c54-b199-279c19f5cc8f_20250502000713.png",
-      "PackagePath": "staticwebassets\\uploads\\profiles\\5cecdc7e-d573-4c54-b199-279c19f5cc8f_20250502000713.png"
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\8d6e8b11-6245-4698-9112-d09649364eab_20250505232632.png",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\8d6e8b11-6245-4698-9112-d09649364eab_20250505232632.png"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\a96874d5-e4dc-4911-a4ad-236e5bf8527d.jpeg",
@@ -3299,6 +3135,18 @@
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\e989ef19-b9fa-4eb0-a36d-5c8f06cf1513.jpg",
       "PackagePath": "staticwebassets\\uploads\\profiles\\e989ef19-b9fa-4eb0-a36d-5c8f06cf1513.jpg"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\user_15_638829489767261623.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\user_15_638829489767261623.jpg"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\user_5_638829483546311447.png",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\user_5_638829483546311447.png"
+    },
+    {
+      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\uploads\\profiles\\user_7_638827661460275658.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\user_7_638827661460275658.jpg"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\vendor\\apexcharts\\dist\\apexchart.min.js",
@@ -9791,10 +9639,6 @@
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\vue\\src\\components\\menu-styles\\HorizontalNavbar.vue",
       "PackagePath": "staticwebassets\\vue\\src\\components\\menu-styles\\HorizontalNavbar.vue"
-    },
-    {
-      "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\vue\\src\\components\\partials\\FooterComponent.vue",
-      "PackagePath": "staticwebassets\\vue\\src\\components\\partials\\FooterComponent.vue"
     },
     {
       "Id": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\vue\\src\\components\\partials\\HeaderComponent.vue",

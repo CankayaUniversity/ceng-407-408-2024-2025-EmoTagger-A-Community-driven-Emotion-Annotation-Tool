@@ -1,8 +1,11 @@
-﻿@{
-    
+﻿@using EmoTagger.Data
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+
     var profileImage = Context.Session.GetString("UserProfileImage") ?? "/assets/images/default-profile.png";
 }
-
+<link rel="stylesheet" href="~/css/friend-search.css">
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
@@ -57,13 +60,94 @@
 </head>
 <body class="  ">
     <style>
-        .iq-float-menu {
-            position: fixed;
-            bottom: auto !important; /* Alt pozisyonlama kaldırıldı */
-            top: 85% !important; /* Sayfa yüksekliğinin %70'ine konumlandırma */
-            right: 5px!important;
-            z-index: 999;
+        .sidebar {
+            max-height: calc(100vh - 80px); /* footer yüksekliği kadar azalt */
+            overflow-y: auto; /* taşarsa scroll çıksın */
         }
+
+
+        .navbar-nav {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+            display: block;
+            width: 100%;
+        }
+
+        .admin-menu-header {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff4757;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+            .admin-menu-header span {
+                display: block;
+                position: relative;
+            }
+
+                .admin-menu-header span:after {
+                    content: '';
+                    display: block;
+                    width: 30px;
+                    height: 2px;
+                    background: linear-gradient(to right, #ff4757, #ff6b81);
+                    margin-top: 5px;
+                }
+
+        /* Navbar düzeltmeleri */
+        .navbar-nav li.nav-item {
+            margin-bottom: 8px;
+        }
+
+        .navbar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-nav .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .navbar-nav .nav-link .item-name {
+                margin-left: 10px;
+            }
+    </style>
+    <style>
+        .iq-float-menu {
+            position: fixed !important;
+            bottom: auto !important;
+            top: 85% !important;
+            right: 5px !important;
+            z-index: 9999 !important; /* Daha yüksek z-index değeri */
+        }
+        /* Checkbox'ı tamamen gizle */
+        .iq-float-menu-open {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            margin: -1px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+            pointer-events: none !important;
+        }
+
 
         /* Alternatif olarak sabit bir piksel değeri de kullanabilirsiniz */
         /* top: 400px !important; /* Üstten 400px aşağıda */
@@ -401,7 +485,6 @@
             --primary-light: #333333;
             --secondary: #555555;
             --accent: #f0f0f0;
-            
         }
 
         [data-theme="theme-gold"] .bg-primary,
@@ -539,21 +622,20 @@
         [data-theme="theme-bordo"] a.nav-link {
             color: #ffffff !important;
         }
-   
 
-        
+
+
         /* Tema Renkleri için Nav Link Yazı Rengi Stilleri */
 
         /* Gold Theme Text Color Only */
-        
-        [data-theme="theme-gold"] .nav-link
-  {
+
+        [data-theme="theme-gold"] .nav-link {
             color: #000000 !important;
         }
 
         /* Mor tema - beyaz yazı */
         [data-theme="theme-mor"] a.nav-link {
-            color: #ffffff !important;
+            color: #000000 !important;
         }
 
         /* Kırmızı tema - beyaz yazı */
@@ -602,7 +684,6 @@
         }
     </style>
     <!-- loader Start -->
-    
     <!-- loader END -->
     <aside class="sidebar sidebar-base sidebar-white sidebar-default  " id="first-tour"
            data-toggle="main-sidebar" data-sidebar="responsive">
@@ -635,25 +716,23 @@
                 </i>
             </div>
         </div>
+
         <div class="navbar-nav" id="sidebar-menu">
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Index" class="nav-link">
                     🏠 <span class="item-name">Home</span>
                 </a>
             </li>
-
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="ListenTag" class="nav-link">
                     🎧 <span class="item-name">Listen & Tag</span>
                 </a>
             </li>
-
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Favorites" class="nav-link">
                     ❤️ <span class="item-name">My Favorites</span>
                 </a>
             </li>
-
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Playlist" class="nav-link">
                     📀 <span class="item-name">Create Playlist</span>
@@ -669,32 +748,50 @@
                     📜 <span class="item-name">Listening History</span>
                 </a>
             </li>
-
-
-         
-
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Leaderboard" class="nav-link">
                     🏆 <span class="item-name">Leaderboard</span>
                 </a>
             </li>
-
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Profile" class="nav-link">
                     👤 <span class="item-name">My Profile</span>
                 </a>
             </li>
-            @if (Context.Session.GetString("UserRole") == "Admin")
-            {
-                <li>
-                    <a asp-controller="Admin" asp-action="Index">
-                        <i class="fas fa-tools"></i> Admin Paneli
-                    </a>
-                </li>
+            @{
+                // Admin menüsü - sadece admin kullanıcılar için görünür
+                var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+                if (userId.HasValue)
+                {
+                    // Kullanıcı bilgilerini veritabanından al
+                    var dbContext = Context.RequestServices.GetRequiredService<ApplicationDbContext>();
+                    var user = dbContext.Users.FirstOrDefault(u => u.Id == userId.Value);
+                    // Kullanıcı admin ise admin menüsünü göster
+                    if (user != null && user.IsAdmin)
+                    {
+                        <li class="nav-divider"></li>
+                        <li class="nav-item admin-menu-header">
+                            <span>Admin Panel</span>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Index" class="nav-link">
+                                📊 <span class="item-name">Control Panel</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Users" class="nav-link">
+                                👥 <span class="item-name">Users</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Musics" class="nav-link">
+                                🎵 <span class="item-name">Music Management</span>
+                            </a>
+                        </li>
+                    }
+                }
             }
-
         </div>
-
 
 
     </aside>
@@ -708,7 +805,7 @@
                         <!--Logo start-->
                         <div class="logo-main">
                             <img src="~/assets/images/logo.svg" class="logo-normal img-fluid" alt="">
-                            
+
                             <img src="~/assets/images/logo-color.svg" class="logo-normal white-normal img-fluid" alt="logo-color">
                             <img src="~/assets/images/logo-mini.svg" class="logo-mini img-fluid" alt="logo-mini">
                             <img src="~/assets/images/logo3.png" class="logo-mini dark-mini img-fluid" alt="logo-dark-mini">
@@ -736,35 +833,11 @@
                             </span>
                         </button>
                     </div>
+                    <!-- Layout.cshtml dosyasında navbar kısmını düzenleyin -->
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <div class="search-box d-xl-block d-none">
-                            <div class="dropdown">
-                                <div class="search-box-drop" id="search-box-drop" data-bs-toggle="dropdown">
-                                    <div class="d-flex align-items-center justify-content-between gap-2">
-                                        <div class="search-box-inner">
-                                            <button type="submit" class="search-box-drop-submit">
-                                                <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                     viewBox="0 0 24 24">
-                                                    <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5"
-                                                            stroke-linecap="round" stroke-linejoin="round" />
-                                                    <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5"
-                                                          stroke-linecap="round" stroke-linejoin="round" />
-                                                </svg>
-                                            </button>
-                                            <input type="text" placeholder="Search Here...">
-                                        </div>
-                                        <div class="flex-shrink-0 search-box-btn">
-                                            <a class="btn  text-capitalize">
-                                                clt + k
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
 
 
-                            </div>
-                        </div>
-                        <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
+                        <ul class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0">
                             <li class="nav-item dropdown d-xl-none d-block">
                                 <a href="#" class="nav-link" id="search-drop" data-bs-toggle="dropdown">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -778,7 +851,7 @@
                                     <li class="">
                                         <div class="p-3 card-header justify-content-between border-bottom rounded-top">
                                             <div class="header-title">
-                                                <div class="iq-search-bar device-search  position-relative">
+                                                <div class="iq-search-bar device-search position-relative">
                                                     <form action="#" class="searchbox">
                                                         <input type="text" class="text search-input form-control bg-soft-primary"
                                                                placeholder="Search here...">
@@ -789,49 +862,60 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </li>
                                 </ul>
                             </li>
+                        </ul>
+
+                        <!-- Kullanıcı profil / Login Register alanı -->
+                        <div class="ms-auto d-flex align-items-center">
                             @{
                                 var userName = Context.Session.GetString("UserName");
                             }
-                            <ul class="navbar-nav ms-auto align-items-center d-flex flex-row">
-                                @if (!string.IsNullOrEmpty(userName))
-                                {
-                                    <li class="nav-item d-flex align-items-center">
-                                        <span class="text-danger fw-bold me-2">
-                                            Welcome @userName! Press play and lose yourself in the magic of music.
-                                        </span>
-                                        <a asp-controller="Dashboard" asp-action="Profile">
+
+                            @if (!string.IsNullOrEmpty(userName))
+                            {
+                                <div class="d-flex align-items-center me-3">
+                                    <div class="friend-search-box" style="margin-right: 24px; min-width: 220px;">
+                                        <input type="text" id="friend-search-input-navbar" placeholder="Add friend..." autocomplete="off">
+                                        <div id="friend-search-results-navbar" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; margin-top: 4px; display: none; position: absolute; z-index: 1000; width: 90%;"></div>
+                                    </div>
+                                    <span class="text-danger fw-bold d-none d-md-block">
+                                        Welcome @userName! Press play and lose yourself in the magic of music.
+                                    </span>
+                                </div>
+
+                                <div class="d-flex align-items-center">
+                                    <a asp-controller="Dashboard" asp-action="Profile" class="me-3 d-flex align-items-center" style="gap: 8px;">
                                         <img src="@profileImage"
                                              alt="Profil Resmi"
                                              class="rounded-circle"
                                              width="40"
                                              height="40"
-                                                 style="object-fit: cover; border: 2px solid #ddd;" />
-                                        </a>
-                                    </li>
+                                             style="object-fit: cover; border: 2px solid #ddd;" />
+                                        <span id="online-indicator" style="display: flex; align-items: center;">
+                                            <span style="width:10px; height:10px; background:#4CAF50; border-radius:50%; display:inline-block; margin-right:5px;"></span>
+                                            <span style="font-size: 0.95em; color: #4CAF50;">Online</span>
+                                        </span>
+                                    </a>
 
-                                    <li class="nav-item ms-3">
-                                        <a href="javascript:void(0);"
-                                           class="btn"
-                                           style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;"
-                                           onclick="performLogout()">
-                                            Log Out
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="nav-item d-flex">
-                                        <a asp-controller="Dashboard" asp-action="Login" class="btn btn-outline-primary me-2">Login</a>
-                                        <a asp-controller="Dashboard" asp-action="Register" class="btn btn-primary">Register</a>
-                                    </li>
-                                }
-                            </ul>
+                                    <a href="javascript:void(0);"
+                                       class="btn"
+                                       style="color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 16px; border-radius: 6px;"
+                                       onclick="performLogout()">
+                                        Log Out
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ms-3 d-flex">
+                                    <a asp-controller="Dashboard" asp-action="Login" class="btn btn-outline-primary me-2">Login</a>
+                                    <a asp-controller="Dashboard" asp-action="Register" class="btn btn-primary">Register</a>
+                                </div>
+                            }
+                        </div>
                     </div>
-                </div>
             </nav>            <!--Nav End-->
         </div>
         <div class="content-inner container-fluid pb-0" id="page_layout">
@@ -844,11 +928,11 @@
 
                         <small> © 2025 Emo Tagger. All rights reserved. </small>
                     </div>
-                  
+
                 </div>
             </div>
         </div>
-   
+
     </main>
 
 
@@ -869,10 +953,7 @@
         </div>
     </footer>
     <!--Footer End-->
-    <!-- Global audio player that persists across page navigation -->
-    <audio id="musicPlayer" preload="metadata" controls style="width:100%; display:block;"></audio>
-
-    <!-- Footer Section End -->        <!--Footer End-->
+    <!--Burger Menu Start-->
     <!--Burger Menu Start-->
     <div class="iq-float-menu">
         <input type="checkbox" href="#" name="menu-open" id="menu-open" class="iq-float-menu-open">
@@ -920,15 +1001,10 @@
                             <path d="M15.8647 15.5969L17.9534 17.6855" stroke="currentColor" stroke-width="1.5" />
                             <path d="M4.58541 4.31807L6.67407 6.40674" stroke="currentColor" stroke-width="1.5" />
                         </g>
-                        <defs>
-                            <clipPath>
-                                <rect width="21.5385" height="20" fill="white" transform="translate(0.5 0.848145)" />
-                            </clipPath>
-                        </defs>
                     </svg>
                 </label>
             </span>
-            <div class="dark-mode" data-setting="radio">
+            <span class="dark-mode" data-setting="radio">
                 <input type="radio" id="color-mode-dark" class="btn-check custom-inputs" value="dark" name="theme_scheme"
                        checked>
                 <label class="switch-icon-label dark-icon" for="color-mode-dark">
@@ -938,9 +1014,8 @@
                               fill="currentColor" />
                     </svg>
                 </label>
-            </div>
+            </span>
         </span>
-        <!-- Orijinal coming soon öğesinin yerine bu kodu yazın -->
         <span class="iq-float-menu-item bg-dark float-menu-theme-color" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Theme Colors">
             <span class="text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-palette"
@@ -950,8 +1025,6 @@
                 </svg>
             </span>
         </span>
-        <!-- Renk paleti modal -->
-        <!-- Theme Color Palette with Additional Elegant Colors -->
         <div class="theme-color-wrapper">
             <div class="theme-color-palette">
                 <div class="color-palette-header">
@@ -993,8 +1066,7 @@
                     <span class="color-option" data-theme-color="theme-bordo" style="background-color: #9f1239;">
                         <i class="bi bi-check-lg"></i>
                     </span>
-
-                    <!-- New Elegant Colors -->
+                    <!-- Elegant Colors -->
                     <span class="color-option" data-theme-color="theme-gold" style="background-color: #6F8FAF;">
                         <i class="bi bi-check-lg"></i>
                     </span>
@@ -1010,7 +1082,7 @@
                 </div>
             </div>
         </div>
-    </div>     
+    </div>
     <!--Burger Menu End-->
     <!-- Wrapper End-->
     <!-- Library Bundle Script -->
@@ -1021,217 +1093,11 @@
     <script src="~/assets/js/plugins/tour.js" defer></script>
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const audio = document.getElementById("musicPlayer");
 
-            const lastSrc = localStorage.getItem("lastPlayedSrc");
-            const lastTitle = localStorage.getItem("lastPlayedTitle");
-
-            if (lastSrc && lastTitle) {
-                audio.src = lastSrc;
-
-                const marquee = document.querySelector('.marquee-content');
-                if (marquee) {
-                    marquee.innerHTML = `<strong>${lastTitle}</strong>`;
-                }
-
-                document.title = lastTitle + " 🎵";
-            }
-        });
-    </script>
 
     <script>
-        // Sayfa geçişlerinde müziğin devam etmesini sağlayan SPA (Single Page Application) benzeri bağlantı yönetimi
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tüm iç bağlantıları işle (Listen & Tag hariç)
-            rehookLinks();
 
-            // Geri/ileri tuşları için popstate olayını dinle
-            window.addEventListener('popstate', function() {
-                // Sayfayı yeniden yüklerken müzik durumunu koru
-                const audio = document.getElementById('musicPlayer');
-                const isPlaying = audio && !audio.paused;
-                const currentTime = audio ? audio.currentTime : 0;
-                const currentSrc = audio ? audio.src : '';
 
-                // Sayfa yeniden yüklendiğinde müzik bilgilerini geri yükleyecek bir fonksiyon çağır
-                window.location.reload();
-            });
-        });
-
-        // Tüm bağlantıları yeniden bağla
-        function rehookLinks() {
-            document.querySelectorAll('a').forEach(link => {
-                // Zaten işlenmiş linkleri tekrar işleme
-                if (link.hasAttribute('data-hooked')) return;
-
-                // Dış bağlantıları ve Listen&Tag sayfasına olan bağlantıları normal davranışla bırak
-                const href = link.getAttribute('href');
-                if (!href ||
-                    href.startsWith('#') ||
-                    href.startsWith('javascript:') ||
-                    href.includes('/Dashboard/ListenTag') ||
-                    (href.startsWith('http') && !href.includes(window.location.hostname))) {
-                    return;
-                }
-
-                link.setAttribute('data-hooked', 'true');
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    // Müzik çalar bilgilerini kaydet
-                    const audio = document.getElementById('musicPlayer');
-                    const wasPlaying = audio && !audio.paused;
-                    const currentTime = audio ? audio.currentTime : 0;
-                    const currentSrc = audio ? audio.src : '';
-                    const currentTitle = localStorage.getItem('lastPlayedTitle') || '';
-
-                    // AJAX ile yeni sayfayı yükle
-                    fetch(href)
-                        .then(response => response.text())
-                        .then(html => {
-                            // HTML'i ayrıştır
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, 'text/html');
-
-                            // Ana içeriği güncelle
-                            const content = doc.querySelector('.content-inner');
-                            if (content) {
-                                document.querySelector('.content-inner').innerHTML = content.innerHTML;
-                            }
-
-                            // Başlığı güncelle
-                            document.title = doc.title;
-
-                            // URL'yi güncelle
-                            history.pushState({}, '', href);
-
-                            // Yeni sayfadaki scriptleri çalıştır
-                            Array.from(content.querySelectorAll('script')).forEach(oldScript => {
-                                const newScript = document.createElement('script');
-                                Array.from(oldScript.attributes).forEach(attr => {
-                                    newScript.setAttribute(attr.name, attr.value);
-                                });
-                                newScript.textContent = oldScript.textContent;
-
-                                // Eski script öğesini yenisiyle değiştir
-                                if (oldScript.parentNode) {
-                                    oldScript.parentNode.replaceChild(newScript, oldScript);
-                                }
-                            });
-
-                            // Müzik çalarını geri yükle
-                            setTimeout(() => {
-                                // Müzik durumunu geri yükle
-                                if (wasPlaying && audio) {
-                                    audio.currentTime = currentTime;
-                                    if (audio.paused) {
-                                        audio.play().catch(e => console.warn("Otomatik oynatma engellendi:", e));
-                                    }
-                                }
-
-                                // Eğer çalınıyorsa, çalan şarkıyı görsel olarak işaretle
-                                if (audio && audio.src) {
-                                    document.querySelectorAll('.music-row').forEach(row => {
-                                        const onclick = row.getAttribute('onclick');
-                                        if (onclick && onclick.includes(audio.src)) {
-                                            row.classList.add('playing-now');
-                                        }
-                                    });
-                                }
-
-                                // Yeni bağlantıları tekrar bağla
-                                rehookLinks();
-                            }, 300);
-                        })
-                        .catch(error => {
-                            console.error("Sayfa yükleme hatası:", error);
-                            // Hata durumunda normal sayfa yüklemesine dön
-                            window.location.href = href;
-                        });
-                });
-            });
-        }
-
-        // Müzik oynatma fonksiyonunu global olarak tanımla
-        function playMusic(src, title, element) {
-            const audio = document.getElementById("musicPlayer");
-
-            if (!audio) return;
-
-            // localStorage'a son oynatılanı kaydet
-            localStorage.setItem("lastPlayedSrc", src);
-            localStorage.setItem("lastPlayedTitle", title);
-
-            // Stil
-            document.querySelectorAll('.music-row').forEach(row => row.classList.remove('playing-now'));
-            if (element) element.classList.add('playing-now');
-
-            // Global değişkenleri ayarla (footer ile uyum için)
-            window.currentTrackTitle = title.split(' - ')[0];
-            window.currentTrackArtist = title.split(' - ')[1];
-            window.currentMusicId = element ? element.getAttribute('data-music-id') : null;
-
-            // TrackData elementini güncelle (eğer varsa)
-            updateTrackDataElement();
-
-            // Oynat
-            audio.src = src;
-            audio.play().catch(e => console.warn("Otomatik oynatma engellendi:", e));
-
-            document.title = title + " 🎵";
-
-            const marquee = document.querySelector('.marquee-content');
-            if (marquee) {
-                marquee.innerHTML = `<strong>${title}</strong>`;
-            }
-
-            // Özel event tetikle - diğer bileşenlerle iletişim için
-            document.dispatchEvent(new CustomEvent('songChanged', {
-                detail: {
-                    id: window.currentMusicId,
-                    title: window.currentTrackTitle,
-                    artist: window.currentTrackArtist
-                }
-            }));
-        }
-
-        // TrackData elementini güncelle
-        function updateTrackDataElement() {
-            const trackDataElement = document.getElementById('trackData');
-            if (!trackDataElement || !window.currentMusicId) return;
-
-            // Şarkı index'ini bul
-            const trackItems = trackDataElement.querySelectorAll('.track-item');
-            let currentIndex = -1;
-
-            trackItems.forEach((item, index) => {
-                if (item.dataset.id === window.currentMusicId) {
-                    currentIndex = index;
-                }
-            });
-
-            // İndex bulunduysa güncelle
-            if (currentIndex >= 0) {
-                trackDataElement.dataset.currentIndex = currentIndex;
-                trackDataElement.dataset.currentTitle = window.currentTrackTitle;
-                trackDataElement.dataset.currentArtist = window.currentTrackArtist;
-            }
-        }
-
-        // Sayfa yüklendiğinde çalan şarkıları işaretle
-        document.addEventListener('DOMContentLoaded', function() {
-            const audio = document.getElementById("musicPlayer");
-            if (audio && audio.src) {
-                document.querySelectorAll('.music-row').forEach(row => {
-                    const onclick = row.getAttribute('onclick');
-                    if (onclick && onclick.includes(audio.src)) {
-                        row.classList.add('playing-now');
-                    }
-                });
-            }
-        });
                 // Logout işlemi için JavaScript fonksiyonu
         function performLogout() {
             // Tüm localStorage ve sessionStorage verilerini temizle
@@ -1279,13 +1145,28 @@
     <!-- qompacui Script -->
     <script src="~/assets/js/muzik.js?v=1.0.1" defer></script>
     <script src="~/assets/js/sidebar.js?v=1.0.1" defer>
-        </script>
+    </script>
     <!-- Müzik çalar entegrasyonu için JavaScript -->
     <script src="~/js/player-integration.js"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 
+
+
+    <script src="~/js/friend-search.js"></script>
+
+
+    <script>
+        // Playlist veya başka bir yerden player'a yeni bir şarkı listesi ve başlangıç index'i gönder
+        window.setFooterPlaylist = function(playlistArray, startIndex) {
+            if (!Array.isArray(playlistArray) || playlistArray.length === 0) return;
+            window.tracks = playlistArray;
+            window.currentIndex = startIndex || 0;
+            if (typeof setCurrentTrack === 'function') {
+                setCurrentTrack(window.tracks[window.currentIndex], true);
+            }
+        };
+    </script>
 
 </body>
 </html>
-  
