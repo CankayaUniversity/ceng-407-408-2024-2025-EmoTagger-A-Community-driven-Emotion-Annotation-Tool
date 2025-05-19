@@ -1,24 +1,24 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authentication.Cookies; // Bu satýrý ekleyin
+using Microsoft.AspNetCore.Authentication.Cookies; // Bu satÄ±rÄ± ekleyin
 using EmoTagger.Models;
 using EmoTagger.Services;
 using EmoTagger.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// **PostgreSQL baðlantýsýný ekleyelim**
+// **PostgreSQL baÄŸlantÄ±sÄ±nÄ± ekleyelim**
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<EmailService>();
 
-// **Session ve Cache için Gerekli Servisleri Ekleyelim**
-builder.Services.AddDistributedMemoryCache(); // **Session için Gerekli**
+// **Session ve Cache iÃ§in Gerekli Servisleri Ekleyelim**
+builder.Services.AddDistributedMemoryCache(); // **Session iÃ§in Gerekli**
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // **30 Dakika Oturum Süresi**
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // **30 Dakika Oturum SÃ¼resi**
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -27,14 +27,14 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Dashboard/Login"; // Giriþ sayfanýzýn yolu
+        options.LoginPath = "/Dashboard/Login"; // GiriÅŸ sayfanÄ±zÄ±n yolu
         options.AccessDeniedPath = "/Dashboard/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
     });
 
-builder.Logging.AddConsole(); // Konsol loglamayý ekle
-builder.Logging.AddDebug();   // Debug loglamayý ekle
+builder.Logging.AddConsole(); // Konsol loglamayÄ± ekle
+builder.Logging.AddDebug();   // Debug loglamayÄ± ekle
 // HttpContextAccessor servisini ekleyelim
 builder.Services.AddHttpContextAccessor();
 // **Servisleri ekleyelim**
@@ -42,19 +42,19 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// **Middleware yapýlandýrmasý**
+// **Middleware yapÄ±landÄ±rmasÄ±**
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
 app.UseDeveloperExceptionPage();
-app.UseSession(); // **Session Middleware'ini Etkinleþtir**
+app.UseSession(); // **Session Middleware'ini EtkinleÅŸtir**
 
-// **Authentication middleware'ini UseAuthorization'dan ÖNCE ekliyoruz**
-app.UseAuthentication(); // BU SATIRI EKLEYÝN
+// **Authentication middleware'ini UseAuthorization'dan Ã–NCE ekliyoruz**
+app.UseAuthentication(); // BU SATIRI EKLEYÄ°N
 app.UseAuthorization();
 
-// **Varsayýlan Route Yapýsý**
+// **VarsayÄ±lan Route YapÄ±sÄ±**
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
@@ -71,7 +71,7 @@ app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        // Eðer uploads/profiles klasöründeki bir dosyaysa önbelleði devre dýþý býrak
+        // EÄŸer uploads/profiles klasÃ¶rÃ¼ndeki bir dosyaysa Ã¶nbelleÄŸi devre dÄ±ÅŸÄ± bÄ±rak
         if (ctx.File.PhysicalPath.Contains("uploads/profiles"))
         {
             ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");

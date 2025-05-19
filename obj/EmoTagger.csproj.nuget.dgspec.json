@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj": {}
+    "D:\\ceng407\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger.csproj": {}
   },
   "projects": {
-    "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj": {
+    "D:\\ceng407\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj",
+        "projectUniqueName": "D:\\ceng407\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger.csproj",
         "projectName": "EmoTagger",
-        "projectPath": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\EmoTagger.csproj",
-        "packagesPath": "C:\\Users\\SelinUzunoğlu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SelinUzunoğlu\\Desktop\\EmoTagger\\EmoTagger\\obj\\",
+        "projectPath": "D:\\ceng407\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\EmoTagger.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "D:\\ceng407\\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\SelinUzunoğlu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -53,6 +53,10 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -92,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

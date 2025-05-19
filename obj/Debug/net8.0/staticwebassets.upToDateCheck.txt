@@ -782,6 +782,7 @@ wwwroot\uploads\profiles\dade8f56-69cf-42f3-93f4-4def076bc5e2.jpeg
 wwwroot\uploads\profiles\e5c9dd8d-4763-4944-b317-5dd62bc1c95c.png
 wwwroot\uploads\profiles\e989ef19-b9fa-4eb0-a36d-5c8f06cf1513.jpg
 wwwroot\uploads\profiles\user_15_638829489767261623.jpg
+wwwroot\uploads\profiles\user_16_638831971236267299.jpg
 wwwroot\uploads\profiles\user_5_638829483546311447.png
 wwwroot\uploads\profiles\user_7_638827661460275658.jpg
 wwwroot\vendor\apexcharts\dist\apexchart.min.js
@@ -994,7 +995,6 @@ wwwroot\vendor\swiperSlider\swiper-bundle.min.css
 wwwroot\vendor\swiperSlider\swiper-bundle.min.js
 wwwroot\vendor\uppy\uppy.min.css
 wwwroot\vendor\uppy\uppy.min.js
-wwwroot\vue\.env
 wwwroot\vue\.eslintignore
 wwwroot\vue\.eslintrc.cjs
 wwwroot\vue\.gitignore

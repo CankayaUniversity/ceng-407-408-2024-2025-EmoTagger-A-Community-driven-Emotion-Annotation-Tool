@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using EmoTagger.Data;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace EmoTagger.Controllers
 {
@@ -36,6 +38,28 @@ namespace EmoTagger.Controllers
             if (!await IsAdminAsync())
                 return RedirectToAction("Login", "Dashboard");
 
+            // Run all 3 model scripts
+            string model1Output = RunPythonScript("Scripts/model1.py");
+            string model2Output = RunPythonScript("Scripts/model2.py,train_model2.py,audio_feature_extractor.py");
+            string model3Output = RunPythonScript("Scripts/model3.py,model3_lyrics.py");
+
+            // Define paths for HTML results
+            string model1HtmlPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "predicted_emotions.html");
+            string model2HtmlPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "model2_predictions.html");
+            string model3HtmlPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "model3_lyrics_emotions.html");
+
+            // Set ViewBags for each model's HTML
+            ViewBag.EmotionHtml1 = System.IO.File.Exists(model1HtmlPath)
+                ? System.IO.File.ReadAllText(model1HtmlPath)
+                : $"<p style='color:red;'>Model 1 HTML not found!</p><pre>{model1Output}</pre>";
+            ViewBag.EmotionHtml2 = System.IO.File.Exists(model2HtmlPath)
+                ? System.IO.File.ReadAllText(model2HtmlPath)
+                : $"<p style='color:red;'>Model 2 HTML not found!</p><pre>{model2Output}</pre>";
+            ViewBag.EmotionHtml3 = System.IO.File.Exists(model3HtmlPath)
+                ? System.IO.File.ReadAllText(model3HtmlPath)
+                : $"<p style='color:red;'>Model 3 HTML not found!</p><pre>{model3Output}</pre>";
+
+            // Original statistics from first implementation
             ViewBag.UserCount = await _context.Users.CountAsync();
             ViewBag.MusicCount = await _context.Musics.CountAsync();
             ViewBag.TotalTagCount = await _context.MusicTags.CountAsync();
@@ -91,13 +115,40 @@ namespace EmoTagger.Controllers
             // Ortalama dinlenme
             ViewBag.AvgPlayCount = musicPlayCounts.Count > 0 ? (int)Math.Round(musicPlayCounts.Average(x => x.Count)) : 0;
 
-            return View();
+            return View("~/Views/Dashboard/AdminPanel.cshtml");
         }
+
+        private string RunPythonScript(string scriptPath)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "python",
+                Arguments = scriptPath,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            try
+            {
+                var process = Process.Start(psi);
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                return string.IsNullOrWhiteSpace(error) ? output : $"Python Error:\n{error}";
+            }
+            catch (Exception ex)
+            {
+                return $"Script failed: {ex.Message}";
+            }
+        }
+
         // Mevcut Users() metodu - HTML view döndürür
         public IActionResult Users()
         {
             return View();
         }
+
         public async Task<IActionResult> Musics(int page = 1, int pageSize = 20)
         {
             if (!await IsAdminAsync())
@@ -134,8 +185,8 @@ namespace EmoTagger.Controllers
                     u.FirstName,
                     u.LastName,
                     u.Email,
-                    u.Country,         // <-- EKLE
-                    u.PhoneNumber,     // <-- EKLE
+                    u.Country,
+                    u.PhoneNumber,
                     u.CreatedAt,
                     PlayCount = _context.RecentlyPlayed
                         .Where(rp => rp.UserId == u.Id)
@@ -156,6 +207,7 @@ namespace EmoTagger.Controllers
                 totalUsers
             });
         }
+
         // Kullanıcı silme API endpoint'i
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -194,8 +246,6 @@ namespace EmoTagger.Controllers
             public int Id { get; set; }
         }
 
-        // Müzik yönetimi
-    
         // Müzik düzenleme sayfası
         public async Task<IActionResult> EditMusic(int id)
         {
@@ -288,7 +338,8 @@ namespace EmoTagger.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {
+                return Json(new
+                {
                     success = false,
                     message = "Güncelleme sırasında hata oluştu",
                     error = ex.Message,

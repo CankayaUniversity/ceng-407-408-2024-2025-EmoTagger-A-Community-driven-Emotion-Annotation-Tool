@@ -1,0 +1,32 @@
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+TestResults/
+out/
+
+## VS Code
+.vscode/
+*.code-workspace
+
+# Local History for IDEs
+.localhistory/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+# Environment settings and secrets
+*.env
