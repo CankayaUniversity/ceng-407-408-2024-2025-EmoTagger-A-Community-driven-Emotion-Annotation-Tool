@@ -1,0 +1,1127 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Çalma Listesi Oluştur";
+}
+
+<link rel="stylesheet" href="~/css/playlist.css">
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sol Taraf - Playlist Oluşturma Formu -->
+        <div class="col-lg-4">
+            <div class="playlist-creator card shadow">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-music me-2"></i>Yeni Çalma Listesi Oluştur</h4>
+                </div>
+                <div class="card-body">
+                    <form id="playlistForm">
+                        <div class="mb-3">
+                            <label for="playlistName" class="form-label">Çalma Listesi Adı</label>
+                            <input type="text" class="form-control" id="playlistName" placeholder="Örn: Sabah Enerjisi">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="playlistDescription" class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="playlistDescription" rows="3" placeholder="Bu çalma listesi hakkında birkaç kelime..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Kapak Resmi</label>
+                            <div class="d-flex align-items-center">
+                                <div class="playlist-cover-preview me-3" id="coverPreview">
+                                    <i class="fas fa-music fa-3x text-muted"></i>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary mb-2 w-100" id="uploadCoverBtn">
+                                        <i class="fas fa-upload me-2"></i>Resim Yükle
+                                    </button>
+                                    <input type="file" id="coverUpload" class="d-none" accept="image/*">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="coverOptions" data-bs-toggle="dropdown">
+                                            <i class="fas fa-palette me-2"></i>Temalar
+                                        </button>
+                                        <ul class="dropdown-menu cover-themes" aria-labelledby="coverOptions">
+                                            <li><a class="dropdown-item" href="#" data-theme="gradient-purple">Mor Geçiş</a></li>
+                                            <li><a class="dropdown-item" href="#" data-theme="gradient-blue">Mavi Geçiş</a></li>
+                                            <li><a class="dropdown-item" href="#" data-theme="gradient-orange">Turuncu Geçiş</a></li>
+                                            <li><a class="dropdown-item" href="#" data-theme="gradient-pink">Pembe Geçiş</a></li>
+                                            <li><a class="dropdown-item" href="#" data-theme="gradient-green">Yeşil Geçiş</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Etiketler</label>
+                            <div class="mood-tags">
+                                <div class="mood-tag" data-tag="sad">
+                                    <span class="emoji">😢</span>
+                                    <span class="tag-name">Sad</span>
+                                </div>
+                                <div class="mood-tag" data-tag="happy">
+                                    <span class="emoji">😄</span>
+                                    <span class="tag-name">Happy</span>
+                                </div>
+                                <div class="mood-tag" data-tag="nostalgic">
+                                    <span class="emoji">🌧️</span>
+                                    <span class="tag-name">Nostalgic</span>
+                                </div>
+                                <div class="mood-tag" data-tag="energetic">
+                                    <span class="emoji">🔥</span>
+                                    <span class="tag-name">Energetic</span>
+                                </div>
+                                <div class="mood-tag" data-tag="relaxing">
+                                    <span class="emoji">🧘</span>
+                                    <span class="tag-name">Relaxing</span>
+                                </div>
+                                <div class="mood-tag" data-tag="romantic">
+                                    <span class="emoji">❤️</span>
+                                    <span class="tag-name">Romantic</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Gizlilik</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="playlistPrivacy">
+                                <label class="form-check-label" for="playlistPrivacy">Özel Liste</label>
+                            </div>
+                            <small class="text-muted">Özel listeler sadece siz tarafından görüntülenebilir.</small>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="button" id="createPlaylistBtn" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i>Listeyi Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Önceden Oluşturulan Çalma Listeleri -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-gradient-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Mevcut Listelerim</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush existing-playlists">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="playlist-mini-cover gradient-purple me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Sabah Ritüeli</h6>
+                                    <small class="text-muted">12 şarkı • Energetic</small>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary load-playlist-btn" data-id="1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="playlist-mini-cover gradient-blue me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Gece Modunda</h6>
+                                    <small class="text-muted">8 şarkı • Relaxing</small>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary load-playlist-btn" data-id="2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="playlist-mini-cover gradient-pink me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Eski Günler</h6>
+                                    <small class="text-muted">15 şarkı • Nostalgic</small>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary load-playlist-btn" data-id="3">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sağ Taraf - Şarkı Arama ve Liste İçeriği -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="mb-0">Şarkı Ekle</h5>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="songSearch" placeholder="Şarkı veya sanatçı ara...">
+                                <button class="btn btn-primary" type="button" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-pills mb-3" id="songFilterTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-songs-tab" data-bs-toggle="pill" data-bs-target="#all-songs" type="button" role="tab">
+                                <i class="fas fa-music me-1"></i>Tüm Şarkılar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="by-mood-tab" data-bs-toggle="pill" data-bs-target="#by-mood" type="button" role="tab">
+                                <i class="fas fa-heart me-1"></i>Duygulara Göre
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="most-played-tab" data-bs-toggle="pill" data-bs-target="#most-played" type="button" role="tab">
+                                <i class="fas fa-headphones me-1"></i>En Çok Dinlenenler
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="recently-added-tab" data-bs-toggle="pill" data-bs-target="#recently-added" type="button" role="tab">
+                                <i class="fas fa-clock me-1"></i>Yeni Eklenenler
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="songFilterContent">
+                        <!-- Tüm Şarkılar Sekmesi -->
+                        <div class="tab-pane fade show active" id="all-songs" role="tabpanel" aria-labelledby="all-songs-tab">
+                            <div class="song-list">
+                                <!-- Şarkı Listesi İçeriği -->
+                                <div class="song-item" data-id="101">
+                                    <div class="song-info">
+                                        <img src="~/assets/images/covers/cover1.jpg" alt="Song Cover" class="song-cover">
+                                        <div class="song-details">
+                                            <h6 class="song-title">Shape of You</h6>
+                                            <p class="song-artist">Ed Sheeran</p>
+                                        </div>
+                                    </div>
+                                    <div class="song-tags">
+                                        <span class="tag-badge happy">Happy</span>
+                                    </div>
+                                    <div class="song-actions">
+                                        <button class="btn btn-sm btn-success add-song-btn">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary preview-song-btn">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="song-item" data-id="102">
+                                    <div class="song-info">
+                                        <img src="~/assets/images/covers/cover2.jpg" alt="Song Cover" class="song-cover">
+                                        <div class="song-details">
+                                            <h6 class="song-title">Someone You Loved</h6>
+                                            <p class="song-artist">Lewis Capaldi</p>
+                                        </div>
+                                    </div>
+                                    <div class="song-tags">
+                                        <span class="tag-badge sad">Sad</span>
+                                    </div>
+                                    <div class="song-actions">
+                                        <button class="btn btn-sm btn-success add-song-btn">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary preview-song-btn">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="song-item" data-id="103">
+                                    <div class="song-info">
+                                        <img src="~/assets/images/covers/cover3.jpg" alt="Song Cover" class="song-cover">
+                                        <div class="song-details">
+                                            <h6 class="song-title">Dance Monkey</h6>
+                                            <p class="song-artist">Tones and I</p>
+                                        </div>
+                                    </div>
+                                    <div class="song-tags">
+                                        <span class="tag-badge energetic">Energetic</span>
+                                    </div>
+                                    <div class="song-actions">
+                                        <button class="btn btn-sm btn-success add-song-btn">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary preview-song-btn">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Daha fazla şarkı burada listelenebilir -->
+                            </div>
+                            
+                            <!-- Sayfalama -->
+                            <div class="d-flex justify-content-center mt-4">
+                                <nav aria-label="Şarkı listesi sayfalama">
+                                    <ul class="pagination">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Önceki</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Sonraki</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        
+                        <!-- Duygulara Göre Sekmesi -->
+                        <div class="tab-pane fade" id="by-mood" role="tabpanel" aria-labelledby="by-mood-tab">
+                            <div class="mood-filter-buttons mb-3">
+                                <button class="btn btn-outline-primary mood-filter-btn active" data-mood="all">Tümü</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="happy">Happy</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="sad">Sad</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="energetic">Energetic</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="relaxing">Relaxing</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="romantic">Romantic</button>
+                                <button class="btn btn-outline-primary mood-filter-btn" data-mood="nostalgic">Nostalgic</button>
+                            </div>
+                            
+                            <div class="song-list mood-filtered">
+                                <!-- Duygu filtresine göre şarkılar burada listelenecek -->
+                                <!-- Şarkı listesi JavaScript ile doldurulacak -->
+                            </div>
+                        </div>
+                        
+                        <!-- En Çok Dinlenenler Sekmesi -->
+                        <div class="tab-pane fade" id="most-played" role="tabpanel" aria-labelledby="most-played-tab">
+                            <div class="song-list">
+                                <!-- En çok dinlenen şarkılar burada listelenecek -->
+                                <!-- Bu içerik backend'den alınacak -->
+                            </div>
+                        </div>
+                        
+                        <!-- Yeni Eklenenler Sekmesi -->
+                        <div class="tab-pane fade" id="recently-added" role="tabpanel" aria-labelledby="recently-added-tab">
+                            <div class="song-list">
+                                <!-- Yeni eklenen şarkılar burada listelenecek -->
+                                <!-- Bu içerik backend'den alınacak -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seçili Çalma Listesi İçeriği -->
+            <div class="card shadow">
+                <div class="card-header bg-gradient-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Çalma Listesi İçeriği</h5>
+                        <div>
+                            <button id="savePlaylistBtn" class="btn btn-light btn-sm">
+                                <i class="fas fa-save me-1"></i>Kaydet
+                            </button>
+                            <button id="playAllBtn" class="btn btn-light btn-sm ms-2">
+                                <i class="fas fa-play me-1"></i>Tümünü Çal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="playlistSongsEmpty" class="text-center p-5">
+                        <img src="~/assets/images/empty-playlist.svg" alt="Boş Liste" class="mb-3" style="width: 120px;">
+                        <h5>Henüz şarkı eklenmedi</h5>
+                        <p class="text-muted">Şarkı eklemek için yukarıdaki listeden şarkıları seçin.</p>
+                    </div>
+                    
+                    <div id="playlistSongs" class="d-none">
+                        <ul class="list-group list-group-flush sortable-songs">
+                            <!-- Seçilen şarkılar buraya eklenecek - JavaScript ile doldurulacak -->
+                        </ul>
+                        
+                        <div class="d-flex justify-content-between p-3 bg-light">
+                            <div>
+                                <span class="text-muted">Toplam süre: <span id="totalDuration">0:00</span></span>
+                            </div>
+                            <div>
+                                <span class="text-muted"><span id="songCount">0</span> şarkı</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Önizleme Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Şarkı Önizleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="preview-album-art mb-3">
+                    <img src="" id="previewCover" alt="Album Art">
+                </div>
+                <h5 id="previewTitle"></h5>
+                <p id="previewArtist" class="text-muted"></p>
+                <div class="preview-player">
+                    <audio id="previewAudio" controls></audio>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-success" id="addToPlaylistBtn">
+                    <i class="fas fa-plus me-1"></i>Listeye Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Başarı Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Başarılı!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="success-icon mb-4">
+                    <i class="fas fa-check-circle fa-5x text-success"></i>
+                </div>
+                <h4>Çalma Listeniz Oluşturuldu!</h4>
+                <p>Çalma listeniz başarıyla kaydedildi ve artık kullanıma hazır.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <a href="~/Dashboard/Playlists" class="btn btn-primary">
+                    <i class="fas fa-list me-1"></i>Çalma Listelerim
+                </a>
+                <button type="button" class="btn btn-success" id="playNewPlaylistBtn">
+                    <i class="fas fa-play me-1"></i>Şimdi Çal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kapak yükleme işlevselliği
+            const uploadCoverBtn = document.getElementById('uploadCoverBtn');
+            const coverUpload = document.getElementById('coverUpload');
+            const coverPreview = document.getElementById('coverPreview');
+
+            uploadCoverBtn.addEventListener('click', function() {
+                coverUpload.click();
+            });
+
+            coverUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        coverPreview.innerHTML = `<img src="${e.target.result}" alt="Playlist Cover">`;
+                        coverPreview.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Kapak teması seçimi
+            const coverThemes = document.querySelectorAll('.cover-themes .dropdown-item');
+            coverThemes.forEach(theme => {
+                theme.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const themeClass = this.getAttribute('data-theme');
+                    coverPreview.innerHTML = '';
+                    coverPreview.className = 'playlist-cover-preview me-3 ' + themeClass;
+                });
+            });
+
+            // Duygu etiketleri seçimi
+            const moodTags = document.querySelectorAll('.mood-tag');
+            moodTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // Seçili sınıfını toggle et
+                    this.classList.toggle('selected');
+                });
+            });
+
+            // Sıralanabilir şarkı listesi
+            const sortableList = document.querySelector('.sortable-songs');
+            if (sortableList) {
+                new Sortable(sortableList, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    onSort: function() {
+                        updatePlaylistSummary();
+                    }
+                });
+            }
+
+            // Şarkı ekleme işlemleri
+            const addSongBtns = document.querySelectorAll('.add-song-btn');
+            addSongBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const songItem = this.closest('.song-item');
+                    const songId = songItem.getAttribute('data-id');
+                    const songTitle = songItem.querySelector('.song-title').textContent;
+                    const songArtist = songItem.querySelector('.song-artist').textContent;
+                    const songCover = songItem.querySelector('.song-cover').src;
+                    const songTag = songItem.querySelector('.tag-badge') ? songItem.querySelector('.tag-badge').textContent : '';
+
+                    // Şarkıyı çalma listesine ekle
+                    addSongToPlaylist(songId, songTitle, songArtist, songCover, songTag);
+                });
+            });
+
+            // Şarkı önizleme işlemleri
+            const previewSongBtns = document.querySelectorAll('.preview-song-btn');
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            const previewAudio = document.getElementById('previewAudio');
+            let previewingSongId = null;
+
+            previewSongBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const songItem = this.closest('.song-item');
+                    const songId = songItem.getAttribute('data-id');
+                    const songTitle = songItem.querySelector('.song-title').textContent;
+                    const songArtist = songItem.querySelector('.song-artist').textContent;
+                    const songCover = songItem.querySelector('.song-cover').src;
+
+                    // Önizleme modalını güncelle
+                    document.getElementById('previewTitle').textContent = songTitle;
+                    document.getElementById('previewArtist').textContent = songArtist;
+                    document.getElementById('previewCover').src = songCover;
+                    
+                    // Demo ses dosyasını ayarla
+                    const audioSrc = `/music/preview/${songId}.mp3`;
+                    previewAudio.src = audioSrc;
+                    previewAudio.load();
+                    previewingSongId = songId;
+
+                    // Modalı göster
+                    previewModal.show();
+                    
+                    // Otomatik çal
+                    previewAudio.play().catch(e => console.log('Otomatik çalma engellendi:', e));
+                });
+            });
+
+            // Modal kapandığında sesi durdur
+            document.getElementById('previewModal').addEventListener('hidden.bs.modal', function() {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+            });
+
+            // Önizlemeden şarkı ekleme
+            document.getElementById('addToPlaylistBtn').addEventListener('click', function() {
+                const songTitle = document.getElementById('previewTitle').textContent;
+                const songArtist = document.getElementById('previewArtist').textContent;
+                const songCover = document.getElementById('previewCover').src;
+                
+                addSongToPlaylist(previewingSongId, songTitle, songArtist, songCover, '');
+                previewModal.hide();
+            });
+
+            // Şarkı arama
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('songSearch').value.trim();
+                if (searchTerm.length > 0) {
+                    searchSongs(searchTerm);
+                }
+            });
+
+            document.getElementById('songSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = document.getElementById('songSearch').value.trim();
+                    if (searchTerm.length > 0) {
+                        searchSongs(searchTerm);
+                    }
+                }
+            });
+
+            // Duygu filtreleme
+            const moodFilterBtns = document.querySelectorAll('.mood-filter-btn');
+            moodFilterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Tüm butonlardan active sınıfını kaldır
+                    moodFilterBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Bu butona active sınıfı ekle
+                    this.classList.add('active');
+                    
+                    // Filtrelemeyi uygula
+                    const mood = this.getAttribute('data-mood');
+                    filterSongsByMood(mood);
+                });
+            });
+
+            // Çalma listesi oluşturma
+            document.getElementById('createPlaylistBtn').addEventListener('click', function() {
+                createPlaylist();
+            });
+
+            // Çalma listesi kaydetme
+            document.getElementById('savePlaylistBtn').addEventListener('click', function() {
+                savePlaylist();
+            });
+
+            // Mevcut çalma listesi yükleme
+            const loadPlaylistBtns = document.querySelectorAll('.load-playlist-btn');
+            loadPlaylistBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const playlistId = this.getAttribute('data-id');
+                    loadPlaylist(playlistId);
+        });
+               });
+
+               // Fonksiyonlar
+
+               // Şarkı arama fonksiyonu
+               function searchSongs(query) {
+                   console.log('Arama yapılıyor:', query);
+                   // Gerçek uygulamada burada AJAX isteği yapılır
+                   // Şimdilik dummy data ile gösteriyoruz
+
+                   // Yükleniyor göstergesi eklenebilir
+                   const songList = document.querySelector('#all-songs .song-list');
+                   songList.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Şarkılar aranıyor...</p></div>';
+
+                   // Simüle edilmiş AJAX isteği
+                   setTimeout(() => {
+                       // Arama sonuçlarını içeren HTML
+                       const searchResults = `
+                           <div class="song-item" data-id="201">
+                               <div class="song-info">
+                                   <img src="/assets/images/covers/search1.jpg" alt="Song Cover" class="song-cover">
+                                   <div class="song-details">
+                                       <h6 class="song-title">${query} - Arama Sonucu 1</h6>
+                                       <p class="song-artist">Arama Sanatçı 1</p>
+                                   </div>
+                               </div>
+                               <div class="song-tags">
+                                   <span class="tag-badge energetic">Energetic</span>
+                               </div>
+                               <div class="song-actions">
+                                   <button class="btn btn-sm btn-success add-song-btn">
+                                       <i class="fas fa-plus"></i>
+                                   </button>
+                                   <button class="btn btn-sm btn-secondary preview-song-btn">
+                                       <i class="fas fa-play"></i>
+                                   </button>
+                               </div>
+                           </div>
+                           <div class="song-item" data-id="202">
+                               <div class="song-info">
+                                   <img src="/assets/images/covers/search2.jpg" alt="Song Cover" class="song-cover">
+                                   <div class="song-details">
+                                       <h6 class="song-title">${query} - Arama Sonucu 2</h6>
+                                       <p class="song-artist">Arama Sanatçı 2</p>
+                                   </div>
+                               </div>
+                               <div class="song-tags">
+                                   <span class="tag-badge sad">Sad</span>
+                               </div>
+                               <div class="song-actions">
+                                   <button class="btn btn-sm btn-success add-song-btn">
+                                       <i class="fas fa-plus"></i>
+                                   </button>
+                                   <button class="btn btn-sm btn-secondary preview-song-btn">
+                                       <i class="fas fa-play"></i>
+                                   </button>
+                               </div>
+                           </div>
+                       `;
+
+                       songList.innerHTML = searchResults;
+
+                       // Yeni eklenen butonlar için event listener'ları ekle
+                       addEventListenersToSongs();
+                   }, 1000);
+               }
+
+               // Duygulara göre şarkı filtreleme
+               function filterSongsByMood(mood) {
+                   console.log('Duygu filtresi uygulanıyor:', mood);
+                   // Gerçek uygulamada burada AJAX isteği yapılır
+
+                   const songList = document.querySelector('.mood-filtered');
+                   songList.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Şarkılar filtreleniyor...</p></div>';
+
+                   // Simüle edilmiş AJAX isteği
+                   setTimeout(() => {
+                       if (mood === 'all') {
+                           // Tüm duyguları göster
+                           songList.innerHTML = `
+                               <div class="song-item" data-id="301">
+                                   <div class="song-info">
+                                       <img src="/assets/images/covers/mood1.jpg" alt="Song Cover" class="song-cover">
+                                       <div class="song-details">
+                                           <h6 class="song-title">Happy Song</h6>
+                                           <p class="song-artist">Happy Artist</p>
+                                       </div>
+                                   </div>
+                                   <div class="song-tags">
+                                       <span class="tag-badge happy">Happy</span>
+                                   </div>
+                                   <div class="song-actions">
+                                       <button class="btn btn-sm btn-success add-song-btn">
+                                           <i class="fas fa-plus"></i>
+                                       </button>
+                                       <button class="btn btn-sm btn-secondary preview-song-btn">
+                                           <i class="fas fa-play"></i>
+                                       </button>
+                                   </div>
+                               </div>
+                               <div class="song-item" data-id="302">
+                                   <div class="song-info">
+                                       <img src="/assets/images/covers/mood2.jpg" alt="Song Cover" class="song-cover">
+                                       <div class="song-details">
+                                           <h6 class="song-title">Sad Song</h6>
+                                           <p class="song-artist">Sad Artist</p>
+                                       </div>
+                                   </div>
+                                   <div class="song-tags">
+                                       <span class="tag-badge sad">Sad</span>
+                                   </div>
+                                   <div class="song-actions">
+                                       <button class="btn btn-sm btn-success add-song-btn">
+                                           <i class="fas fa-plus"></i>
+                                       </button>
+                                       <button class="btn btn-sm btn-secondary preview-song-btn">
+                                           <i class="fas fa-play"></i>
+                                       </button>
+                                   </div>
+                               </div>
+                           `;
+                       } else {
+                           // Belirli bir duyguyu göster
+                           songList.innerHTML = `
+                               <div class="song-item" data-id="303">
+                                   <div class="song-info">
+                                       <img src="/assets/images/covers/mood3.jpg" alt="Song Cover" class="song-cover">
+                                       <div class="song-details">
+                                           <h6 class="song-title">${mood.charAt(0).toUpperCase() + mood.slice(1)} Song 1</h6>
+                                           <p class="song-artist">${mood.charAt(0).toUpperCase() + mood.slice(1)} Artist 1</p>
+                                       </div>
+                                   </div>
+                                   <div class="song-tags">
+                                       <span class="tag-badge ${mood}">${mood.charAt(0).toUpperCase() + mood.slice(1)}</span>
+                                   </div>
+                                   <div class="song-actions">
+                                       <button class="btn btn-sm btn-success add-song-btn">
+                                           <i class="fas fa-plus"></i>
+                                       </button>
+                                       <button class="btn btn-sm btn-secondary preview-song-btn">
+                                           <i class="fas fa-play"></i>
+                                       </button>
+                                   </div>
+                               </div>
+                               <div class="song-item" data-id="304">
+                                   <div class="song-info">
+                                       <img src="/assets/images/covers/mood4.jpg" alt="Song Cover" class="song-cover">
+                                       <div class="song-details">
+                                           <h6 class="song-title">${mood.charAt(0).toUpperCase() + mood.slice(1)} Song 2</h6>
+                                           <p class="song-artist">${mood.charAt(0).toUpperCase() + mood.slice(1)} Artist 2</p>
+                                       </div>
+                                   </div>
+                                   <div class="song-tags">
+                                       <span class="tag-badge ${mood}">${mood.charAt(0).toUpperCase() + mood.slice(1)}</span>
+                                   </div>
+                                   <div class="song-actions">
+                                       <button class="btn btn-sm btn-success add-song-btn">
+                                           <i class="fas fa-plus"></i>
+                                       </button>
+                                       <button class="btn btn-sm btn-secondary preview-song-btn">
+                                           <i class="fas fa-play"></i>
+                                       </button>
+                                   </div>
+                               </div>
+                           `;
+                       }
+
+                       // Yeni eklenen butonlar için event listener'ları ekle
+                       addEventListenersToSongs();
+                   }, 800);
+               }
+
+               // Şarkıyı çalma listesine ekleme
+               function addSongToPlaylist(songId, title, artist, cover, tag) {
+                   // Boş liste mesajını gizle, şarkı listesini göster
+                   document.getElementById('playlistSongsEmpty').classList.add('d-none');
+                   document.getElementById('playlistSongs').classList.remove('d-none');
+
+                   // Şarkı ID'sini kontrol et - eğer zaten listede varsa ekleme
+                   const existingSong = document.querySelector(`.playlist-song[data-id="${songId}"]`);
+                   if (existingSong) {
+                       // Şarkı zaten listede, hafif bir vurgulama animasyonu ekle
+                       existingSong.classList.add('highlight');
+                       setTimeout(() => {
+                           existingSong.classList.remove('highlight');
+                       }, 1500);
+                       return;
+                   }
+
+                   // Rasgele süre (gerçek uygulamada şarkı süreleri veritabanından gelir)
+                   const minutes = Math.floor(Math.random() * 4) + 2; // 2-5 dakika arası
+                   const seconds = Math.floor(Math.random() * 60);
+                   const duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                   // Şarkı öğesini oluştur
+                   const songElement = document.createElement('li');
+                   songElement.className = 'list-group-item playlist-song';
+                   songElement.setAttribute('data-id', songId);
+                   songElement.setAttribute('data-duration', `${minutes * 60 + seconds}`);
+
+                   songElement.innerHTML = `
+                       <div class="d-flex align-items-center">
+                           <div class="handle me-2">
+                               <i class="fas fa-grip-lines"></i>
+                           </div>
+                           <div class="song-number me-3">${document.querySelectorAll('.playlist-song').length + 1}</div>
+                           <img src="${cover}" alt="${title}" class="song-mini-cover me-3">
+                           <div class="song-details flex-grow-1">
+                               <h6 class="mb-0">${title}</h6>
+                               <small class="text-muted">${artist}</small>
+                           </div>
+                           <div class="song-duration me-3">${duration}</div>
+                           ${tag ? `<span class="tag-badge ${tag.toLowerCase()} me-3">${tag}</span>` : ''}
+                           <button class="btn btn-sm btn-danger remove-song-btn">
+                               <i class="fas fa-times"></i>
+                           </button>
+                       </div>
+                   `;
+
+                   // Şarkıyı listeye ekle
+                   document.querySelector('.sortable-songs').appendChild(songElement);
+
+                   // Silme butonuna event listener ekle
+                   songElement.querySelector('.remove-song-btn').addEventListener('click', function() {
+                       songElement.remove();
+                       // Şarkı numaralarını yeniden düzenle
+                       updateSongNumbers();
+                       // Çalma listesi bilgilerini güncelle
+                       updatePlaylistSummary();
+
+                       // Eğer liste boşsa, boş mesajını göster
+                       if (document.querySelectorAll('.playlist-song').length === 0) {
+                           document.getElementById('playlistSongsEmpty').classList.remove('d-none');
+                           document.getElementById('playlistSongs').classList.add('d-none');
+                       }
+                   });
+
+                   // Çalma listesi bilgilerini güncelle
+                   updatePlaylistSummary();
+               }
+
+               // Şarkı numaralarını güncelleme
+               function updateSongNumbers() {
+                   const songs = document.querySelectorAll('.playlist-song');
+                   songs.forEach((song, index) => {
+                       song.querySelector('.song-number').textContent = index + 1;
+                   });
+               }
+
+               // Çalma listesi özet bilgilerini güncelleme
+               function updatePlaylistSummary() {
+                   const songs = document.querySelectorAll('.playlist-song');
+
+                   // Şarkı sayısını güncelle
+                   document.getElementById('songCount').textContent = songs.length;
+
+                   // Toplam süreyi hesapla
+                   let totalSeconds = 0;
+                   songs.forEach(song => {
+                       totalSeconds += parseInt(song.getAttribute('data-duration'));
+                   });
+
+                   const hours = Math.floor(totalSeconds / 3600);
+                   const minutes = Math.floor((totalSeconds % 3600) / 60);
+                   const seconds = totalSeconds % 60;
+
+                   let durationText = '';
+                   if (hours > 0) {
+                       durationText = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                   } else {
+                       durationText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                   }
+
+                   document.getElementById('totalDuration').textContent = durationText;
+               }
+
+               // Yeni eklenen şarkılar için event listener'ları ekleme
+               function addEventListenersToSongs() {
+                   // Şarkı ekleme butonları
+                   document.querySelectorAll('.add-song-btn').forEach(btn => {
+                       btn.addEventListener('click', function() {
+                           const songItem = this.closest('.song-item');
+                           const songId = songItem.getAttribute('data-id');
+                           const songTitle = songItem.querySelector('.song-title').textContent;
+                           const songArtist = songItem.querySelector('.song-artist').textContent;
+                           const songCover = songItem.querySelector('.song-cover').src;
+                           const songTag = songItem.querySelector('.tag-badge') ? songItem.querySelector('.tag-badge').textContent : '';
+
+                           addSongToPlaylist(songId, songTitle, songArtist, songCover, songTag);
+                       });
+                   });
+
+                   // Şarkı önizleme butonları
+                   document.querySelectorAll('.preview-song-btn').forEach(btn => {
+                       btn.addEventListener('click', function() {
+                           const songItem = this.closest('.song-item');
+                           const songId = songItem.getAttribute('data-id');
+                           const songTitle = songItem.querySelector('.song-title').textContent;
+                           const songArtist = songItem.querySelector('.song-artist').textContent;
+                           const songCover = songItem.querySelector('.song-cover').src;
+
+                           // Önizleme modalını güncelle
+                           document.getElementById('previewTitle').textContent = songTitle;
+                           document.getElementById('previewArtist').textContent = songArtist;
+                           document.getElementById('previewCover').src = songCover;
+
+                           // Demo ses dosyasını ayarla
+                           const audioSrc = `/music/preview/${songId}.mp3`;
+                           previewAudio.src = audioSrc;
+                           previewAudio.load();
+                           previewingSongId = songId;
+
+                           // Modalı göster
+                           const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+                           previewModal.show();
+
+                           // Otomatik çal
+                           previewAudio.play().catch(e => console.log('Otomatik çalma engellendi:', e));
+                       });
+                   });
+               }
+
+               // Çalma listesi oluşturma
+               function createPlaylist() {
+                   const playlistName = document.getElementById('playlistName').value.trim();
+                   const playlistDescription = document.getElementById('playlistDescription').value.trim();
+                   const songs = document.querySelectorAll('.playlist-song');
+
+                   // Validasyon
+                   if (!playlistName) {
+                       alert('Lütfen çalma listesi adı girin');
+                       return;
+                   }
+
+                   if (songs.length === 0) {
+                       alert('Lütfen çalma listesine en az bir şarkı ekleyin');
+                       return;
+                   }
+
+                   // Seçili etiketleri al
+                   const selectedTags = [];
+                   document.querySelectorAll('.mood-tag.selected').forEach(tag => {
+                       selectedTags.push(tag.getAttribute('data-tag'));
+                   });
+
+                   // Kapak görselini al (gerçek bir uygulama bir FormData nesnesine dosyayı ekleyecektir)
+                   let coverImageData = null;
+                   const coverPreview = document.getElementById('coverPreview');
+                   if (coverPreview.classList.contains('has-image')) {
+                       coverImageData = 'image_data_here'; // Gerçekte: coverUpload.files[0]
+                   } else {
+                       // Tema seçilmişse
+                       const themeClass = Array.from(coverPreview.classList).find(c => c.startsWith('gradient-'));
+                       if (themeClass) {
+                           coverImageData = themeClass; // Temayı kaydet
+                       }
+                   }
+
+                   // Şarkı listesini hazırla
+                   const songList = [];
+                   songs.forEach((song, index) => {
+                       songList.push({
+                           id: song.getAttribute('data-id'),
+                           order: index + 1
+                       });
+                   });
+
+                   // Çalma listesi verisi
+                   const playlistData = {
+                       name: playlistName,
+                       description: playlistDescription,
+                       coverImage: coverImageData,
+                       tags: selectedTags,
+                       isPrivate: document.getElementById('playlistPrivacy').checked,
+                       songs: songList
+                   };
+
+                   console.log('Çalma listesi oluşturuluyor:', playlistData);
+
+                   // Gerçek uygulamada burada AJAX isteği yapılır
+                   // Şimdilik başarı modalını gösterelim
+                   setTimeout(() => {
+                       const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                       successModal.show();
+                   }, 1000);
+               }
+
+               // Çalma listesi kaydetme (güncelleme)
+               function savePlaylist() {
+                   // Bu fonksiyon mevcut bir çalma listesi düzenlendiğinde kullanılır
+                   // Gerçek uygulamada, playlistId gibi bir değişken takip edilir
+                   console.log('Çalma listesi kaydediliyor...');
+
+                   // Başarı mesajı
+                   const toast = `
+                       <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+                           <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                               <div class="toast-header bg-success text-white">
+                                   <strong class="me-auto">Başarılı!</strong>
+                                   <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Kapat"></button>
+                               </div>
+                               <div class="toast-body">
+                                   Çalma listeniz başarıyla güncellendi.
+                               </div>
+                           </div>
+                       </div>
+                   `;
+
+                   const toastContainer = document.createElement('div');
+                   toastContainer.innerHTML = toast;
+                   document.body.appendChild(toastContainer);
+
+                   // 3 saniye sonra toast'ı kaldır
+                   setTimeout(() => {
+                       const toastElement = document.querySelector('.toast');
+                       const bsToast = bootstrap.Toast.getInstance(toastElement);
+                       if (bsToast) {
+                           bsToast.hide();
+                       }
+                       setTimeout(() => {
+                           toastContainer.remove();
+                       }, 500);
+                   }, 3000);
+               }
+
+               // Mevcut çalma listesini yükleme
+               function loadPlaylist(playlistId) {
+                   console.log('Çalma listesi yükleniyor:', playlistId);
+
+                   // Gerçek uygulamada burada AJAX isteği yapılır
+                   // Şimdilik dummy data ile gösterelim
+
+                   // Yükleme göstergesi
+                   document.getElementById('playlistSongsEmpty').classList.remove('d-none');
+                   document.getElementById('playlistSongs').classList.add('d-none');
+                   document.getElementById('playlistSongsEmpty').innerHTML = `
+                       <div class="text-center p-5">
+                           <div class="spinner-border text-primary" role="status"></div>
+                           <p class="mt-2">Çalma listesi yükleniyor...</p>
+                       </div>
+                   `;
+
+                   // Şimüle edilmiş AJAX isteği
+                   setTimeout(() => {
+                       // Form bilgilerini doldur
+                       const playlists = [
+                           {
+                               id: 1,
+                               name: 'Sabah Ritüeli',
+                               description: 'Güne enerjik başlamak için harika şarkılar',
+                               coverTheme: 'gradient-purple',
+                               tags: ['energetic', 'happy'],
+                               isPrivate: false,
+                               songs: [
+                                   { id: 101, title: 'Morning Energy', artist: 'Sunrise Band', cover: '/assets/images/covers/cover1.jpg', tag: 'Energetic', duration: 195 },
+                                   { id: 102, title: 'Wake Up Call', artist: 'Alarm Clock', cover: '/assets/images/covers/cover2.jpg', tag: 'Happy', duration: 210 },
+                                   { id: 103, title: 'New Day', artist: 'Fresh Start', cover: '/assets/images/covers/cover3.jpg', tag: 'Energetic', duration: 180 }
+                               ]
+                           },
+                           {
+                               id: 2,
+                               name: 'Gece Modunda',
+                               description: 'Rahatlamak ve uykuya dalmak için',
+                               coverTheme: 'gradient-blue',
+                               tags: ['relaxing'],
+                               isPrivate: true,
+                               songs: [
+                                   { id: 201, title: 'Midnight Dreams', artist: 'Sleep Well', cover: '/assets/images/covers/cover4.jpg', tag: 'Relaxing', duration: 240 },
+                                   { id: 202, title: 'Starry Night', artist: 'Moon Light', cover: '/assets/images/covers/cover5.jpg', tag: 'Relaxing', duration: 270 }
+                               ]
+                           },
+                           {
+                               id: 3,
+                               name: 'Eski Günler',
+                               description: 'Nostalji dolu anılar için',
+                               coverTheme: 'gradient-pink',
+                               tags: ['nostalgic'],
+                               isPrivate: false,
+                               songs: [
+                                   { id: 301, title: 'Old Times', artist: 'Memory Lane', cover: '/assets/images/covers/cover6.jpg', tag: 'Nostalgic', duration: 225 },
+                                   { id: 302, title: 'Back Then', artist: 'Yesterday', cover: '/assets/images/covers/cover7.jpg', tag: 'Nostalgic', duration: 195 },
+                                   { id: 303, title: 'Remember When', artist: 'Past Times', cover: '/assets/images/covers/cover8.jpg', tag: 'Nostalgic', duration: 210 }
+                               ]
+                           }
+                       ];
+
+                       // ID'ye göre çalma listesini bul
+                       const playlist = playlists.find(p => p.id === parseInt(playlistId));
+
+                       if (playlist) {
+                           // Form alanlarını doldur
+                           document.getElementById('playlistName').value = playlist.name;
+                           document.getElementById('playlistDescription').value = playlist.description;
+
+                           // Kapak temasını ayarla
+                           const coverPreview = document.getElementById('coverPreview');
+                           coverPreview.className = 'playlist-cover-preview me-3 ' + playlist.coverTheme;
+
+                           // Etiketleri seç
+                           document.querySelectorAll('.mood-tag').forEach(tag => {
+                               const tagName = tag.getAttribute('data-tag');
+                               if (playlist.tags.includes(tagName)) {
+                                   tag.classList.add('selected');
+                               } else {
+                                   tag.classList.remove('selected');
+                               }
+                           });
+
+                           // Gizlilik ayarını ayarla
+                           document.getElementById('playlistPrivacy').checked = playlist.isPrivate;
+
+                           // Şarkı listesini temizle
+                           document.querySelector('.sortable-songs').innerHTML = '';
+
+                           // Şarkıları ekle
+                           playlist.songs.forEach(song => {
+                               const minutes = Math.floor(song.duration / 60);
+                               const seconds = song.duration % 60;
+                               const durationStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                               addSongToPlaylist(song.id, song.title, song.artist, song.cover, song.tag, durationStr);
+                           });
+
+                           // Boş liste mesajını gizle, şarkı listesini göster
+                           document.getElementById('playlistSongsEmpty').classList.add('d-none');
+                           document.getElementById('playlistSongs').classList.remove('d-none');
+                       }
+                   }, 1500);
+               }
+           });
+    </script>
+
+ }
