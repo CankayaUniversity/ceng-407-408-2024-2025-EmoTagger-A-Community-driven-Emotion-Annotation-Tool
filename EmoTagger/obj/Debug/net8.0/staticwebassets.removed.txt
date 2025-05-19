@@ -1,1 +1,0 @@
-D:\Ceng407\ceng-407-408-2024-2025-EmoTagger-A-Community-driven-Emotion-Annotation-Tool\wwwroot\vue\.env
