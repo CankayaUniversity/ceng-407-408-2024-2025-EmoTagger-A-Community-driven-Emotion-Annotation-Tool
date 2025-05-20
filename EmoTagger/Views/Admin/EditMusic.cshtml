@@ -1,0 +1,186 @@
+﻿@model EmoTagger.Models.Music
+@{
+    ViewData["Title"] = "Müzik Düzenle - EmoTagger";
+}
+
+<div class="container-fluid">
+    <div class="admin-header">
+        <h1 class="mb-1">Müzik Düzenle</h1>
+        <p class="text-muted">Müzik bilgilerini güncelleyebilirsiniz.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="EditMusic" method="post">
+                        <input type="hidden" asp-for="musicid" />
+                        <input type="hidden" asp-for="UserId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="title" class="form-label">Başlık</label>
+                            <input asp-for="title" class="form-control" />
+                            <span asp-validation-for="title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="artist" class="form-label">Sanatçı</label>
+                            <input asp-for="artist" class="form-control" />
+                            <span asp-validation-for="artist" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <option value="Pop">Pop</option>
+                            <option value="Rock">Rock</option>
+                            <option value="Classical">Klasik</option>
+                            <option value="Jazz">Jazz</option>
+                            <option value="Hip Hop">Hip Hop</option>
+                            <option value="Electronic">Elektronik</option>
+                            <option value="Folk">Folk</option>
+                            <option value="R&B">R&B</option>
+                            <option value="Country">Country</option>
+                            <option value="Other">Diğer</option>
+                            </select>
+
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Değişiklikleri Kaydet
+                            </button>
+                            <a asp-action="Musics" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Müzik Bilgileri</h5>
+                    <div class="text-center my-4">
+                        <div class="music-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Müzik ID:</span>
+                            <span class="fw-bold">@Model.musicid</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Eklenme Tarihi:</span>
+                            <span>@Model.createdat.ToString("dd.MM.yyyy")</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Ekleyen:</span>
+
+                        </li>
+                    </ul>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-primary w-100" id="playMusicBtn">
+                            <i class="fas fa-play me-2"></i> Müziği Dinle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .music-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7016d0, #ff69b4);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        margin: 0 auto;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Müzik dinleme
+        $(document).ready(function() {
+            $("#playMusicBtn").click(function() {
+                var musicId = @Model.musicid;
+                var musicTitle = "@Model.title";
+
+                // Modal içeriğini ayarla
+                $("#playMusicModal .music-title-display").text(musicTitle);
+
+                // Müzik dosyasını yükle
+                var audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = '/api/music/' + musicId;
+                audioPlayer.load();
+
+                // Modalı göster
+                $("#playMusicModal").modal('show');
+
+                // Müziği çal
+                audioPlayer.play();
+            });
+        });
+    </script>
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Son Kayıt Olan Kullanıcılar</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad Soyad</th>
+                        <th>Email</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Bu kısım controller'dan gelen verilerle doldurulacak -->
+                    <tr>
+                        <td colspan="5" class="text-center">Yükleniyor...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-header {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+    }
+</style>

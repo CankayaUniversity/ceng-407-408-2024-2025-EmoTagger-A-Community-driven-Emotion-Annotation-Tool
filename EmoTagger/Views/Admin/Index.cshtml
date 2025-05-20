@@ -1,0 +1,324 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+<h2 class="mb-3">Admin Panel</h2>
+
+<!-- Analytics Summary Cards -->
+<div class="row mb-4 justify-content-center">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Users</h5>
+                <h3 class="card-text">@ViewBag.UserCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Music Tracks</h5>
+                <h3 class="card-text">@ViewBag.MusicCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Tags</h5>
+                <h3 class="card-text">@ViewBag.TotalTagCount</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Button Group for Emotion Models -->
+<div class="d-flex gap-2 mb-4">
+    <button type="button" class="btn btn-danger" onclick="showSection('model1Table')">Model 1</button>
+    <button type="button" class="btn btn-info" onclick="showSection('model2Table')">Model 2</button>
+    <button type="button" class="btn btn-success" onclick="showSection('model3Table')">Model 3</button>
+    <button type="button" class="btn btn-secondary" onclick="showSection('musicStats')">Music Stats</button>
+</div>
+
+<!-- Model 1 Table -->
+<div id="model1Table" class="section-content" style="display:none;">
+    <p class="text-muted">Predicted emotions (Model 1 – based on user tags):</p>
+    <div class="ai-chat-bot mt-3 mb-3 d-flex align-items-center gap-2" style="max-width: 500px;">
+        <span style="font-size:2rem;line-height:1;">🧠</span>
+        <input type="text" class="form-control mx-2" placeholder="Type a song name or ask a question..." style="flex:1;">
+        <button class="btn btn-primary" onclick="askModel1AI(this)">ASK</button>
+    </div>
+    <div class="ai-response mb-3" style="max-width:500px;"></div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                @Html.Raw(
+                         ViewBag.EmotionHtml1?.ToString()
+                         .Replace("<table", "<table class='table table-bordered table-striped'")
+                         .Replace("<thead>", "<thead class='table-dark'>")
+                         )
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model 2 Table -->
+<div id="model2Table" class="section-content" style="display:none;">
+    <p class="text-muted">Predicted emotions (Model 2 – based on audio analysis):</p>
+    <div class="ai-chat-bot mt-3 mb-3 d-flex align-items-center gap-2" style="max-width: 500px;">
+        <span style="font-size:2rem;line-height:1;">🧠</span>
+        <input type="text" class="form-control mx-2" placeholder="Type a song name or ask a question..." style="flex:1;">
+        <button class="btn btn-primary" onclick="askModelEmotionAI(this, 'model2Table')">Sor</button>
+    </div>
+    <div class="ai-response mb-3" style="max-width:500px;"></div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                @Html.Raw(
+                         ViewBag.EmotionHtml2?.ToString()
+                         .Replace("<table", "<table class='table table-bordered table-striped'")
+                         .Replace("<thead>", "<thead class='table-primary'>")
+                         )
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model 3 Table -->
+<div id="model3Table" class="section-content" style="display:none;">
+    <p class="text-muted">Predicted emotions (Model 3 – based on lyrics transcription):</p>
+    <div class="ai-chat-bot mt-3 mb-3 d-flex align-items-center gap-2" style="max-width: 500px;">
+        <span style="font-size:2rem;line-height:1;">🧠</span>
+        <input type="text" class="form-control mx-2" placeholder="Type a song name or ask a question..." style="flex:1;">
+        <button class="btn btn-primary" onclick="askModelEmotionAI(this, 'model3Table')">Sor</button>
+    </div>
+    <div class="ai-response mb-3" style="max-width:500px;"></div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                @Html.Raw(
+                         ViewBag.EmotionHtml3?.ToString()
+                         .Replace("<table", "<table class='table table-bordered table-striped'")
+                         .Replace("<thead>", "<thead class='table-success'>")
+                         )
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Music Statistics Section -->
+<div id="musicStats" class="section-content" style="display:none;">
+    <div class="row">
+        <!-- Most Played Tracks -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Most Played Tracks</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Artist</th>
+                                    <th>Play Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.MostPlayedList != null)
+                                {
+                                    @foreach (var item in ViewBag.MostPlayedList)
+                                    {
+                                        <tr>
+                                            <td>@item.title</td>
+                                            <td>@item.artist</td>
+                                            <td>@item.Count</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Least Played Tracks -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Least Played Tracks</h5>
+                </div>
+                <div class="card-body">
+                    <div id="leastPlayedTracksContainer">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Artist</th>
+                                        <th>Play Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.LeastPlayedList != null)
+                                    {
+                                        @foreach (var item in ViewBag.LeastPlayedList)
+                                        {
+                                            <tr>
+                                                <td>@item.title</td>
+                                                <td>@item.artist</td>
+                                                <td>@item.Count</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (ViewBag.LeastPlayedTotalPages > 1)
+                        {
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav aria-label="Least played tracks pagination">
+                                    <ul class="pagination">
+                                        @for (int i = 1; i <= ViewBag.LeastPlayedTotalPages; i++)
+                                        {
+                                            <li class="page-item @(i == ViewBag.LeastPlayedCurrentPage ? "active" : "")">
+                                                <a class="page-link" href="javascript:void(0)" onclick="loadLeastPlayedTracks(@i)">@i</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script to toggle sections -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set initial section
+        showSection('musicStats');
+    });
+
+    function showSection(sectionId) {
+        // Hide all sections
+        const allSections = document.querySelectorAll('.section-content');
+        allSections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Show the selected section
+        const selectedSection = document.getElementById(sectionId);
+        if (selectedSection) {
+            selectedSection.style.display = 'block';
+        }
+
+        // Update active button state
+        const buttons = document.querySelectorAll('.d-flex.gap-2.mb-4 button');
+        buttons.forEach(button => {
+            // Remove active class from all buttons
+            button.classList.remove('active');
+
+            // Add active class to the clicked button
+            if (button.getAttribute('onclick').includes(sectionId)) {
+                button.classList.add('active');
+            }
+        });
+    }
+
+    // Function to load least played tracks with pagination
+    function loadLeastPlayedTracks(page) {
+        $.ajax({
+            url: '@Url.Action("GetLeastPlayedTracks", "Admin")',
+            type: 'GET',
+            data: { page: page },
+            success: function(response) {
+                $('#leastPlayedTracksContainer').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading least played tracks:', error);
+                alert('Error loading least played tracks. Please try again.');
+            }
+        });
+    }
+
+    // Model 1 için AI Chat Bot
+    function askModel1AI(btn) {
+        const input = btn.previousElementSibling;
+        const responseDiv = btn.parentElement.parentElement.querySelector('.ai-response');
+        responseDiv.textContent = ""; // Önce cevabı temizle
+        const question = input.value.trim().toLowerCase();
+        if (!question) {
+            responseDiv.textContent = "Please enter a song name.";
+            return;
+        }
+        const table = document.querySelector('#model1Table table');
+        if (!table) {
+            responseDiv.textContent = "Table not found.";
+            return;
+        }
+        let found = false;
+        const headers = Array.from(table.tHead.rows[0].cells).map(cell => cell.textContent.trim().toLowerCase());
+        const titleIdx = headers.findIndex(h => h.includes('title'));
+        const tagsIdx = headers.findIndex(h => h.includes('tag'));
+        const predIdx = headers.findIndex(h => h.includes('predicted emotion') || h.includes('emotion'));
+        for (let row of table.tBodies[0].rows) {
+            const titleCell = row.cells[titleIdx];
+            const tagsCell = row.cells[tagsIdx];
+            const predCell = row.cells[predIdx];
+            const title = titleCell?.textContent.trim().toLowerCase();
+            if (title && question.includes(title)) {
+                if (question.includes('insan') || question.includes('tag')) {
+                    responseDiv.innerHTML = `<span style='color:#198754;font-weight:600;'>İnsanlar ne dedi (Tags):</span> ${tagsCell?.textContent || '-'}`;
+                } else {
+                    responseDiv.innerHTML = `<span style='color:#198754;font-weight:600;'>AI (Predicted Emotion):</span> ${predCell?.textContent || '-'}`;
+                }
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            responseDiv.innerHTML = "Song not found or no tag.";
+        }
+    }
+
+    // Model 2 ve 3 için AI Chat Bot
+    function askModelEmotionAI(btn, tableId) {
+        const input = btn.previousElementSibling;
+        const responseDiv = btn.parentElement.parentElement.querySelector('.ai-response');
+        responseDiv.textContent = ""; // Önce cevabı temizle
+        const question = input.value.trim().toLowerCase();
+        if (!question) {
+            responseDiv.textContent = "Please enter a song name.";
+            return;
+        }
+        const table = document.querySelector(`#${tableId} table`);
+        if (!table) {
+            responseDiv.textContent = "Table not found.";
+            return;
+        }
+        let found = false;
+        const headers = Array.from(table.tHead.rows[0].cells).map(cell => cell.textContent.trim().toLowerCase());
+        const titleIdx = headers.findIndex(h => h.includes('title'));
+        const emotionIdx = headers.findIndex(h => h.includes('emotion'));
+        for (let row of table.tBodies[0].rows) {
+            const titleCell = row.cells[titleIdx];
+            const emotionCell = row.cells[emotionIdx];
+            const title = titleCell?.textContent.trim().toLowerCase();
+            if (title && question.includes(title)) {
+                responseDiv.innerHTML = `<span style='color:#198754;font-weight:600;'>AI (Emotion):</span> ${emotionCell?.textContent || '-'}`;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            responseDiv.innerHTML = "Song not found or no tag.";
+        }
+    }
+</script>
+
+<!-- Adding some additional styles for better UI -->

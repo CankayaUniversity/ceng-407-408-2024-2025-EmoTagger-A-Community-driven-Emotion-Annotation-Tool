@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\listentag.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\listentag.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ListenTag.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListenTag.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\ListenTag.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListenTag.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\ListenTag.cshtml",
+              "ViewState": "AgIAAH0JAAAAAAAAAAAqwJcJAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-20T21:44:24.93Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

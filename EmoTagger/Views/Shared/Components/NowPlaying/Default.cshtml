@@ -1,0 +1,676 @@
+﻿@model EmoTagger.ViewComponents.NowPlayingViewModel
+@using System.Web
+
+<link rel="stylesheet" href="~/css/default.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<meta charset="UTF-8">
+
+@if (Model?.CurrentTrack != null)
+{
+    <div id="player-loading" style="display:none; position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 9999; background: rgba(0,0,0,0.8); color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: bold; font-size: 1.1rem;">Yükleniyor...</div>
+    <div class="now-playing d-flex align-items-center text-white">
+        <div class="track-info">
+            <i class="fas fa-music note-icon"></i>
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <strong>@Html.Raw(HttpUtility.HtmlDecode(Model.CurrentTrack.title)) - @Html.Raw(HttpUtility.HtmlDecode(Model.CurrentTrack.artist))</strong>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn heart-icon me-3" onclick="toggleFavorite()" title="Favorilere Ekle/Çıkar">
+            <i class="fas fa-heart"></i>
+        </button>
+        <div id="favorite-toast" style="display:none; position: absolute; left: 50%; bottom: 70px; transform: translateX(-50%); z-index: 9999; background: #ff3366; color: #fff; padding: 10px 28px; border-radius: 24px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.12); transition: opacity 0.3s;">Favorilere eklendi!</div>
+
+        <div class="player-controls">
+            <button class="btn prev-btn" onclick="prevTrack()" title="Previous">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <button class="btn play-pause-btn" onclick="playPause()" title="Play/Pause">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="btn next-btn" onclick="nextTrack()" title="Next">
+                <i class="fas fa-step-forward"></i>
+            </button>
+            <button class="btn stop-btn" onclick="stopTrack()" title="Stop">
+                <i class="fas fa-stop"></i>
+            </button>
+            <button class="btn mute-btn" onclick="toggleMute()" title="Mute">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <div class="time-display current-time">00:00</div>
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-filled"></div>
+                </div>
+                <input type="range" min="0" max="100" value="0" class="progress-slider" oninput="updateProgressUI(this.value)" onchange="seekTo()">
+            </div>
+            <div class="time-display total-duration">00:00</div>
+            <div class="preview-timer" style="background: #ff3366; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem; margin: 0 10px;">
+                30 Seconds
+            </div>
+            <div class="volume-control">
+                <div class="volume-bar">
+                    <div class="volume-filled"></div>
+                </div>
+                <input type="range" min="0" max="100" value="80" class="volume-slider" oninput="updateVolumeUI(this.value)" onchange="setVolume()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Müzik verisi için gizli div -->
+    <div id="trackData" style="display: none;"
+         data-current-filename="@Model.CurrentTrack.filename"
+         data-current-title="@HttpUtility.HtmlEncode(Model.CurrentTrack.title)"
+         data-current-artist="@HttpUtility.HtmlEncode(Model.CurrentTrack.artist)"
+         data-current-index="@Model.AllTracks.FindIndex(t => t.musicid == Model.CurrentTrack.musicid)"
+         data-tracks-count="@Model.AllTracks.Count">
+        @foreach (var track in Model.AllTracks)
+        {
+            <div class="track-item"
+                 data-id="@track.musicid"
+                 data-title="@HttpUtility.HtmlEncode(track.title)"
+                 data-artist="@HttpUtility.HtmlEncode(track.artist)"
+                 data-filename="@track.filename">
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="now-playing text-center text-white py-3">
+        <p class="mb-0">Çalan müzik yok.</p>
+    </div>
+}
+<script>
+    // Global değişkenler - sadece bu component için
+    let hasLogged = false;
+    let lastLoggedId = null;
+    const minimumPlayTime = 2; // saniye
+    let previewTimer = null;
+    let originalVolume = 0.8;
+
+    // Audio player'ı bul
+    const audioPlayer = document.getElementById('musicPlayer') || window.parent.document.getElementById('musicPlayer');
+
+    // Şarkı değiştiğinde loglama durumunu sıfırla
+    document.addEventListener('songChanged', function(event) {
+        console.log("NowPlaying: Şarkı değişti, loglama sıfırlanıyor");
+        hasLogged = false;
+        lastLoggedId = null;
+    });
+
+    // Şarkı bittiğinde loglama durumunu sıfırla
+    if (audioPlayer) {
+        audioPlayer.addEventListener('ended', function() {
+            console.log("NowPlaying: Şarkı bitti, loglama sıfırlanıyor");
+            hasLogged = false;
+            lastLoggedId = null;
+        });
+    }
+</script>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+        console.log("Player script başlatılıyor...");
+
+        let audioPlayer = document.getElementById('musicPlayer');
+        if (!audioPlayer) {
+            audioPlayer = document.createElement('audio');
+            audioPlayer.id = 'musicPlayer';
+            audioPlayer.style.display = 'none';
+            document.body.appendChild(audioPlayer);
+            console.log("Audio player oluşturuldu");
+        }
+
+        const trackDataElement = document.getElementById('trackData');
+        // Değişkenleri window objesine bağlıyoruz (global erişim için)
+        window.tracks = [];
+        window.currentIndex = 0;
+
+        const playPauseBtn = document.querySelector('.play-pause-btn');
+        const playPauseIcon = playPauseBtn?.querySelector('i');
+        const progressSlider = document.querySelector('.progress-slider');
+        const progressFilled = document.querySelector('.progress-filled');
+        const currentTimeDisplay = document.querySelector('.current-time');
+        const totalDurationDisplay = document.querySelector('.total-duration');
+        const volumeSlider = document.querySelector('.volume-slider');
+        const volumeFilled = document.querySelector('.volume-filled');
+        const muteBtn = document.querySelector('.mute-btn');
+
+        function decodeHtmlEntities(input) {
+            if (!input) return "";
+            const doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        }
+
+        function loadTrackData() {
+            if (!trackDataElement) {
+                console.warn("Şarkı verisi bulunamadı!");
+                return false;
+            }
+
+            const trackItems = trackDataElement.querySelectorAll('.track-item');
+            if (!trackItems || trackItems.length === 0) {
+                console.warn("Şarkı listesi bulunamadı!");
+                return false;
+            }
+
+        window.tracks = Array.from(trackItems).map(item => ({
+                id: item.dataset.id,
+                title: decodeHtmlEntities(item.dataset.title),
+                artist: decodeHtmlEntities(item.dataset.artist),
+                filename: item.dataset.filename
+            }));
+
+        console.log("Şarkı listesi yüklendi, toplam:", window.tracks.length);
+
+            const currentFilename = trackDataElement.dataset.currentFilename;
+
+        // Dosya adına göre doğru şarkıyı bul
+        const foundIndex = window.tracks.findIndex(t => t.filename === currentFilename);
+
+        if (foundIndex >= 0 && foundIndex < window.tracks.length) {
+            window.currentIndex = foundIndex;
+            console.log("Mevcut şarkı:", window.tracks[window.currentIndex].title, "indeks:", window.currentIndex);
+            return true;
+        } else if (window.tracks.length > 0) {
+            const defaultIndex = parseInt(trackDataElement.dataset.currentIndex) || 0;
+            if (defaultIndex >= 0 && defaultIndex < window.tracks.length) {
+                window.currentIndex = defaultIndex;
+                console.log("Current-index kullanıldı:", window.currentIndex);
+                    return true;
+                }
+
+            window.currentIndex = 0;
+                console.warn("Geçerli şarkı bulunamadı, ilk şarkı kullanılıyor");
+                return true;
+            }
+
+            return false;
+        }
+
+        function setCurrentTrack(track, autoPlay = true) {
+            if (!track || !track.filename) {
+                console.error("Geçersiz şarkı bilgisi!");
+                return;
+            }
+
+            // currentIndex'i güncelle
+            const foundIndex = window.tracks.findIndex(t => t.id == track.id);
+            if (foundIndex !== -1) {
+                window.currentIndex = foundIndex;
+            }
+
+            window.currentTrackTitle = track.title;
+            window.currentTrackArtist = track.artist;
+            window.currentMusicId = track.id;
+             // *** BURAYA EKLE! ***
+    window.currentFilename = track.filename;
+    if (window.parent) window.parent.currentFilename = track.filename;
+    // ********************
+            audioPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(track.filename)}`;
+            audioPlayer.load();
+
+            const titleElement = document.querySelector('.marquee-content');
+            if (titleElement) {
+                const decodedTitle = decodeHtmlEntities(track.title);
+                const decodedArtist = decodeHtmlEntities(track.artist);
+                titleElement.innerHTML = `<strong>${decodedTitle} - ${decodedArtist}</strong>`;
+            }
+
+            checkFavoriteStatus();
+
+            if (autoPlay) {
+                playAfterLoad = true;
+                timeToSeekAfterLoad = 0;
+            } else {
+                playAfterLoad = false;
+            }
+
+            if (window.currentMusicId) {
+                const event = new CustomEvent('songChanged', {
+                    detail: {
+                        id: window.currentMusicId,
+                        title: window.currentTrackTitle,
+                        artist: window.currentTrackArtist,
+                        filename: track.filename
+                    }
+                });
+                window.dispatchEvent(event);
+                console.log("Player: songChanged event fırlatıldı (setCurrentTrack):", window.currentMusicId);
+            }
+        }
+
+        function updateProgressUI(value) {
+            if (!progressFilled || isNaN(audioPlayer.duration)) return;
+
+            const currentTime = value !== undefined ? parseFloat(value) : audioPlayer.currentTime;
+            const percent = (currentTime / audioPlayer.duration) * 100;
+            progressFilled.style.width = `${percent}%`;
+        }
+
+        function updateVolumeUI(value) {
+            if (!volumeFilled) return;
+
+            const volumeValue = value !== undefined ? parseFloat(value) / 100 : audioPlayer.volume;
+            volumeFilled.style.width = `${volumeValue * 100}%`;
+
+            if (muteBtn) {
+                const icon = muteBtn.querySelector('i');
+                if (icon) {
+                    if (audioPlayer.muted || volumeValue === 0) {
+                        icon.className = 'fas fa-volume-mute';
+                    } else if (volumeValue < 0.33) {
+                        icon.className = 'fas fa-volume-off';
+                    } else if (volumeValue < 0.67) {
+                        icon.className = 'fas fa-volume-down';
+                    } else {
+                        icon.className = 'fas fa-volume-up';
+                    }
+                }
+            }
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function playPause() {
+            if (audioPlayer.paused) {
+                // Önce login kontrolü yap
+                fetch('/Dashboard/CheckSession')
+                    .then(response => response.json())
+                    .then(sessionData => {
+                        if (!sessionData.isLoggedIn) {
+                            alert('Müzik dinlemek için giriş yapmalısınız!');
+                            window.location.href = '/Dashboard/Login';
+                            return;
+                        }
+                        // Kullanıcı giriş yapmışsa müziği çal
+                audioPlayer.play().catch(e => console.error("Oynatma hatası:", e));
+                    })
+                    .catch(error => {
+                        console.error('Oturum kontrolü hatası:', error);
+                        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                    });
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function stopTrack() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            updateProgressUI();
+            if (currentTimeDisplay) currentTimeDisplay.textContent = "00:00";
+        }
+
+        function nextTrack() {
+            // Önce login kontrolü yap
+            fetch('/Dashboard/CheckSession')
+                .then(response => response.json())
+                .then(sessionData => {
+                    if (!sessionData.isLoggedIn) {
+                        alert('Müzik dinlemek için giriş yapmalısınız!');
+                        window.location.href = '/Dashboard/Login';
+                        return;
+                    }
+                    // Kullanıcı giriş yapmışsa sonraki şarkıya geç
+        if (window.tracks.length <= 1) return;
+        window.currentIndex = (window.currentIndex + 1) % window.tracks.length;
+        setCurrentTrack(window.tracks[window.currentIndex], true);
+                })
+                .catch(error => {
+                    console.error('Oturum kontrolü hatası:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                });
+    }
+
+        function prevTrack() {
+            // Önce login kontrolü yap
+            fetch('/Dashboard/CheckSession')
+                .then(response => response.json())
+                .then(sessionData => {
+                    if (!sessionData.isLoggedIn) {
+                        alert('Müzik dinlemek için giriş yapmalısınız!');
+                        window.location.href = '/Dashboard/Login';
+                        return;
+                    }
+                    // Kullanıcı giriş yapmışsa önceki şarkıya geç
+            if (window.tracks.length <= 1) return;
+            window.currentIndex = (window.currentIndex - 1 + window.tracks.length) % window.tracks.length;
+            setCurrentTrack(window.tracks[window.currentIndex], true);
+                })
+                .catch(error => {
+                    console.error('Oturum kontrolü hatası:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                });
+        }
+
+        function seekTo() {
+            if (!progressSlider || isNaN(audioPlayer.duration)) return;
+            audioPlayer.currentTime = parseFloat(progressSlider.value);
+        }
+
+        function setVolume() {
+            if (!volumeSlider) return;
+            audioPlayer.volume = volumeSlider.value / 100;
+            audioPlayer.muted = false;
+            updateVolumeUI();
+            localStorage.setItem('playerVolume', volumeSlider.value);
+        }
+
+        function toggleMute() {
+            audioPlayer.muted = !audioPlayer.muted;
+
+            if (audioPlayer.muted) {
+                localStorage.setItem('previousVolume', audioPlayer.volume);
+                if (volumeSlider) volumeSlider.value = 0;
+            } else {
+                if (audioPlayer.volume === 0) {
+                    const previousVolume = parseFloat(localStorage.getItem('previousVolume') || 0.8);
+                    audioPlayer.volume = previousVolume;
+                    if (volumeSlider) volumeSlider.value = previousVolume * 100;
+                }
+            }
+
+            updateVolumeUI();
+        }
+
+        function toggleFavorite() {
+            const musicId = window.currentMusicId;
+            if (!musicId) {
+                alert('Şu anda çalan bir müzik yok!');
+                return;
+            }
+
+            fetch('/Dashboard/CheckSession')
+                .then(response => response.json())
+                .then(sessionData => {
+                    if (!sessionData.isLoggedIn) {
+                        alert('Bu işlem için giriş yapmalısınız.');
+                        window.location.href = '/Dashboard/Login';
+                    return;
+                }
+
+                    const heartIcon = document.querySelector('.heart-icon i');
+                    const isFavorite = heartIcon.classList.contains('favorite');
+
+                    fetch('/Dashboard/ToggleFavorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ musicId: parseInt(musicId), remove: isFavorite })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.isFavorite) {
+                                heartIcon.classList.add('favorite', 'heart-animation');
+                                heartIcon.style.color = '#ff3366';
+                                showFavoriteToast('Favorilere eklendi!', '#ff3366', '#fff');
+                            } else {
+                                heartIcon.classList.remove('favorite');
+                                heartIcon.classList.add('heart-animation');
+                                heartIcon.style.color = '#222';
+                                showFavoriteToast('Favorilerden çıkarıldı!', '#fff', '#222');
+                            }
+                            setTimeout(() => heartIcon.classList.remove('heart-animation'), 1000);
+                            checkFavoriteStatus();
+                            // FAVORITE EVENT
+                            window.dispatchEvent(new CustomEvent('favoriteChanged', { detail: { musicId: musicId, isFavorite: data.isFavorite } }));
+                        } else {
+                            if (data.message && data.message.includes('giriş')) {
+                                alert('Bu işlem için giriş yapmalısınız.');
+                                window.location.href = '/Account/Login';
+                            } else {
+                                alert(data.message || 'İşlem başarısız oldu!');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Favori işlemi hatası:', error);
+                        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                    });
+                })
+                .catch(error => {
+                    console.error('Oturum kontrolü hatası:', error);
+                    alert('Oturum kontrolü sırasında bir hata oluştu.');
+                });
+        }
+
+        function showFavoriteToast(message, bg, color) {
+            const toast = document.getElementById('favorite-toast');
+            toast.textContent = message;
+            toast.style.background = bg;
+            toast.style.color = color;
+            toast.style.display = 'block';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; }, 400);
+            }, 1200);
+        }
+
+        function checkFavoriteStatus() {
+            const musicId = window.currentMusicId;
+            console.log('Favori kontrolü için musicId:', musicId);
+            if (!musicId) return;
+
+            fetch(`/Dashboard/CheckFavorite?musicId=${musicId}`)
+                .then(response => response.json())
+                    .then(data => {
+                    console.log('Favori API yanıtı:', data);
+                    const heartIcon = document.querySelector('.heart-icon i');
+                    const heartBtn = document.querySelector('.heart-icon');
+                    if (heartIcon) {
+                        if (data.isFavorite) {
+                            heartIcon.classList.add('favorite');
+                            heartIcon.style.color = '#ff3366';
+                            if (heartBtn) heartBtn.title = "Favorilerden çıkar";
+                        } else {
+                            heartIcon.classList.remove('favorite');
+                            heartIcon.style.color = '';
+                            if (heartBtn) heartBtn.title = "Favorilere ekle";
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Favori durumu kontrolü hatası:', error);
+                });
+        }
+
+        let playAfterLoad = false;
+        let timeToSeekAfterLoad = 0;
+
+        function initializePlayerState() {
+            if (loadTrackData()) {
+                console.log("Şarkı verileri yüklendi, toplam:", window.tracks.length, "şarkı");
+
+                const savedVolume = localStorage.getItem('playerVolume');
+                if (savedVolume !== null) {
+                    const volume = parseFloat(savedVolume);
+                    audioPlayer.volume = volume / 100;
+                    if (volumeSlider) volumeSlider.value = volume;
+                    updateVolumeUI();
+                }
+
+                const lastPlayedId = localStorage.getItem('lastPlayedId');
+                const lastPlayedTime = parseFloat(localStorage.getItem('lastPlayedTime') || '0');
+                let foundIndex = -1;
+
+                if (lastPlayedId && window.tracks.length > 0) {
+                    foundIndex = window.tracks.findIndex(t => t.id == lastPlayedId);
+                }
+
+                if (foundIndex >= 0) {
+                    window.currentIndex = foundIndex;
+                    setCurrentTrack(window.tracks[window.currentIndex], false);
+                    playAfterLoad = true;
+                    timeToSeekAfterLoad = lastPlayedTime || 0;
+                } else if (window.tracks.length > 0 && window.currentIndex >= 0 && window.currentIndex < window.tracks.length) {
+                    setCurrentTrack(window.tracks[window.currentIndex], false);
+                } else if (window.tracks.length > 0) {
+                    window.currentIndex = 0;
+                    setCurrentTrack(window.tracks[window.currentIndex], false);
+            }
+            } else {
+                console.error("Şarkı verileri yüklenemedi!");
+            }
+        }
+
+        audioPlayer.addEventListener('loadedmetadata', function() {
+            if (progressSlider) {
+                progressSlider.max = audioPlayer.duration;
+            }
+
+            if (totalDurationDisplay) {
+                totalDurationDisplay.textContent = formatTime(audioPlayer.duration);
+            }
+
+            if (playAfterLoad) {
+                audioPlayer.currentTime = timeToSeekAfterLoad;
+                const playPromise = audioPlayer.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        // Oynatma başarıyla başladı.
+                        console.log("Player: Oynatma başarıyla başladı (loadedmetadata).");
+                    }).catch(error => {
+                        // Oynatma engellendi veya başarısız oldu.
+                        console.error("Player: Oynatma hatası (loadedmetadata):", error);
+                        // Kullanıcıya bir bildirim gösterilebilir veya
+                        // oynatmayı başlatmak için bir kullanıcı etkileşimi (örneğin bir butona tıklama) beklenebilir.
+                    });
+                }
+                playAfterLoad = false; // Bayrağı sıfırla
+                timeToSeekAfterLoad = 0;
+            }
+            updateProgressUI(); // currentTime set edildikten sonra UI'ı güncelle
+        });
+
+        audioPlayer.addEventListener('timeupdate', function() {
+            updateProgressUI();
+
+            if (currentTimeDisplay) {
+                const minutes = Math.floor(audioPlayer.currentTime / 60);
+                const seconds = Math.floor(audioPlayer.currentTime % 60);
+                currentTimeDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        });
+
+        audioPlayer.addEventListener('play', function() {
+            if (playPauseIcon) {
+                playPauseIcon.className = 'fas fa-pause';
+                if (playPauseBtn) playPauseBtn.classList.add('playing');
+            }
+        });
+
+        audioPlayer.addEventListener('pause', function() {
+            if (playPauseIcon) {
+                playPauseIcon.className = 'fas fa-play';
+                if (playPauseBtn) playPauseBtn.classList.remove('playing');
+            }
+        });
+
+        audioPlayer.addEventListener('ended', function() {
+            nextTrack();
+        });
+
+        audioPlayer.addEventListener('error', function(e) {
+            console.error("Müzik yüklenirken hata:", e);
+            setTimeout(() => nextTrack(), 2000);
+        });
+
+        audioPlayer.addEventListener('loadstart', function() {
+            const loadingDiv = document.getElementById('player-loading');
+            if (loadingDiv) loadingDiv.style.display = 'block';
+        });
+        audioPlayer.addEventListener('canplay', function() {
+            const loadingDiv = document.getElementById('player-loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+        audioPlayer.addEventListener('playing', function() {
+            const loadingDiv = document.getElementById('player-loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+
+        window.playPause = playPause;
+        window.nextTrack = nextTrack;
+        window.prevTrack = prevTrack;
+        window.stopTrack = stopTrack;
+        window.seekTo = seekTo;
+        window.updateProgressUI = updateProgressUI;
+        window.toggleMute = toggleMute;
+        window.setVolume = setVolume;
+        window.updateVolumeUI = updateVolumeUI;
+        window.toggleFavorite = toggleFavorite;
+        window.setCurrentTrack = setCurrentTrack;
+
+        initializePlayerState();
+
+        // Sayfa yüklendiğinde ve player state restore edildikten sonra favori durumu kontrolü
+        setTimeout(() => {
+            if (window.currentMusicId) {
+                checkFavoriteStatus();
+            }
+        }, 400); // Player state restore edildikten sonra çağırmak için küçük bir gecikme
+
+        function savePlayerState() {
+            if (!audioPlayer || !window.currentMusicId) return;
+            localStorage.setItem('lastPlayedId', window.currentMusicId);
+            localStorage.setItem('lastPlayedTime', audioPlayer.currentTime);
+        }
+        audioPlayer.addEventListener('play', savePlayerState);
+        audioPlayer.addEventListener('pause', savePlayerState);
+        audioPlayer.addEventListener('timeupdate', function() {
+            if (audioPlayer.currentTime > 0 && Math.floor(audioPlayer.currentTime) % 2 === 0) {
+                 savePlayerState();
+            }
+        });
+        window.addEventListener('beforeunload', savePlayerState);
+
+        // Her 3 saniyede bir favori durumu kontrolü (watchdog)
+        setInterval(() => {
+            if (window.currentMusicId) {
+                checkFavoriteStatus();
+            }
+        }, 3000);
+
+        // 30 saniye sonra şarkıyı durdur
+        audioPlayer.addEventListener('timeupdate', function() {
+            if (audioPlayer.currentTime >= 30) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                nextTrack();
+            }
+        });
+
+        // Sayfa yüklendiğinde login kontrolü yap
+        fetch('/Dashboard/CheckSession')
+            .then(response => response.json())
+            .then(sessionData => {
+                if (!sessionData.isLoggedIn) {
+                    // Kullanıcı giriş yapmamışsa müzik çaları devre dışı bırak
+                    const playPauseBtn = document.querySelector('.play-pause-btn');
+                    const nextBtn = document.querySelector('.next-btn');
+                    const prevBtn = document.querySelector('.prev-btn');
+                    const stopBtn = document.querySelector('.stop-btn');
+                    
+                    if (playPauseBtn) playPauseBtn.style.opacity = '0.5';
+                    if (nextBtn) nextBtn.style.opacity = '0.5';
+                    if (prevBtn) prevBtn.style.opacity = '0.5';
+                    if (stopBtn) stopBtn.style.opacity = '0.5';
+                }
+            })
+            .catch(error => {
+                console.error('Oturum kontrolü hatası:', error);
+            });
+    });
+</script>
