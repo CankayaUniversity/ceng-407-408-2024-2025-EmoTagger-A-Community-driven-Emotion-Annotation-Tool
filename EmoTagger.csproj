@@ -1,5 +1,0 @@
-<ItemGroup>
-    <PackageReference Include="musicnn" Version="1.0.0" />
-    <PackageReference Include="tensorflow" Version="2.11.0" />
-    <PackageReference Include="numpy" Version="1.24.3" />
-</ItemGroup> 
