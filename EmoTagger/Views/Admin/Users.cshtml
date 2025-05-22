@@ -1,0 +1,295 @@
+﻿@{
+    ViewBag.Title = "Kullanıcı Yönetimi";
+}
+@Html.AntiForgeryToken()
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="fas fa-users me-2"></i>User List</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="userTableContainer">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p class="mt-2">Kullanıcılar yükleniyor...</p>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination" class="d-flex justify-content-center mt-4"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Silme Onay Modalı -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Kullanıcıyı Sil</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeDeleteModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
+                </div>
+                <p id="deleteModalText" class="text-center fs-5"></p>
+                <p class="text-center text-muted small">Bu işlem geri alınamaz!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeDeleteModal()">
+                    <i class="fas fa-times me-1"></i> Vazgeç
+                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">
+                    <i class="fas fa-trash-alt me-1"></i> Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        let pageSize = 10;
+        let deleteUserId = null;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+        function loadUsers(page = 1) {
+            currentPage = page;
+           fetch(`/Admin/GetUsers?page=${page}&pageSize=${pageSize}`)
+                .then(res => res.json())
+                .then(data => {
+                    renderUserTable(data);
+                    renderPagination(data);
+                })
+                .catch(error => {
+                    console.error('Kullanıcılar yüklenirken hata oluştu:', error);
+                    document.getElementById('userTableContainer').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Kullanıcılar yüklenirken bir hata oluştu.
+                        </div>`;
+                });
+        }
+
+        function renderUserTable(data) {
+            if (data.users.length === 0) {
+                document.getElementById('userTableContainer').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Kayıtlı kullanıcı bulunamadı.
+                    </div>`;
+                return;
+            }
+
+            let html = `<table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name Surname</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Registration Date</th>
+                        <th scope="col" class="text-center">Listening</th>
+                        <th scope="col" class="text-center">Tag</th>
+                        <th scope="col" class="text-center">Process</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            data.users.forEach((user, index) => {
+                const createdDate = new Date(user.createdAt);
+                const formattedDate = createdDate.toLocaleDateString('tr-TR') + ' ' +
+                                     createdDate.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+
+                html += `<tr>
+                    <td>${(data.page - 1) * data.pageSize + index + 1}</td>
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.country || ''}</td>
+                    <td>${user.phoneNumber || ''}</td>
+                    <td><a href="mailto:${user.email}">${user.email}</a></td>
+                    <td>${formattedDate}</td>
+                    <td class="text-center">
+                        <span class="badge bg-${user.playCount > 0 ? 'primary' : 'secondary'} rounded-pill">
+                            ${user.playCount}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-${user.tagCount > 0 ? 'success' : 'secondary'} rounded-pill">
+                            ${user.tagCount}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-danger btn-sm" onclick="showDeleteModal(${user.id}, '${user.firstName} ${user.lastName}')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            document.getElementById('userTableContainer').innerHTML = html;
+        }
+
+        function renderPagination(data) {
+            const totalPages = Math.ceil(data.totalUsers / data.pageSize);
+            let html = '<nav aria-label="Kullanıcı Sayfalaması"><ul class="pagination">';
+            if (totalPages <= 1) {
+                html += `<li class="page-item active"><span class="page-link">1</span></li>`;
+                html += '</ul></nav>';
+                document.getElementById('pagination').innerHTML = html;
+                return;
+            }
+
+            // Önceki sayfa butonu
+            html += `<li class="page-item ${data.page === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); loadUsers(${data.page - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>`;
+
+            // Sayfa numaraları
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, data.page - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="#" onclick="event.preventDefault(); loadUsers(1)">1</a>
+                </li>`;
+
+                if (startPage > 2) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${i === data.page ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="event.preventDefault(); loadUsers(${i})">${i}</a>
+                </li>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
+                }
+
+                html += `<li class="page-item">
+                    <a class="page-link" href="#" onclick="event.preventDefault(); loadUsers(${totalPages})">${totalPages}</a>
+                </li>`;
+            }
+
+            // Sonraki sayfa butonu
+            html += `<li class="page-item ${data.page === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); loadUsers(${data.page + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>`;
+
+            html += '</ul></nav>';
+            document.getElementById('pagination').innerHTML = html;
+        }
+
+        function showDeleteModal(id, name) {
+            deleteUserId = id;
+            document.getElementById('deleteModalText').innerText = `"${name}" adlı kullanıcıyı silmek istediğinize emin misiniz?`;
+            deleteModal.show();
+        }
+
+        function closeDeleteModal() {
+            deleteModal.hide();
+            deleteUserId = null;
+        }
+
+        function confirmDeleteUser() {
+            if (!deleteUserId) return;
+
+            const loadingBtn = document.querySelector('#deleteModal .btn-danger');
+            const originalHtml = loadingBtn.innerHTML;
+            loadingBtn.disabled = true;
+            loadingBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> İşleniyor...`;
+
+            fetch('/Admin/DeleteUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ id: deleteUserId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeDeleteModal();
+
+                if (data.success) {
+                    // Silme başarılı - mevcut sayfada kaç kullanıcı kaldığını kontrol et
+                    // Eğer sayfada kalan son kullanıcıyı sildiysen ve sayfa 1 değilse, önceki sayfaya git
+                    const totalUsersOnPage = document.querySelectorAll('#userTableContainer tbody tr').length;
+                    if (totalUsersOnPage === 1 && currentPage > 1) {
+                        loadUsers(currentPage - 1);
+                    } else {
+                        loadUsers(currentPage);
+                    }
+
+                    // Başarı mesajını göster
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show';
+                    successAlert.innerHTML = `
+                        <i class="fas fa-check-circle me-2"></i>
+                        Kullanıcı başarıyla silindi.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.querySelector('.card-body').prepend(successAlert);
+
+                    // 3 saniye sonra başarı mesajını kaldır
+                    setTimeout(() => {
+                        successAlert.remove();
+                    }, 3000);
+                } else {
+                    // Hata mesajını göster
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                    errorAlert.innerHTML = `
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        ${data.message || "Silme işlemi başarısız oldu!"}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.querySelector('.card-body').prepend(errorAlert);
+                }
+            })
+            .catch(error => {
+                console.error('Silme işlemi sırasında hata:', error);
+                closeDeleteModal();
+
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                errorAlert.innerHTML = `
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Silme işlemi sırasında bir hata oluştu.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.querySelector('.card-body').prepend(errorAlert);
+            })
+            .finally(() => {
+                loadingBtn.disabled = false;
+                loadingBtn.innerHTML = originalHtml;
+            });
+        }
+
+        // Sayfa yüklendiğinde kullanıcıları getir
+        document.addEventListener('DOMContentLoaded', () => loadUsers());
+    </script>
+}

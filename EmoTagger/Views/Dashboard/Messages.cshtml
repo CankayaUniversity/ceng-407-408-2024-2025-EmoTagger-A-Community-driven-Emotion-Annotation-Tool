@@ -1,0 +1,465 @@
+﻿@model EmoTagger.Models.ProfileViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Mesajlar";
+}
+
+<link rel="stylesheet" href="~/css/messages.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css">
+
+<div class="messages-container">
+    <div class="row">
+        <!-- Sol Sütun: Arkadaşlar Listesi -->
+        <div class="col-md-4">
+            <div class="friends-card">
+                <div class="card-header">
+                    <h4>Friends (@Model.Friends.Count)</h4>
+                </div>
+                <div class="card-body">
+                    <div id="friends-list" class="friends-list">
+                        @if (Model.Friends != null && Model.Friends.Any())
+                        {
+                            @foreach (var friend in Model.Friends)
+                            {
+                                <div class="friend-item d-flex align-items-center p-2" data-friend-id="@friend.Id">
+                                    <div class="friend-avatar me-2">
+                                        <img src="@(string.IsNullOrEmpty(friend.ProfileImageUrl) ? "/assets/images/default-profile.png" : friend.ProfileImageUrl)"
+                                             alt="@friend.Name" class="rounded-circle">
+                                        <span class="status-indicator @(friend.IsOnline ? "online" : "offline")"></span>
+                                    </div>
+                                    <div class="friend-info">
+                                        <h6 class="mb-0">@friend.Name</h6>
+                                        <small class="text-muted status-text">@(friend.IsOnline ? "Online" : "Offline")</small>
+                                    </div>
+                                    <span class="badge bg-danger ms-2 badge-unread" style="display:@(friend.UnreadCount > 0 ? "inline-block" : "none")">@(friend.UnreadCount > 0 ? friend.UnreadCount.ToString() : "")</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-center">You don't have any friends yet.</p>
+                        }
+                    </div>
+
+                    @if (Model.FriendsTotalPages > 1)
+                    {
+                        <div class="pagination-controls mt-3">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= Model.FriendsTotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.FriendsPage ? "active" : "")">
+                                        <a class="page-link" href="#" data-page="@i">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Sütun: Mesajlaşma Alanı -->
+        <div class="col-md-8">
+            <div class="chat-card">
+                <div class="chat-header">
+                    <div class="selected-friend-info d-flex align-items-center">
+                        <div class="friend-avatar me-2">
+                            <img src="/assets/images/default-profile.png" alt="Profil" class="rounded-circle" id="selectedFriendImage">
+                            <span class="status-indicator" id="selectedFriendStatus"></span>
+                        </div>
+                        <div>
+                            <h5 class="mb-0" id="selectedFriendName">choose a friend</h5>
+                            <small class="text-muted" id="selectedFriendStatusText"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-body" id="chatMessages">
+                    <!-- Mesajlar buraya gelecek -->
+                </div>
+                <div class="chat-footer">
+                    <form id="messageForm" class="d-flex align-items-center">
+                        <button type="button" class="btn btn-link emoji-button" id="emojiButton">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <div class="message-input-container flex-grow-1">
+                            <textarea class="form-control" id="messageInput" placeholder="Mesajınızı yazın..." rows="1"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+    <script>
+        let selectedFriendId = null;
+        let currentPage = 1;
+        const messagesPerPage = 10;
+
+        // Emoji picker initialization
+        const picker = new EmojiMart.Picker({
+            onSelect: emoji => {
+                const messageInput = document.getElementById('messageInput');
+                messageInput.value += emoji.native;
+            }
+        });
+
+        document.getElementById('emojiButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            picker.toggle();
+        });
+
+        // Friend selection
+        document.querySelectorAll('.friend-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const friendId = parseInt(this.getAttribute('data-friend-id'));
+                markMessagesAsRead(friendId);
+                if (typeof updateMenuUnreadBadge === 'function') updateMenuUnreadBadge();
+                const friendName = this.querySelector('h6').textContent;
+                const friendImage = this.querySelector('img').src;
+                const isOnline = this.querySelector('.status-indicator').classList.contains('online');
+
+                selectedFriendId = friendId;
+                document.getElementById('selectedFriendName').textContent = friendName;
+                document.getElementById('selectedFriendImage').src = friendImage;
+                document.getElementById('selectedFriendStatus').className = 
+                    `status-indicator ${isOnline ? 'online' : 'offline'}`;
+                document.getElementById('selectedFriendStatusText').textContent =
+                    isOnline ? 'Online' : 'Offline';
+
+                // Load messages for selected friend
+                loadMessages(friendId);
+            });
+        });
+
+        // Message form submission
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!selectedFriendId) {
+                alert('Lütfen bir arkadaş seçin');
+                return;
+            }
+
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                sendMessage(selectedFriendId, message);
+                messageInput.value = '';
+            }
+        });
+
+        // Load messages for a friend
+        function loadMessages(friendId) {
+            fetch(`/Dashboard/GetMessages?friendId=${friendId}&page=${currentPage}`)
+                .then(response => response.json())
+                .then(data => {
+                    const chatMessages = document.getElementById('chatMessages');
+                    chatMessages.innerHTML = '';
+
+                    data.messages.forEach(message => {
+                        const messageElement = createMessageElement(message);
+                        chatMessages.appendChild(messageElement);
+                    });
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Mesajlar yüklenirken hata oluştu:', error);
+                    alert('Mesajlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
+                });
+        }
+
+        // Send message
+        function sendMessage(friendId, content) {
+            fetch('/Dashboard/SendMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    friendId: friendId,
+                    content: content
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const messageElement = createMessageElement(data.message);
+                    document.getElementById('chatMessages').appendChild(messageElement);
+                    document.getElementById('chatMessages').scrollTop = 
+                        document.getElementById('chatMessages').scrollHeight;
+                } else {
+                    alert(data.message || 'Mesaj gönderilirken bir hata oluştu.');
+                }
+            })
+            .catch(error => {
+                console.error('Mesaj gönderilirken hata oluştu:', error);
+                alert('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+
+        // Create message element
+        function createMessageElement(message) {
+            const div = document.createElement('div');
+            div.className = `message ${message.isFromCurrentUser ? 'sent' : 'received'}`;
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = message.content;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = new Date(message.timestamp).toLocaleTimeString('tr-TR');
+            
+            // Tik ikonu
+            if (message.isFromCurrentUser) {
+                const status = document.createElement('span');
+                status.className = 'message-status ms-2';
+                if (message.isRead) {
+                    status.innerHTML = '<i class="bi bi-check2-all text-primary"></i>'; // Çift tik
+                } else {
+                    status.innerHTML = '<i class="bi bi-check2 text-muted"></i>'; // Tek tik
+                }
+                time.appendChild(status);
+            }
+            
+            div.appendChild(content);
+            div.appendChild(time);
+            
+            return div;
+        }
+
+        // Pagination
+        document.querySelectorAll('.pagination .page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.dataset.page;
+                currentPage = parseInt(page);
+                
+                if (selectedFriendId) {
+                    loadMessages(selectedFriendId);
+                }
+            });
+        });
+
+        function updateUnreadCounts() {
+            fetch('/Dashboard/GetUnreadCounts')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.counts) {
+                        document.querySelectorAll('.friend-item').forEach(item => {
+                            const friendId = parseInt(item.getAttribute('data-friend-id'));
+                            const badge = item.querySelector('.badge-unread');
+                            const found = data.counts.find(x => x.FriendId === friendId);
+                            if (badge) {
+                                badge.textContent = found ? found.Count : '';
+                                badge.style.display = found && found.Count > 0 ? 'inline-block' : 'none';
+                            }
+                        });
+                    }
+                    // Menüdeki toplam badge'i güncelle
+                    const menuBadge = document.getElementById('menu-unread-badge');
+                    if (menuBadge) {
+                        menuBadge.textContent = data.total > 0 ? data.total : '';
+                        menuBadge.style.display = data.total > 0 ? 'inline-block' : 'none';
+                    }
+                });
+        }
+
+        // Arkadaş seçildiğinde mesajları okundu olarak işaretle
+        function markMessagesAsRead(friendId) {
+            fetch('/Dashboard/MarkMessagesAsRead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ friendId })
+            }).then(() => {
+                updateUnreadCounts();
+                if (typeof updateMenuUnreadBadge === 'function') updateMenuUnreadBadge();
+            });
+        }
+
+        // Mesaj gönderilince
+        function afterSendMessage() {
+            updateUnreadCounts();
+        }
+
+        // Sayfa ilk açıldığında da badge'leri güncelle
+        updateUnreadCounts();
+    </script>
+}
+
+<style>
+    .messages-container {
+        padding: 20px;
+    }
+
+    .friends-card, .chat-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        height: calc(100vh - 140px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-header {
+        background-color: #3f51b5;
+        color: white;
+        padding: 15px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .friend-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+        border-radius: 8px;
+    }
+
+    .friend-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .friend-avatar {
+        position: relative;
+        width: 40px;
+        height: 40px;
+    }
+
+    .friend-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+    }
+
+    .status-indicator.online {
+        background-color: #28a745;
+    }
+
+    .status-indicator.offline {
+        background-color: #dc3545;
+    }
+
+    .chat-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message {
+        max-width: 70%;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message.sent {
+        align-self: flex-end;
+    }
+
+    .message.received {
+        align-self: flex-start;
+    }
+
+    .message-content {
+        padding: 10px 15px;
+        border-radius: 15px;
+        background-color: #f0f0f0;
+    }
+
+    .message.sent .message-content {
+        background-color: #3f51b5;
+        color: white;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .chat-footer {
+        padding: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .message-input-container {
+        position: relative;
+    }
+
+    .emoji-button {
+        color: #666;
+        padding: 0;
+        margin-right: 10px;
+    }
+
+    .emoji-button:hover {
+        color: #3f51b5;
+    }
+
+    /* Dark mode styles */
+    [data-theme]:not([data-theme="theme-light"]) .friends-card,
+    [data-theme]:not([data-theme="theme-light"]) .chat-card {
+        background-color: #222;
+        color: #e0e0e0;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .friend-item:hover {
+        background-color: #333;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .message-content {
+        background-color: #333;
+        color: #e0e0e0;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .message.sent .message-content {
+        background-color: #3f51b5;
+        color: white;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .chat-header,
+    [data-theme]:not([data-theme="theme-light"]) .chat-footer {
+        border-color: #444;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .form-control {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #444;
+    }
+
+    [data-theme]:not([data-theme="theme-light"]) .form-control:focus {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #3f51b5;
+    }
+</style>

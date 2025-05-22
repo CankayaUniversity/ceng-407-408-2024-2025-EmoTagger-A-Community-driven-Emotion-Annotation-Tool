@@ -1,0 +1,69 @@
+﻿@model EmoTagger.Models.ListeningHistoryViewModel
+@{
+    ViewBag.Title = "Listening History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/listeninghistory.css">
+
+<h2 class="history-title" style="color:#ff4c4c; font-weight:bold;">Dinleme Geçmişi</h2>
+<div class="table-responsive">
+    <table class="history-table" style="width:100%; border-radius:12px; overflow:hidden;">
+        <thead>
+            <tr>
+                <th style="width:40%; background-color:#ff4c4c; color:#fff;">Song</th>
+                <th style="width:30%; background-color:#ff4c4c; color:#fff;">Artist</th>
+                <th style="width:30%; background-color:#ff4c4c; color:#fff;">Listening Time</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.History != null && Model.History.Count > 0)
+        {
+            foreach (var item in Model.History)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Artist</td>
+                    <td>@item.PlayedAt</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="3" class="text-center text-muted">Henüz dinleme geçmişiniz yok.</td></tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Dinleme geçmişi sayfalama">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" style="color:#ff4c4c;" href="@Url.Action("ListeningHistory", new { page = 1, pageSize = Model.PageSize })" title="İlk">&laquo;</a>
+            </li>
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" style="color:#ff4c4c;" href="@Url.Action("ListeningHistory", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize })" title="Önceki">&lsaquo;</a>
+            </li>
+            @{
+                int start = Math.Max(1, Model.CurrentPage - 2);
+                int end = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+                if (Model.CurrentPage <= 3) { end = Math.Min(5, Model.TotalPages); }
+                if (Model.CurrentPage >= Model.TotalPages - 2) { start = Math.Max(1, Model.TotalPages - 4); }
+            }
+            @for (int i = start; i <= end; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" style="color:#ff4c4c; font-weight:bold;" href="@Url.Action("ListeningHistory", new { page = i, pageSize = Model.PageSize })">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" style="color:#ff4c4c;" href="@Url.Action("ListeningHistory", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize })" title="Sonraki">&rsaquo;</a>
+            </li>
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" style="color:#ff4c4c;" href="@Url.Action("ListeningHistory", new { page = Model.TotalPages, pageSize = Model.PageSize })" title="Son">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+}

@@ -1,0 +1,97 @@
+﻿/* Profil sayfası için karanlık mod düzeltmeleri - Tüm beyaz alanlar için */
+
+/* Tüm profil kartları için karanlık mod */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-card,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-image-container,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .card-body {
+    background-color: #222 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Tüm etiketler ve metin renkleri */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-item,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-label,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-value,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .form-label,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-name,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-email,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .friend-name,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .request-name {
+    color: #e0e0e0 !important;
+}
+
+/* Form alanları için koyu arka plan */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .form-control {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+/* Müzik istatistikleri kartı ve diğer özel kartlar */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .card-header {
+    background-image: linear-gradient(to right, #6e41c4, #3f51b5) !important;
+    color: white !important;
+}
+
+/* Sayfadaki tüm beyaz arka planları koyu yap */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) div,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) span,
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) section {
+    background-color: inherit;
+}
+
+/* Profil resmi değiştir butonu */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .btn-upload {
+    background-color: #6e41c4 !important;
+    color: white !important;
+}
+
+/* En çok etiketlenen tür ve diğer mavi renkli değerler */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .stat-value {
+    color: #6e8aff !important;
+}
+
+/* KRITIK: Tüm beyaz arka planları geçersiz kıl */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-card *:not(.btn):not(.card-header):not(.form-control):not(.btn-success):not(.btn-danger):not(.btn-secondary):not(.page-link):not(.profile-image) {
+    background-color: #222 !important;
+}
+
+/* Kaydet butonu için stil */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .btn-success {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+/* Uyarı mesajları için koyu arka plan */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .alert {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Sayfalama kontrolleri için koyu arka plan */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .page-link {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+/* Aktif sayfa bağlantısı */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .page-item.active .page-link {
+    background-color: #6e41c4 !important;
+    border-color: #6e41c4 !important;
+}
+
+/* Siyah tema için daha koyu arka plan */
+[data-theme="theme-siyah"] .profile-card,
+[data-theme="theme-siyah"] .profile-card *:not(.btn):not(.card-header):not(.form-control):not(.btn-success):not(.btn-danger):not(.btn-secondary):not(.page-link):not(.profile-image) {
+    background-color: #151515 !important;
+}
+
+[data-theme="theme-siyah"] .form-control {
+    background-color: #222 !important;
+}
+
+/* İlave güvence: Müzik istatistikleri kartının alt kısmı */
+[data-theme]:not([data-theme="theme-light"]):not([data-theme="theme-gold"]):not([data-theme="theme-pembe"]):not([data-theme="theme-sari"]):not([data-theme="theme-turkuaz"]):not([data-theme="theme-turuncu"]):not([data-theme="theme-yesil"]) .profile-card {
+    background-color: #222 !important;
+}

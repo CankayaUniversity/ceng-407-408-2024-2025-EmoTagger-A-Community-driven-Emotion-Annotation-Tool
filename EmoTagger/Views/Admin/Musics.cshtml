@@ -1,0 +1,129 @@
+﻿@model IEnumerable<EmoTagger.Models.Music>
+@{
+    ViewBag.Title = "Music Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.AntiForgeryToken()
+<div class="container py-4">
+    <h3 class="mb-4">Music Management</h3>
+    <table class="table table-striped table-hover w-100" id="musicTable" style="font-size: 0.95rem;">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:48px;">No</th>
+                <th class="text-truncate" style="max-width: 160px;">Music Title</th>
+                <th class="text-truncate" style="max-width: 120px;">Artist</th>
+                <th style="width:140px;">Created At</th>
+                <th class="text-center" style="width:70px;">Save</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int rowNumber = ((int)ViewBag.CurrentPage - 1) * 20 + 1;
+            }
+            @foreach (var music in Model)
+            {
+                <tr data-music-id="@music.musicid">
+                    <td>@rowNumber</td>
+                    <td class="editable-music-title text-truncate" style="max-width: 160px; white-space: nowrap; overflow: hidden; cursor:pointer;">@music.title</td>
+                    <td class="editable-artist text-truncate" style="max-width: 120px; white-space: nowrap; overflow: hidden; cursor:pointer;">@music.artist</td>
+                    <td>@music.createdat.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="text-center">
+                        <button class="btn btn-success btn-sm save-music-btn" style="display:none;">Kaydet</button>
+                    </td>
+                </tr>
+                rowNumber++;
+            }
+        </tbody>
+    </table>
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Music pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">Previous</a>
+                </li>
+                @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="?page=@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+@section Scripts {
+<script>
+$(document).on('click', '.editable-music-title, .editable-artist', function() {
+    var $cell = $(this);
+    if ($cell.find('input').length > 0) return; // Zaten edit modunda
+    var text = $cell.text();
+    var input = $('<input type="text" class="form-control form-control-sm" />').val(text);
+    $cell.html(input);
+    input.focus();
+    $cell.closest('tr').find('.save-music-btn').show();
+});
+
+$(document).on('blur', '.editable-music-title input, .editable-artist input', function() {
+    var $input = $(this);
+    var value = $input.val();
+    var $cell = $input.parent();
+    $cell.text(value);
+});
+
+$(document).on('click', '.save-music-btn', function() {
+    var $row = $(this).closest('tr');
+    var musicId = $row.data('music-id');
+    var title = $row.find('.editable-music-title').text().trim();
+    var artist = $row.find('.editable-artist').text().trim();
+    var token = $('input[name="__RequestVerificationToken"]').val();
+    var $btn = $(this);
+    $btn.prop('disabled', true).text('Kaydediliyor...');
+    $.ajax({
+        url: '/Admin/EditMusicJson',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ musicid: musicId, title: title, artist: artist }),
+        headers: { 'RequestVerificationToken': token },
+        success: function(res) {
+            if (res && res.success) {
+                $btn.text('Kaydedildi!');
+                setTimeout(function() { $btn.hide().text('Kaydet').prop('disabled', false); }, 1000);
+            } else {
+                alert(
+                    (res.message || 'Güncelleme başarısız!') +
+                    (res.error ? '\nHata: ' + res.error : '') +
+                    (res.inner ? '\nDetay: ' + res.inner : '') +
+                    (res.stack ? '\nStack: ' + res.stack : '') +
+                    (res.innerStack ? '\nInnerStack: ' + res.innerStack : '') +
+                    (res.innerInner ? '\nInnerInner: ' + res.innerInner : '') +
+                    (res.innerInnerStack ? '\nInnerInnerStack: ' + res.innerInnerStack : '')
+                );
+                $btn.text('Kaydet').prop('disabled', false);
+            }
+        },
+        error: function(xhr) {
+            let msg = 'Güncelleme başarısız!';
+            msg += '\nURL: ' + this.url;
+            msg += '\nVeri: ' + this.data;
+            msg += '\nHTTP Hata: ' + xhr.status + ' ' + xhr.statusText;
+            if (xhr.responseText) {
+                msg += '\nDetay: ' + xhr.responseText;
+            }
+            alert(msg);
+            console.error('AJAX HATASI:', {
+                url: this.url,
+                data: this.data,
+                status: xhr.status,
+                statusText: xhr.statusText,
+                responseText: xhr.responseText
+            });
+            $btn.text('Kaydet').prop('disabled', false);
+        }
+    });
+});
+</script>
+}

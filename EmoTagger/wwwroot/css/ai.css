@@ -1,0 +1,382 @@
+﻿/* AI Analiz stilleri - ai.css dosyasına ekleyin */
+
+/* AI Düğme Stilleri */
+.player-header-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+    pointer-events: auto;
+}
+
+.ai-float-button {
+    background: linear-gradient(135deg, #4a4ad7, #6a6aff);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+    .ai-float-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .ai-float-button i {
+        font-size: 20px;
+    }
+
+/* Sürüklenebilir Modal Stilleri */
+.ai-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Modal dışına tıklamalar için */
+}
+
+.ai-modal-content {
+    position: absolute;
+    background-color: #fff;
+    width: 450px;
+    max-width: 90vw;
+    min-width: 300px;
+    max-height: 90vh;
+    border-radius: 10px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    pointer-events: auto;
+    /* Sağ üst köşede başlasın */
+    top: 15px;
+    right: 15px;
+    left: auto;
+    animation: popIn 0.3s ease;
+    resize: both; /* Yeniden boyutlandırılabilir */
+    overflow: auto;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.ai-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #4a4ad7, #6a6aff);
+    color: white;
+    cursor: move;
+}
+
+    .ai-modal-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+.ai-header-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.ai-minimize-btn, .ai-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .ai-minimize-btn:hover, .ai-modal-close:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+.ai-modal-body {
+    padding: 15px;
+    max-height: calc(90vh - 50px);
+    overflow-y: auto;
+}
+
+/* Şarkı Bilgisi */
+.ai-current-song {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: rgba(74, 74, 215, 0.05);
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.ai-song-info {
+    flex: 1;
+}
+
+.ai-song-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a4a7d;
+}
+
+.ai-song-artist {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Yükleme Göstergesi */
+.ai-loading {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.ai-spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 10px;
+    position: relative;
+}
+
+.ai-spinner-inner {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(74, 74, 215, 0.1);
+    border-top: 3px solid #4a4ad7;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.ai-loading-progress {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.ai-progress-bar {
+    width: 150px;
+    height: 6px;
+    background-color: rgba(74, 74, 215, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ai-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4a4ad7, #6a6aff);
+    border-radius: 3px;
+    transition: width 0.2s ease;
+}
+
+/* Analiz Sonuçları */
+.ai-results-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.ai-left-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+.ai-right-column {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ai-chart-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    height: 200px;
+}
+
+    .ai-chart-container h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #4a4a7d;
+        text-align: center;
+        font-size: 14px;
+    }
+
+.ai-prediction-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ai-card-header {
+    background-color: #4a4ad7;
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.ai-card-content {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ai-emotion-icon {
+    font-size: 36px;
+}
+
+.ai-emotion-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4a4a7d;
+}
+
+.ai-confidence {
+    padding: 0 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.ai-confidence-bar {
+    flex: 1;
+    height: 8px;
+    background-color: rgba(74, 74, 215, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ai-confidence-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4a4ad7, #6a6aff);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.ai-features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 15px;
+}
+
+.ai-feature {
+    text-align: center;
+}
+
+.ai-feature-name {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.ai-feature-value {
+    font-size: 15px;
+    font-weight: bold;
+    color: #4a4ad7;
+}
+
+.ai-comparison-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+    .ai-comparison-section h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #4a4a7d;
+        text-align: center;
+        font-size: 14px;
+    }
+
+.ai-comparison-chart-container {
+    height: 200px;
+    margin-bottom: 10px;
+}
+
+.ai-agreement-rate {
+    text-align: center;
+    font-size: 14px;
+}
+
+    .ai-agreement-rate strong {
+        color: #4a4ad7;
+        margin-left: 5px;
+    }
+
+/* Küçültülmüş modal */
+.ai-modal-minimized {
+    width: 220px !important;
+    height: auto !important;
+    resize: none;
+}
+
+    .ai-modal-minimized .ai-modal-body {
+        display: none;
+    }
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .ai-modal-content {
+        width: 95vw;
+        max-height: 95vh;
+        top: 10px;
+        right: 10px;
+    }
+
+    .ai-float-button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .ai-results-columns {
+        flex-direction: column;
+    }
+}

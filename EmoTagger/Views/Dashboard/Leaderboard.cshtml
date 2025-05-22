@@ -1,0 +1,115 @@
+﻿@model EmoTagger.ViewModels.LeaderboardViewModel
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">🏆 Liderlik Tablosu</h2>
+    
+    <div class="row">
+        <!-- En Çok Müzik Dinleyenler -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🎧 Müzik Gurusu</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        @for (int i = 0; i < Model.TopListeners.Count; i++)
+                        {
+                            var user = Model.TopListeners[i];
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="position-absolute" style="left: 10px; color: #6c757d;">
+                                    #@(i + 1)
+                                </div>
+                                <img src="@user.ProfileImageUrl" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="@user.UserName">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">@user.UserName</h6>
+                                    <small class="text-muted">@user.Count şarkı dinledi</small>
+                                </div>
+                                @if (i < 3)
+                                {
+                                    <div class="ms-2">
+                                        @if (i == 0)
+                                        {
+                                            <span class="badge bg-warning">🥇</span>
+                                        }
+                                        else if (i == 1)
+                                        {
+                                            <span class="badge bg-secondary">🥈</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">🥉</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- En Çok Etiketleyenler -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">🏷️ Etiket Ustası</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        @for (int i = 0; i < Model.TopTaggers.Count; i++)
+                        {
+                            var user = Model.TopTaggers[i];
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="position-absolute" style="left: 10px; color: #6c757d;">
+                                    #@(i + 1)
+                                </div>
+                                <img src="@user.ProfileImageUrl" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="@user.UserName">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">@user.UserName</h6>
+                                    <small class="text-muted">@user.Count etiket attı</small>
+                                </div>
+                                @if (i < 3)
+                                {
+                                    <div class="ms-2">
+                                        @if (i == 0)
+                                        {
+                                            <span class="badge bg-warning">🥇</span>
+                                        }
+                                        else if (i == 1)
+                                        {
+                                            <span class="badge bg-secondary">🥈</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">🥉</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        position: relative;
+        padding-left: 40px;
+    }
+    
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    
+    .card-header {
+        font-weight: bold;
+    }
+    
+    .badge {
+        font-size: 1.2em;
+    }
+</style>

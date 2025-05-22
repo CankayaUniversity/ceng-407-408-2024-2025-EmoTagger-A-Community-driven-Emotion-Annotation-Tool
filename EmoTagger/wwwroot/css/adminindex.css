@@ -1,0 +1,67 @@
+﻿.btn.active {
+    box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.25);
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+/* Pagination styles */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.page-item.active .page-link {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.page-link:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.page-item.active .page-link:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+/* Tablo ve kart hizalama düzeltmeleri */
+.card-body {
+    padding: 1rem 1rem 1rem 1rem;
+}
+
+.table-responsive {
+    padding: 0;
+    margin: 0;
+}
+
+.table {
+    width: 100% !important;
+    margin-bottom: 0;
+    background-color: #fff;
+}
+
+
+
+@media (max-width: 768px) {
+    .table th, .table td {
+        max-width: 90px;
+        font-size: 0.95rem;
+    }
+}
+
