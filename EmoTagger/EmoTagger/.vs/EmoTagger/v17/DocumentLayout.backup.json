@@ -1,0 +1,288 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\admin\\users.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\admin\\users.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\messages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\messages.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\listeninghistory.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\listeninghistory.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\favorites.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\favorites.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\listentag.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\listentag.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\wwwroot\\css\\listentag.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:wwwroot\\css\\listentag.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\wwwroot\\css\\register.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:wwwroot\\css\\register.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\views\\dashboard\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:views\\dashboard\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|c:\\users\\selinuzuno\u011Flu\\desktop\\emotagger\\emotagger\\models\\friendviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{903791CB-8E16-4954-ADA2-47E5AC56D71E}|EmoTagger.csproj|solutionrelative:models\\friendviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Users.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Admin\\Users.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Users.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Admin\\Users.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Users.cshtml",
+              "ViewState": "AgIAABcAAAAAAAAAAAAiwCsAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T23:52:21.092Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Profile.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Profile.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Profile.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Profile.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Profile.cshtml",
+              "ViewState": "AgIAAIQBAAAAAAAAAAAkwJYBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T23:45:58.004Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ListeningHistory.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListeningHistory.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\ListeningHistory.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListeningHistory.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\ListeningHistory.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T23:43:21.74Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Favorites.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Favorites.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Favorites.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Favorites.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Favorites.cshtml",
+              "ViewState": "AgIAAIgAAAAAAAAAAAAkwJsAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T23:40:48.563Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "listentag.css",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\listentag.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\listentag.css",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\listentag.css",
+              "RelativeToolTip": "wwwroot\\css\\listentag.css",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAABIAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-05-22T23:23:41.678Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Index.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAADQBAAAAAAAAAAAiwEQBAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T06:22:04.533Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Messages.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Messages.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Messages.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Messages.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Messages.cshtml",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAiwFQAAABsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T03:06:18.074Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DashboardController.cs",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Controllers\\DashboardController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DashboardController.cs",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Controllers\\DashboardController.cs",
+              "RelativeToolTip": "Controllers\\DashboardController.cs",
+              "ViewState": "AgIAAG8IAAAAAAAAAAAUwHoIAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T03:11:46.463Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Models\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Models\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Models\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Models\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T03:44:21.216Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ListenTag.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListenTag.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\ListenTag.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\ListenTag.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\ListenTag.cshtml",
+              "ViewState": "AgIAAFkEAAAAAAAAAAAkwGkEAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-20T21:44:24.93Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "register.css",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\register.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\register.css",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\register.css",
+              "RelativeToolTip": "wwwroot\\css\\register.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-05-22T03:15:35.336Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "login.css",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\login.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\login.css",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\wwwroot\\css\\login.css",
+              "RelativeToolTip": "wwwroot\\css\\login.css",
+              "ViewState": "AgIAAC8BAAAAAAAAAAAAADUBAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-05-22T03:17:29.238Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Login.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Login.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Login.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T03:17:18.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Register.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dashboard\\Register.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Dashboard\\Register.cshtml",
+              "RelativeToolTip": "Views\\Dashboard\\Register.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T03:14:55.945Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAOQCAAAAAAAAAAAuwPoCAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-22T03:11:15.048Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "FriendViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Models\\FriendViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\FriendViewModel.cs",
+              "ToolTip": "C:\\Users\\SelinUzuno\u011Flu\\Desktop\\EmoTagger\\EmoTagger\\Models\\FriendViewModel.cs",
+              "RelativeToolTip": "Models\\FriendViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T03:07:28.721Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

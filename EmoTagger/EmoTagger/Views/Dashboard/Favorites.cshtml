@@ -1,0 +1,284 @@
+﻿@{
+    ViewData["Title"] = "Favori Şarkılarım";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Varsayılan layout'unuzu kullanın
+}
+<link rel="stylesheet" href="~/css/favorites.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="~/css/favorites.css" asp-append-version="true">
+<link rel="stylesheet" href="~/css/default.css" asp-append-version="true"> <!-- Genel stil ve player için -->
+<style>
+    .heart-icon i.favorite {
+        color: #ff3366 !important;
+    }
+</style>
+<div class="favorites-container">
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-heart"></i> My Favorite Songs</h1>
+        <button id="shuffle-all-favorites" class="btn btn-primary" style="display:none;"><i class="fas fa-random"></i> Shuffle All</button>
+                    </div>
+
+    <div id="favorites-list" class="favorites-list">
+        <!-- Favori şarkılar buraya yüklenecek -->
+                </div>
+
+    <!-- Sayfalama kontrolleri -->
+    <div id="favorites-pagination" class="pagination justify-content-center mt-4"></div>
+
+    <div id="no-favorites" class="empty-state" style="display: none;">
+        <i class="fas fa-heart-broken empty-state-icon"></i>
+        <p class="empty-state-message">You don't have any favorite songs yet.</p>
+        <a href="@Url.Action("ListenMixed", "Dashboard")" class="btn empty-state-action">Discover Music</a>
+            </div>
+
+    <div id="loading-favorites" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yükleniyor...</span>
+        </div>
+        <p class="mt-2">Favoriler yükleniyor...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const favoritesList = document.getElementById('favorites-list');
+    const noFavoritesMessage = document.getElementById('no-favorites');
+    const loadingFavorites = document.getElementById('loading-favorites');
+    const shuffleAllButton = document.getElementById('shuffle-all-favorites');
+    let currentFavorites = [];
+    const ITEMS_PER_PAGE = 9;
+    let currentPage = 1;
+
+    function decodeHtmlEntities(input) {
+        if (!input) return "";
+        const doc = new DOMParser().parseFromString(input, "text/html");
+        return doc.documentElement.textContent;
+    }
+
+    function playFavorite(musicId) {
+        const trackToPlay = currentFavorites.find(fav => fav.id === musicId);
+        if (trackToPlay && typeof window.setCurrentTrack === 'function') {
+            // Footer player'ın tracks dizisini güncelle
+            if (window.tracks && Array.isArray(window.tracks)) {
+                window.tracks = [...currentFavorites];
+            }
+            // currentIndex'i doğru ayarla
+            window.setCurrentTrack(trackToPlay, true);
+                } else {
+            console.error('setCurrentTrack fonksiyonu bulunamadı veya şarkı bilgisi eksik.');
+            alert('Müzik çalar hazır değil veya şarkı bilgisi bulunamadı.');
+        }
+    }
+
+    function removeFromFavorites(musicId, cardElement) {
+        fetch('/Dashboard/ToggleFavorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest' // Gerekliyse
+            },
+            credentials: 'include', // Session bazlı işlemler için
+            body: JSON.stringify({ musicId: musicId, remove: true })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && !data.isFavorite) {
+                cardElement.remove();
+                currentFavorites = currentFavorites.filter(fav => fav.id !== musicId);
+                if (currentFavorites.length === 0) {
+                    noFavoritesMessage.style.display = 'block';
+                    if (shuffleAllButton) shuffleAllButton.style.display = 'none';
+                }
+                // Global favori ikonunu güncellemek için event fırlatılabilir (gerekirse)
+                const event = new CustomEvent('favoriteChanged', { detail: { musicId: musicId, isFavorite: false } });
+                window.dispatchEvent(event);
+
+                // Toast mesajı (NowPlaying'deki gibi)
+                showToast('Favorilerden çıkarıldı!', '#fff', '#222');
+
+            } else {
+                alert(data.message || 'Favorilerden çıkarırken bir hata oluştu.');
+            }
+        })
+        .catch(error => {
+            console.error('Favori çıkarma hatası:', error);
+            alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+        });
+    }
+
+    function showToast(message, bg, color) { // Bu fonksiyon NowPlaying'den kopyalanabilir veya global yapılabilir
+        let toast = document.getElementById('page-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'page-toast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '20px';
+            toast.style.zIndex = '10000';
+            toast.style.transition = 'opacity 0.3s';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.background = bg;
+        toast.style.color = color;
+        toast.style.display = 'block';
+        toast.style.opacity = '1';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => { toast.style.display = 'none'; }, 400);
+        }, 1200);
+    }
+
+    function renderFavorites(favorites, page = 1) {
+        favoritesList.innerHTML = '';
+        if (favorites && favorites.length > 0) {
+            currentFavorites = favorites;
+            const startIdx = (page - 1) * ITEMS_PER_PAGE;
+            const endIdx = Math.min(startIdx + ITEMS_PER_PAGE, favorites.length);
+            const pageItems = favorites.slice(startIdx, endIdx);
+            pageItems.forEach(fav => {
+                const title = decodeHtmlEntities(fav.title);
+                const artist = decodeHtmlEntities(fav.artist);
+                const card = document.createElement('div');
+                card.className = 'favorite-card';
+                card.innerHTML = `
+                    <div class="favorite-card-image">
+                        <i class="fas fa-music fa-3x"></i>
+                    </div>
+                    <div class="favorite-card-info">
+                        <h5 class="favorite-title">${title}</h5>
+                        <p class="favorite-artist">${artist}</p>
+                            <small class="favorite-added-date">Added: ${new Date(fav.addedAt).toLocaleDateString()}</small>
+                    </div>
+                    <div class="favorite-card-actions">
+                        <button class="btn btn-icon btn-play-favorite" title="Çal">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn btn-icon btn-remove-favorite" title="Favorilerden Çıkar">
+                            <i class="fas fa-heart" style="color: #ff3366;"></i>
+                        </button>
+                    </div>
+                `;
+                favoritesList.appendChild(card);
+                card.querySelector('.btn-play-favorite').addEventListener('click', () => playFavorite(fav.id));
+                card.querySelector('.btn-remove-favorite').addEventListener('click', () => removeFromFavorites(fav.id, card));
+            });
+            noFavoritesMessage.style.display = 'none';
+            if (shuffleAllButton) shuffleAllButton.style.display = 'block';
+                    } else {
+            noFavoritesMessage.style.display = 'block';
+            if (shuffleAllButton) shuffleAllButton.style.display = 'none';
+        }
+        renderPagination(favorites.length, page);
+    }
+
+    function renderPagination(totalItems, page) {
+        const paginationDiv = document.getElementById('favorites-pagination');
+        paginationDiv.innerHTML = '';
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        if (totalPages <= 1) return;
+        let html = '<ul class="pagination">';
+        html += `<li class="page-item${page === 1 ? ' disabled' : ''}"><a class="page-link" href="#" data-page="${page - 1}">«</a></li>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<li class="page-item${i === page ? ' active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+        }
+        html += `<li class="page-item${page === totalPages ? ' disabled' : ''}"><a class="page-link" href="#" data-page="${page + 1}">»</a></li>`;
+        html += '</ul>';
+        paginationDiv.innerHTML = html;
+        // Event listener
+        paginationDiv.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newPage = parseInt(this.getAttribute('data-page'));
+                if (!isNaN(newPage) && newPage >= 1 && newPage <= totalPages && newPage !== page) {
+                    currentPage = newPage;
+                    renderFavorites(currentFavorites, currentPage);
+                }
+            });
+        });
+    }
+
+    fetch('/Dashboard/GetFavorites')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            loadingFavorites.style.display = 'none';
+            if (data.success) {
+                renderFavorites(data.favorites, 1);
+            } else {
+                noFavoritesMessage.textContent = data.message || 'Favoriler yüklenirken bir hata oluştu.';
+                noFavoritesMessage.style.display = 'block';
+                if (shuffleAllButton) shuffleAllButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+            loadingFavorites.style.display = 'none';
+            noFavoritesMessage.textContent = 'Favoriler yüklenirken bir hata oluştu: ' + error.message;
+            noFavoritesMessage.style.display = 'block';
+            if (shuffleAllButton) shuffleAllButton.style.display = 'none';
+            console.error('Favori yükleme hatası:', error);
+        });
+
+    if (shuffleAllButton) {
+        shuffleAllButton.addEventListener('click', function() {
+            if (currentFavorites.length > 0) {
+                // Favori şarkıları player'ın beklediği formata çevir
+                let songs = currentFavorites.map(fav => ({
+                    id: fav.id,
+                    title: fav.title,
+                    artist: fav.artist,
+                    filename: fav.filename
+                }));
+                // Karışık sıraya sok
+                let shuffled = songs.slice().sort(() => 0.5 - Math.random());
+                if (typeof window.setFooterPlaylist === 'function') {
+                    window.setFooterPlaylist(shuffled, 0); // 0. şarkıdan başla
+                }
+            } else {
+                alert("Karışık çalmak için favori şarkınız bulunmuyor.");
+            }
+        });
+    }
+
+    // Eğer NowPlaying'den bir favori durumu değişirse bu sayfayı güncellemek için
+    window.addEventListener('favoriteChanged', function(event) {
+        fetchFavoritesAndRender();
+    });
+
+    function fetchFavoritesAndRender() {
+        loadingFavorites.style.display = 'block';
+        favoritesList.innerHTML = '';
+        noFavoritesMessage.style.display = 'none';
+        if (shuffleAllButton) shuffleAllButton.style.display = 'none';
+
+        fetch('/Dashboard/GetFavorites')
+            .then(response => response.json())
+            .then(data => {
+                loadingFavorites.style.display = 'none';
+                if (data.success) {
+                    renderFavorites(data.favorites, 1);
+                } else {
+                    noFavoritesMessage.textContent = data.message || 'Favoriler yüklenirken bir hata oluştu.';
+                    noFavoritesMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loadingFavorites.style.display = 'none';
+                noFavoritesMessage.textContent = 'Favoriler yüklenirken bir hata oluştu: ' + error.message;
+                noFavoritesMessage.style.display = 'block';
+                console.error('Favori yükleme hatası:', error);
+            });
+    }
+    // Initial load
+    // fetchFavoritesAndRender(); // Zaten yukarıda bir kere fetch ediliyor. Bu event listener için.
+
+    });
+</script>
+
+</rewritten_file>

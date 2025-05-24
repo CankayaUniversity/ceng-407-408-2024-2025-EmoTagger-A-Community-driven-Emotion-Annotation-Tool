@@ -1,0 +1,322 @@
+﻿@model EmoTagger.Models.User
+
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emo Tagger - Sign Up</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/images/logo2.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="~/assets/css/core/libs.min.css">
+    <link rel="stylesheet" href="~/assets/css/muzik.min.css?v=1.0.1">
+    <link rel="stylesheet" href="~/assets/css/custom.min.css?v=1.0.1">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="~/css/register.css">
+   
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Background animations -->
+        <div class="bg-animations" id="bgAnimations">
+            <!-- Music notes and letters will be added via JS -->
+        </div>
+
+        <!-- Dancing Pandas in corners -->
+        <div class="dancing-panda top-left">
+            <div class="panda-face">
+                <div class="panda-eyes eye-left"></div>
+                <div class="panda-eyes eye-right"></div>
+                <div class="panda-nose"></div>
+                <div class="panda-mouth"></div>
+            </div>
+            <div class="panda-ears ear-left"></div>
+            <div class="panda-ears ear-right"></div>
+            <div class="panda-hands hand-left"></div>
+            <div class="panda-hands hand-right"></div>
+            <div class="panda-feet foot-left"></div>
+            <div class="panda-feet foot-right"></div>
+        </div>
+
+        <div class="dancing-panda top-right">
+            <div class="panda-face">
+                <div class="panda-eyes eye-left"></div>
+                <div class="panda-eyes eye-right"></div>
+                <div class="panda-nose"></div>
+                <div class="panda-mouth"></div>
+            </div>
+            <div class="panda-ears ear-left"></div>
+            <div class="panda-ears ear-right"></div>
+            <div class="panda-hands hand-left"></div>
+            <div class="panda-hands hand-right"></div>
+            <div class="panda-feet foot-left"></div>
+            <div class="panda-feet foot-right"></div>
+        </div>
+
+        <div class="dancing-panda bottom-left">
+            <div class="panda-face">
+                <div class="panda-eyes eye-left"></div>
+                <div class="panda-eyes eye-right"></div>
+                <div class="panda-nose"></div>
+                <div class="panda-mouth"></div>
+            </div>
+            <div class="panda-ears ear-left"></div>
+            <div class="panda-ears ear-right"></div>
+            <div class="panda-hands hand-left"></div>
+            <div class="panda-hands hand-right"></div>
+            <div class="panda-feet foot-left"></div>
+            <div class="panda-feet foot-right"></div>
+        </div>
+
+        <div class="dancing-panda bottom-right">
+            <div class="panda-face">
+                <div class="panda-eyes eye-left"></div>
+                <div class="panda-eyes eye-right"></div>
+                <div class="panda-nose"></div>
+                <div class="panda-mouth"></div>
+            </div>
+            <div class="panda-ears ear-left"></div>
+            <div class="panda-ears ear-right"></div>
+            <div class="panda-hands hand-left"></div>
+            <div class="panda-hands hand-right"></div>
+            <div class="panda-feet foot-left"></div>
+            <div class="panda-feet foot-right"></div>
+        </div>
+
+        <section class="login-content overflow-hidden">
+            <div class="row no-gutters align-items-center bg-white">
+                <div class="col-md-12 align-self-center">
+                    <div class="row justify-content-center pt-4">
+                        <div class="col-md-8 col-lg-8 col-sm-12 col-12">
+                            <div class="card auth-card">
+                                <div class="card-body">
+                                    <div class="text-center logo-inside-card">
+                                        <img src="~/assets/images/logo2.png" alt="Logo" class="img-fluid" width="180">
+                                    </div>
+                                    <h2 class="mb-2 text-center">Sign Up</h2>
+                                    <p class="text-center">Create your Emo Tagger account.</p>
+
+                                    <!-- FORM BAŞLANGICI -->
+                                    <form asp-controller="Dashboard" asp-action="Register" method="post">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="first-name" class="form-label">First Name</label>
+                                                    <input type="text" class="form-control" asp-for="FirstName" placeholder="John">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="last-name" class="form-label">Last Name</label>
+                                                    <input type="text" class="form-control" asp-for="LastName" placeholder="Doe">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" asp-for="Email" placeholder="xyz@example.com">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="phone" class="form-label">Phone No.</label>
+                                                    <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="123456789">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="password" class="form-label">Password</label>
+                                                    <input type="password" class="form-control" asp-for="Password" placeholder="Enter password">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                                                    <input type="password" class="form-control" asp-for="ConfirmPassword" placeholder="Confirm password">
+                                                </div>
+                                            </div>
+
+                                            <!-- Ülke Alanı -->
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="country" class="form-label">Country</label>
+                                                    <select class="form-control" asp-for="Country">
+                                                        <option value="Turkey">Turkey</option>
+                                                        <option value="USA">USA</option>
+                                                        <option value="Germany">Germany</option>
+                                                        <option value="France">France</option>
+                                                        <option value="UK">United Kingdom</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-12 d-flex justify-content-center">
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="terms" required>
+                                                    <label class="form-check-label" for="terms">I agree with the terms of use</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <p class="mt-3 text-center">
+                                                    Already have an Account? <a asp-controller="Dashboard" asp-action="Login" class="text-underline">Sign In</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!-- FORM BİTİŞİ -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    </div>
+
+    <script>
+        // Create floating music notes and words animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgAnimations = document.getElementById('bgAnimations');
+            const musicNotes = ['♪', '♫', '♬', '♩', '♭', '♮', '🎵', '🎶', '🎼', '🎸', '🎹', '🎷', '🎺', '🎻'];
+            const musicWords = ['MUSIC', 'BEATS', 'RHYTHM', 'MELODY', 'SONG', 'TUNE', 'HARMONY', 'TAG'];
+            const colorClasses = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8'];
+
+            // Create 60 floating elements (more notes)
+            for (let i = 0; i < 60; i++) {
+                const element = document.createElement('div');
+                element.className = 'note ' + colorClasses[Math.floor(Math.random() * colorClasses.length)];
+
+                // Add sparkle animation to some notes
+                if (Math.random() > 0.7) {
+                    element.style.animation = 'float 15s linear infinite, sparkle 2s ease-in-out infinite';
+                }
+
+                // Randomly choose between notes and words
+                if (Math.random() > 0.3) {
+                    element.innerHTML = musicNotes[Math.floor(Math.random() * musicNotes.length)];
+                    element.style.fontSize = Math.random() * 25 + 15 + 'px'; // Bigger notes
+                } else {
+                    element.innerHTML = musicWords[Math.floor(Math.random() * musicWords.length)];
+                    element.style.fontSize = Math.random() * 14 + 10 + 'px';
+                }
+
+                // Random position and animation timing
+                element.style.left = Math.random() * 100 + 'vw';
+                element.style.animationDuration = Math.random() * 25 + 10 + 's';
+                element.style.animationDelay = Math.random() * 10 + 's';
+                element.style.opacity = Math.random() * 0.7 + 0.3; // More visible
+
+                bgAnimations.appendChild(element);
+            }
+
+            // Form input focus animation with panda
+            const formInputs = document.querySelectorAll('input, select');
+            const pandaFaces = document.querySelectorAll('.panda-face');
+
+            // When any input field is in focus, close panda eyes
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    pandaFaces.forEach(face => {
+                        face.classList.add('eyes-closed');
+                    });
+                });
+
+                input.addEventListener('blur', function() {
+                    pandaFaces.forEach(face => {
+                        face.classList.remove('eyes-closed');
+                    });
+                });
+            });
+        });
+
+        // Form submission and validation
+        document.querySelector("form").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Formdaki tüm alanları al (ClientValidation için)
+            const password = document.querySelector('input[name="Password"]').value;
+            const confirmPassword = document.querySelector('input[name="ConfirmPassword"]').value;
+
+            // Client tarafında temel doğrulama
+            if (password.length < 6) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreniz en az 6 karakter olmalıdır.",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Şifreler uyuşmuyor!",
+                    confirmButtonText: "Tamam"
+                });
+                return;
+            }
+
+            // FormData kullanarak tüm verileri gönder
+            const formData = new FormData(this);
+
+            // Gönderim formatı kontrolü - fetch ile FormData
+            fetch("/Dashboard/Register", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Sunucu yanıtı:", data);
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Successful!",
+                        text: data.message || "Your account has been successfully created!",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        window.location.href = data.redirectUrl;
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: data.message,
+                        confirmButtonText: "OK"
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Bağlantı hatası:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Connection Error!",
+                    text: "A problem occurred while communicating with the server.",
+                    confirmButtonText: "OK"
+                });
+            });
+        });
+    </script>
+</body>
+</html>

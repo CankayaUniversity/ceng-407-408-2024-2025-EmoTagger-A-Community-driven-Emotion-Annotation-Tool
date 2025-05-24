@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="PythonScripts\**" />
+    <Compile Remove="Views\Albums\**" />
+    <Compile Remove="Views\ListenTag\**" />
+    <Compile Remove="Views\Release\**" />
+    <Compile Remove="wwwroot\dashboard\**" />
+    <Content Remove="PythonScripts\**" />
+    <Content Remove="Views\Albums\**" />
+    <Content Remove="Views\ListenTag\**" />
+    <Content Remove="Views\Release\**" />
+    <Content Remove="wwwroot\dashboard\**" />
+    <EmbeddedResource Remove="PythonScripts\**" />
+    <EmbeddedResource Remove="Views\Albums\**" />
+    <EmbeddedResource Remove="Views\ListenTag\**" />
+    <EmbeddedResource Remove="Views\Release\**" />
+    <EmbeddedResource Remove="wwwroot\dashboard\**" />
+    <None Remove="PythonScripts\**" />
+    <None Remove="Views\Albums\**" />
+    <None Remove="Views\ListenTag\**" />
+    <None Remove="Views\Release\**" />
+    <None Remove="wwwroot\dashboard\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\AIController.cs" />
+    <Compile Remove="Controllers\AlbumsController.cs.cs" />
+    <Compile Remove="Controllers\RegisterController.cs" />
+    <Compile Remove="Models\HomeViewModel.cs" />
+    <Compile Remove="Models\ListenTagModel.cs" />
+    <Compile Remove="Models\LogPlayedRequest.cs" />
+    <Compile Remove="Models\MusicComment.cs" />
+    <Compile Remove="Models\NowPlayingViewModel.cs" />
+    <Compile Remove="Models\RecentlyTagged.cs" />
+    <Compile Remove="Models\Tag.cs" />
+    <Compile Remove="Models\TagTrackDto.cs" />
+    <Compile Remove="Models\Track.cs" />
+    <Compile Remove="Models\TrackTag.cs" />
+    <Compile Remove="Views\Admin\EditMusic.cshtml.cs" />
+    <Compile Remove="Views\Dashboard\ListenTagg.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Admin\EditMusic.cshtml" />
+    <Content Remove="Views\Dashboard\albums.cshtml" />
+    <Content Remove="Views\Dashboard\blank-page.cshtml" />
+    <Content Remove="Views\Dashboard\ListenTagg.cshtml" />
+    <Content Remove="Views\Dashboard\music-player.cshtml" />
+    <Content Remove="Views\Dashboard\release.cshtml" />
+    <Content Remove="Views\Shared\_NowPlayingPartial.cshtml" />
+    <Content Remove="wwwroot\css\index.css" />
+    <Content Remove="wwwroot\css\leaderboard.cs" />
+    <Content Remove="wwwroot\css\site.css" />
+    <Content Remove="wwwroot\js\listentag-player.js" />
+    <Content Remove="wwwroot\js\listentag.js" />
+    <Content Remove="wwwroot\js\music-player.js" />
+    <Content Remove="wwwroot\js\muzik.js" />
+    <Content Remove="wwwroot\vue\src\components\partials\FooterComponent.vue" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Dashboard\albums.cshtml" />
+    <None Include="Views\Dashboard\blank-page.cshtml" />
+    <None Include="Views\Dashboard\music-player.cshtml" />
+    <None Include="Views\Dashboard\release.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\NewFolder\" />
+  </ItemGroup>
+
+</Project>

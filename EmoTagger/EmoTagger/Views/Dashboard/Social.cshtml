@@ -1,0 +1,324 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Social";
+}
+
+<div class="social-container">
+    <div class="social-header">
+        <h2>Social Feed</h2>
+        <div class="social-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="tags">Tags</button>
+            <button class="filter-btn" data-filter="comments">Comments</button>
+            <button class="filter-btn" data-filter="likes">Likes</button>
+        </div>
+    </div>
+
+    <div class="social-feed">
+        <!-- Feed items will be loaded here dynamically -->
+        <div class="loading-feed">
+            <i class="fas fa-spinner fa-spin"></i> Loading social feed...
+        </div>
+    </div>
+</div>
+
+<style>
+    .social-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .social-header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .social-header h2 {
+        color: #333;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .social-filters {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        background: #f0f0f0;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        background: #e0e0e0;
+    }
+
+    .filter-btn.active {
+        background: #6a5acd;
+        color: white;
+    }
+
+    .social-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .feed-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .feed-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .feed-item-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 12px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+    }
+
+    .user-info {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .activity-time {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .feed-item-content {
+        margin-bottom: 15px;
+    }
+
+    .song-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f8f8f8;
+        border-radius: 8px;
+    }
+
+    .song-title {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .song-artist {
+        color: #666;
+    }
+
+    .feed-item-actions {
+        display: flex;
+        gap: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #666;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .action-btn:hover {
+        color: #6a5acd;
+    }
+
+    .loading-feed {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .loading-feed i {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter buttons functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                loadFeed(this.dataset.filter);
+            });
+        });
+
+        // Initial feed load
+        loadFeed('all');
+    });
+
+    function loadFeed(filter) {
+        const feedContainer = document.querySelector('.social-feed');
+        feedContainer.innerHTML = '<div class="loading-feed"><i class="fas fa-spinner fa-spin"></i> Loading social feed...</div>';
+
+        // Fetch feed data from backend
+        fetch(`/Dashboard/GetSocialFeed?filter=${filter}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderFeed(data.items);
+                } else {
+                    feedContainer.innerHTML = '<div class="error-message">Failed to load feed</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading feed:', error);
+                feedContainer.innerHTML = '<div class="error-message">Error loading feed</div>';
+            });
+    }
+
+    function renderFeed(items) {
+        const feedContainer = document.querySelector('.social-feed');
+        feedContainer.innerHTML = '';
+
+        if (!items || items.length === 0) {
+            feedContainer.innerHTML = '<div class="no-items">No activity to show</div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const feedItem = createFeedItem(item);
+            feedContainer.appendChild(feedItem);
+        });
+    }
+
+    function createFeedItem(item) {
+        const div = document.createElement('div');
+        div.className = 'feed-item';
+
+        const timeAgo = getTimeAgo(new Date(item.timestamp));
+
+        div.innerHTML = `
+            <div class="feed-item-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">${item.userName}</div>
+                    <div class="activity-time">${timeAgo}</div>
+                </div>
+            </div>
+            <div class="feed-item-content">
+                <div class="song-info">
+                    <i class="fas fa-music"></i>
+                    <div>
+                        <div class="song-title">${item.songTitle}</div>
+                        <div class="song-artist">${item.songArtist}</div>
+                    </div>
+                </div>
+                <div class="activity-description">
+                    ${getActivityDescription(item)}
+                </div>
+            </div>
+            <div class="feed-item-actions">
+                <div class="action-btn like-btn" onclick="handleLike(${item.id})">
+                    <i class="far fa-heart"></i>
+                    <span>${item.likes || 0}</span>
+                </div>
+                <div class="action-btn comment-btn" onclick="handleComment(${item.id})">
+                    <i class="far fa-comment"></i>
+                    <span>${item.comments || 0}</span>
+                </div>
+                <div class="action-btn share-btn" onclick="handleShare(${item.id})">
+                    <i class="far fa-share-square"></i>
+                </div>
+            </div>
+        `;
+
+        return div;
+    }
+
+    function getActivityDescription(item) {
+        switch(item.type) {
+            case 'tag':
+                return `tagged this song as <strong>${item.tag}</strong>`;
+            case 'comment':
+                return `commented: "${item.comment}"`;
+            case 'like':
+                return `liked this song`;
+            default:
+                return '';
+        }
+    }
+
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) return interval + ' years ago';
+        if (interval === 1) return '1 year ago';
+
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return interval + ' months ago';
+        if (interval === 1) return '1 month ago';
+
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return interval + ' days ago';
+        if (interval === 1) return '1 day ago';
+
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return interval + ' hours ago';
+        if (interval === 1) return '1 hour ago';
+
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return interval + ' minutes ago';
+        if (interval === 1) return '1 minute ago';
+
+        return 'just now';
+    }
+
+    function handleLike(itemId) {
+        // Implement like functionality
+        console.log('Like clicked for item:', itemId);
+    }
+
+    function handleComment(itemId) {
+        // Implement comment functionality
+        console.log('Comment clicked for item:', itemId);
+    }
+
+    function handleShare(itemId) {
+        // Implement share functionality
+        console.log('Share clicked for item:', itemId);
+    }
+</script> 
