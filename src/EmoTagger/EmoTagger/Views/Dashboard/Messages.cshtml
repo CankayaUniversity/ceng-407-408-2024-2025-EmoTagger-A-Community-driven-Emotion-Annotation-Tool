@@ -151,6 +151,7 @@
             if (message) {
                 sendMessage(selectedFriendId, message);
                 messageInput.value = '';
+                if (typeof updateUnreadCounts === 'function') updateUnreadCounts();
             }
         });
 
@@ -280,17 +281,14 @@
                 body: JSON.stringify({ friendId })
             }).then(() => {
                 updateUnreadCounts();
-                if (typeof updateMenuUnreadBadge === 'function') updateMenuUnreadBadge();
             });
-        }
-
-        // Mesaj gönderilince
-        function afterSendMessage() {
-            updateUnreadCounts();
         }
 
         // Sayfa ilk açıldığında da badge'leri güncelle
         updateUnreadCounts();
+
+        // Her 5 saniyede bir unread badge'leri güncelle
+        setInterval(updateUnreadCounts, 5000);
     </script>
 }
 

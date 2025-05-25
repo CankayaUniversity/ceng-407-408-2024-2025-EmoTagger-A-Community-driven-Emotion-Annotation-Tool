@@ -1,4 +1,49 @@
 ﻿
+.play-count {
+    text-align: center;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.count-value {
+    display: inline-block;
+    min-width: 30px;
+    text-align: right;
+}
+
+.count-update-effect {
+    animation: countUpdate 0.5s ease;
+}
+
+@keyframes countUpdate {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.row-flash-effect {
+    animation: rowFlash 0.7s ease;
+}
+
+@keyframes rowFlash {
+    0% {
+        background-color: rgba(106, 90, 205, 0.1);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
 /* Enhanced Music Table Styling */
 .music-table {
     width: 100%;
@@ -166,4 +211,3 @@
         50%  { background-color: #ffe066; }
         100% { background-color: inherit; }
     }
-</style>

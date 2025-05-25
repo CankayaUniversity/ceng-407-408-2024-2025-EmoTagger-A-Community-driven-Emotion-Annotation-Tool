@@ -202,13 +202,20 @@ else
                 window.currentIndex = foundIndex;
             }
 
+            // Emotagger global değişkenlerini güncelle
+            window.emotagger.currentMusicId = track.id;
+            window.emotagger.currentTrackTitle = track.title;
+            window.emotagger.currentTrackArtist = track.artist;
+
+            // Şarkı değiştiğinde loglama durumunu sıfırla
+            window.emotagger.hasLogged = false;
+
             window.currentTrackTitle = track.title;
             window.currentTrackArtist = track.artist;
             window.currentMusicId = track.id;
-             // *** BURAYA EKLE! ***
-    window.currentFilename = track.filename;
-    if (window.parent) window.parent.currentFilename = track.filename;
-    // ********************
+            window.currentFilename = track.filename;
+            if (window.parent) window.parent.currentFilename = track.filename;
+
             audioPlayer.src = `https://emomusicc.vercel.app/music/${encodeURIComponent(track.filename)}`;
             audioPlayer.load();
 
@@ -489,9 +496,181 @@ else
         let playAfterLoad = false;
         let timeToSeekAfterLoad = 0;
 
+        // Dinleme geçmişi ve sayaç için global değişkenler
+        window.emotagger = {
+            currentMusicId: null,
+            currentTrackTitle: null,
+            currentTrackArtist: null,
+            isLogging: false,
+            hasLogged: false,
+            lastLoggedId: null,
+            minimumPlayTime: 3,
+            savedCounts: {
+                musicId: null,
+                totalCount: 0,
+                userCount: 0
+            }
+        };
+
+        // Dinleme kaydı için merkezi fonksiyon
+        function logPlayed(musicId) {
+            if (!musicId) {
+                console.warn("logPlayed: Müzik ID eksik!");
+                return;
+            }
+
+            if (window.emotagger.isLogging ||
+                (window.emotagger.hasLogged && window.emotagger.lastLoggedId === musicId)) {
+                console.log("Şarkı zaten loglanmış veya loglama devam ediyor, işlem atlanıyor.");
+                return;
+            }
+
+            console.log(`Şarkı dinleme kaydı başlatılıyor, ID: ${musicId}`);
+            window.emotagger.isLogging = true;
+
+            let fetchCount = 0;
+            const totalFetches = 2;
+            const completeFetch = () => {
+                fetchCount++;
+                if (fetchCount >= totalFetches) {
+                    window.emotagger.isLogging = false;
+                    window.emotagger.hasLogged = true;
+                    window.emotagger.lastLoggedId = musicId;
+                    console.log("Tüm loglama işlemleri tamamlandı.");
+                }
+            };
+
+            // 1. Dinleme geçmişini güncelle
+            fetch('/Dashboard/LogPlayed', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ musicId: parseInt(musicId) }),
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Dinleme geçmişi güncellendi:", data);
+                completeFetch();
+            })
+            .catch(err => {
+                console.error("Geçmiş kaydı hatası:", err);
+                completeFetch();
+            });
+
+            // 2. Dinleme sayacını güncelle
+            fetch('/PlayCounts/UpdateCounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `musicId=${musicId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Dinleme sayacı güncellendi:", data);
+                if (data.success) {
+                    window.emotagger.savedCounts = {
+                        musicId: musicId,
+                        totalCount: data.totalPlayCount,
+                        userCount: data.userPlayCount
+                    };
+
+                    try {
+                        localStorage.setItem('emotagger_counts', JSON.stringify(window.emotagger.savedCounts));
+                    } catch (e) {
+                        console.warn("LocalStorage'a kayıt yapılamadı:", e);
+                    }
+
+                    // Dinleme sayısı güncelleme olayını tetikle
+                    const event = new CustomEvent('playCountUpdated', {
+                        detail: {
+                            musicId: musicId,
+                            totalCount: data.totalPlayCount
+                        }
+                    });
+                    window.dispatchEvent(event);
+                }
+                completeFetch();
+            })
+            .catch(err => {
+                console.error("Sayaç güncelleme hatası:", err);
+                completeFetch();
+            });
+        }
+
+        // Minimum süreye göre dinleme kaydı tetikleyici
+        function setupPlaytimeMonitoring() {
+            if (!audioPlayer) return;
+
+            audioPlayer.removeEventListener('timeupdate', playTimeMonitorHandler);
+            audioPlayer.addEventListener('timeupdate', playTimeMonitorHandler);
+        }
+
+        // Oynatma süresi takibi
+        function playTimeMonitorHandler() {
+            if (!audioPlayer || audioPlayer.paused || !window.emotagger.currentMusicId) return;
+
+            // Sayfa yenilendiğinde ve aynı şarkı çalıyorsa, loglama durumunu kontrol et
+            if (window.emotagger.lastLoggedId === window.emotagger.currentMusicId) {
+                window.emotagger.hasLogged = true;
+                return;
+            }
+
+            if (!window.emotagger.hasLogged &&
+                audioPlayer.currentTime >= window.emotagger.minimumPlayTime) {
+                console.log(`Şarkı minimum süreye (${window.emotagger.minimumPlayTime}s) ulaştı, dinleme kaydediliyor...`);
+                logPlayed(window.emotagger.currentMusicId);
+            }
+        }
+
+        // Sayfa yaşam döngüsü olaylarını kur
+        function setupPageLifecycleEvents() {
+            window.addEventListener('beforeunload', function() {
+                try {
+                    localStorage.setItem('emotagger_counts', JSON.stringify(window.emotagger.savedCounts));
+                    localStorage.setItem('emotagger_last_song', JSON.stringify({
+                        id: window.emotagger.currentMusicId,
+                        hasLogged: window.emotagger.hasLogged,
+                        time: new Date().getTime()
+                    }));
+                } catch (e) {
+                    console.warn("beforeunload: LocalStorage kaydı sırasında hata:", e);
+                }
+            });
+
+            window.addEventListener('load', function() {
+                try {
+                    const savedCounts = localStorage.getItem('emotagger_counts');
+                    if (savedCounts) {
+                        window.emotagger.savedCounts = JSON.parse(savedCounts);
+                        console.log("Kaydedilmiş sayaç verileri yüklendi:", window.emotagger.savedCounts);
+                    }
+
+                    const lastSongData = localStorage.getItem('emotagger_last_song');
+                    if (lastSongData) {
+                        const data = JSON.parse(lastSongData);
+                        const now = new Date().getTime();
+
+                        // Sayfa yenilendiğinde son şarkı bilgilerini geri yükle
+                        if (data.id) {
+                            window.emotagger.lastLoggedId = data.id;
+                            window.emotagger.hasLogged = data.hasLogged;
+                            console.log("Sayfa yenilendi, şarkı durumu geri yüklendi:", data);
+                        }
+
+                        localStorage.removeItem('emotagger_last_song');
+                    }
+                } catch (e) {
+                    console.error("load: LocalStorage verisi işlenirken hata:", e);
+                }
+            });
+        }
+
         function initializePlayerState() {
             if (loadTrackData()) {
                 console.log("Şarkı verileri yüklendi, toplam:", window.tracks.length, "şarkı");
+
+                // Dinleme geçmişi ve sayaç için gerekli kurulumları yap
+                setupPageLifecycleEvents();
+                setupPlaytimeMonitoring();
 
                 const savedVolume = localStorage.getItem('playerVolume');
                 if (savedVolume !== null) {
@@ -519,7 +698,7 @@ else
                 } else if (window.tracks.length > 0) {
                     window.currentIndex = 0;
                     setCurrentTrack(window.tracks[window.currentIndex], false);
-            }
+                }
             } else {
                 console.error("Şarkı verileri yüklenemedi!");
             }
@@ -570,16 +749,16 @@ else
                 playPauseIcon.className = 'fas fa-pause';
                 if (playPauseBtn) playPauseBtn.classList.add('playing');
             }
-        });
 
-        audioPlayer.addEventListener('pause', function() {
-            if (playPauseIcon) {
-                playPauseIcon.className = 'fas fa-play';
-                if (playPauseBtn) playPauseBtn.classList.remove('playing');
+            // Şarkı çalmaya başladığında, eğer mevcut şarkı son loglanandan farklıysa loglama durumunu sıfırla
+            if (window.emotagger.lastLoggedId !== window.emotagger.currentMusicId) {
+                window.emotagger.hasLogged = false;
             }
         });
 
         audioPlayer.addEventListener('ended', function() {
+            // Şarkı bittiğinde loglama durumunu sıfırla
+            window.emotagger.hasLogged = false;
             nextTrack();
         });
 

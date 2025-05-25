@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             const query = input.value.trim();
-            if (query.length < 2) {
+            if (query.length < 1) {
                 results.style.display = 'none';
                 results.innerHTML = '';
                 return;

@@ -1,11 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Favori Şarkılarım";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Varsayılan layout'unuzu kullanın
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 <link rel="stylesheet" href="~/css/favorites.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <link rel="stylesheet" href="~/css/favorites.css" asp-append-version="true">
-<link rel="stylesheet" href="~/css/default.css" asp-append-version="true"> <!-- Genel stil ve player için -->
+<link rel="stylesheet" href="~/css/default.css" asp-append-version="true"> 
 <style>
     .heart-icon i.favorite {
         color: #ff3366 !important;
@@ -18,10 +18,10 @@
                     </div>
 
     <div id="favorites-list" class="favorites-list">
-        <!-- Favori şarkılar buraya yüklenecek -->
+      
                 </div>
 
-    <!-- Sayfalama kontrolleri -->
+
     <div id="favorites-pagination" class="pagination justify-content-center mt-4"></div>
 
     <div id="no-favorites" class="empty-state" style="display: none;">
@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function playFavorite(musicId) {
         const trackToPlay = currentFavorites.find(fav => fav.id === musicId);
         if (trackToPlay && typeof window.setCurrentTrack === 'function') {
-            // Footer player'ın tracks dizisini güncelle
+         
             if (window.tracks && Array.isArray(window.tracks)) {
                 window.tracks = [...currentFavorites];
             }
-            // currentIndex'i doğru ayarla
+           
             window.setCurrentTrack(trackToPlay, true);
                 } else {
             console.error('setCurrentTrack fonksiyonu bulunamadı veya şarkı bilgisi eksik.');
@@ -74,9 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest' // Gerekliyse
+                'X-Requested-With': 'XMLHttpRequest' 
             },
-            credentials: 'include', // Session bazlı işlemler için
+            credentials: 'include', 
             body: JSON.stringify({ musicId: musicId, remove: true })
         })
         .then(response => response.json())
@@ -88,11 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     noFavoritesMessage.style.display = 'block';
                     if (shuffleAllButton) shuffleAllButton.style.display = 'none';
                 }
-                // Global favori ikonunu güncellemek için event fırlatılabilir (gerekirse)
+              
                 const event = new CustomEvent('favoriteChanged', { detail: { musicId: musicId, isFavorite: false } });
                 window.dispatchEvent(event);
 
-                // Toast mesajı (NowPlaying'deki gibi)
+                
                 showToast('Favorilerden çıkarıldı!', '#fff', '#222');
 
             } else {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function showToast(message, bg, color) { // Bu fonksiyon NowPlaying'den kopyalanabilir veya global yapılabilir
+    function showToast(message, bg, color) { 
         let toast = document.getElementById('page-toast');
         if (!toast) {
             toast = document.createElement('div');
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (shuffleAllButton) {
         shuffleAllButton.addEventListener('click', function() {
             if (currentFavorites.length > 0) {
-                // Favori şarkıları player'ın beklediği formata çevir
+           
                 let songs = currentFavorites.map(fav => ({
                     id: fav.id,
                     title: fav.title,
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Eğer NowPlaying'den bir favori durumu değişirse bu sayfayı güncellemek için
+    
     window.addEventListener('favoriteChanged', function(event) {
         fetchFavoritesAndRender();
     });
@@ -275,9 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Favori yükleme hatası:', error);
             });
     }
-    // Initial load
-    // fetchFavoritesAndRender(); // Zaten yukarıda bir kere fetch ediliyor. Bu event listener için.
-
+   
     });
 </script>
 

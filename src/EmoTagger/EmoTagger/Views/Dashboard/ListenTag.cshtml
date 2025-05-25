@@ -158,8 +158,10 @@
             <!-- Hidden audio element for player functionality -->
             <audio id="musicPlayer" style="display:none;"></audio>
         </div>
+        
         <div style="flex: 1 1 0; min-width: 0; max-width: 100%; width: 50%; display: flex; flex-direction: column; gap: 24px;">
             <div>
+        
                 <div class="ai-analyze-section" style="margin-bottom: 18px;">
                     <div id="aiAnalyzedSongInfo" style="font-size: 17px; font-weight: bold; color: #6a5acd; margin-bottom: 10px;"></div>
                     <button id="aiAnalyzeBtn" class="ai-analysis-btn" style="font-size: 18px; padding: 10px 28px;">
@@ -187,12 +189,8 @@
                     <div style="flex: 2; min-width: 180px;">
                         <div style="margin-bottom: 12px; background: #f0f0f8; border-radius: 8px; padding: 8px 12px;">
                             <div style="font-size: 14px; color: #666;">
-                                <i class="fas fa-info-circle"></i> AI analyzes the song based on its audio features (tone, tempo, energy). Lyrics are not analyzed.
+                                <i class="fas fa-info-circle"></i> AI analyzes the song based on its audio features (tone, tempo, energy).
                             </div>
-                        </div>
-                        <div style="margin-bottom: 12px;">
-                            <div style="font-size: 15px; color: #888; margin-bottom: 4px;">Speech-to-Text (if available):</div>
-                            <div id="aiTranscription" style="background: #f7f7fa; border-radius: 8px; padding: 8px 12px; min-height: 32px; font-size: 15px; color: #444;">-</div>
                         </div>
                         <div style="margin-bottom: 16px;">
                             <table style="width: 100%; border-collapse: collapse;">
@@ -217,6 +215,26 @@
                                 <option value="no">No</option>
                             </select>
                             <button id="aiFeedbackSendBtn" style="margin-left: 10px; padding: 4px 16px; border-radius: 6px; background: #6a5acd; color: white; border: none; font-weight: bold; cursor: pointer;">Send</button>
+                            
+                            <!-- Feedback istatistikleri bölümü -->
+                            <div id="feedbackStats" style="margin-top: 15px; padding: 10px; background: #f7f7fa; border-radius: 8px; display: block;">
+                                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Community Feedback:</div>
+                                <div style="display: flex; gap: 20px;">
+                                    <div>
+                                        <span style="color: #4CAF50;">Yes:</span>
+                                        <span id="yesCount" style="font-weight: bold;">0</span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #f44336;">No:</span>
+                                        <span id="noCount" style="font-weight: bold;">0</span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #666;">Total:</span>
+                                        <span id="totalCount" style="font-weight: bold;">0</span>
+                                    </div>
+                                </div>
+                                <div id="alreadyVotedMsg" style="color: #d32f2f; font-weight: bold; margin-top: 8px; display: none;">You already voted!</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -231,7 +249,6 @@
                 text-align: center;
                 font-family: Arial, sans-serif;
             }
-
 
             .tag-title {
                 font-size: 24px;
@@ -349,6 +366,45 @@
                 margin: 10px 0;
             }
 
+           
+
+            #aiProgressBar {
+                transform: rotate(-90deg);
+                transform-origin: center;
+                animation: progress-animation 5s linear forwards;
+            }
+
+            #aiProgressText {
+                position: relative;
+                top: -64px;
+                font-size: 18px;
+                color: #6a5acd;
+                font-weight: bold;
+            }
+
+            .ai-analysis-progress {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                margin: 0 auto;
+            }
+
+            .ai-analysis-progress svg {
+                transform: rotate(-90deg);
+            }
+
+            .ai-analysis-progress path {
+                fill: none;
+                stroke-width: 3.5;
+            }
+
+            #aiProgressBg {
+                stroke: #eee;
+            }
+
+            #aiProgressBar {
+                stroke: #6a5acd;
+            }
         </style>
         <div class="tag-title" style="margin-bottom: 30px; font-size: 28px; color: #222; font-weight: bold;">How did this song make you feel?</div>
         <div class="tag-buttons">
@@ -614,6 +670,7 @@
     </style>
 
     <script>
+             
         // Tab switching functionality
         document.addEventListener('DOMContentLoaded', function() {
             const tabs = document.querySelectorAll('.history-tab');
@@ -649,6 +706,18 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <script src="~/js/friend-search.js"></script>
+    <script>
+        console.log("Friend search script loaded");
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Friend search elements:", {
+                navbarInput: document.getElementById('friend-search-input-navbar'),
+                navbarResults: document.getElementById('friend-search-results-navbar'),
+                footerInput: document.getElementById('friend-search-input-footer'),
+                footerResults: document.getElementById('friend-search-results-footer')
+            });
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
@@ -715,8 +784,10 @@
                 body: JSON.stringify({ musicId: parseInt(musicId) }),
                 credentials: 'include'
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => response.text())
+            .then(text => {
+                let data;
+                try { data = text ? JSON.parse(text) : {}; } catch (e) { console.error('JSON parse hatası:', e, text); data = {}; }
                 console.log("Dinleme geçmişi güncellendi:", data);
                 loadRecentlyPlayed();
                 completeFetch();
@@ -732,30 +803,23 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `musicId=${musicId}`
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => response.text())
+            .then(text => {
+                let data;
+                try { data = text ? JSON.parse(text) : {}; } catch (e) { console.error('JSON parse hatası:', e, text); data = {}; }
                 console.log("Dinleme sayacı güncellendi:", data);
                 if (data.success) {
                     // UI'daki sayaçları güncelle
                     const totalCountEl = document.getElementById('totalPlayCount');
                     const userCountEl = document.getElementById('userPlayCount');
-
                     if (totalCountEl) totalCountEl.innerText = data.totalPlayCount;
                     if (userCountEl) userCountEl.innerText = data.userPlayCount;
-
-                    // Sayfa yenilemesi için verileri kaydet
                     window.emotagger.savedCounts = {
                         musicId: musicId,
                         totalCount: data.totalPlayCount,
                         userCount: data.userPlayCount
                     };
-
-                    // localStorage'a da kaydet
-                    try {
-                        localStorage.setItem('emotagger_counts', JSON.stringify(window.emotagger.savedCounts));
-                    } catch (e) {
-                        console.warn("LocalStorage'a kayıt yapılamadı:", e);
-                    }
+                    try { localStorage.setItem('emotagger_counts', JSON.stringify(window.emotagger.savedCounts)); } catch (e) { console.warn("LocalStorage'a kayıt yapılamadı:", e); }
                 }
                 completeFetch();
             })
@@ -950,26 +1014,20 @@
             console.log("Dinleme sayıları getiriliyor, musicId:", musicId);
 
             fetch(`/PlayCounts/GetCounts?musicId=${musicId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
+                .then(response => response.text())
+                .then(text => {
+                    let data;
+                    try { data = text ? JSON.parse(text) : {}; } catch (e) { console.error('JSON parse hatası:', e, text); data = {}; }
                     if (data.success) {
                         const totalCountEl = document.getElementById('totalPlayCount');
                         const userCountEl = document.getElementById('userPlayCount');
-
                         if (totalCountEl) totalCountEl.innerText = data.totalPlayCount;
                         if (userCountEl) userCountEl.innerText = data.userPlayCount;
-
-                        // Sayfa yenilemesi için verileri kaydet
                         window.emotagger.savedCounts = {
                             musicId: musicId,
                             totalCount: data.totalPlayCount,
                             userCount: data.userPlayCount
                         };
-
-                        // Sayaç bilgisi panelini göster
                         const playCountInfo = document.getElementById('playCountInfo');
                         if (playCountInfo) playCountInfo.style.display = 'flex';
                     }
@@ -1451,27 +1509,16 @@
            container.innerHTML = '<div class="loading-stats">Etiket istatistikleri yükleniyor...</div>';
 
            fetch(`/Tag/GetPopularTags?musicId=${musicId}`)
-               .then(response => response.json())
-               .then(data => {
+               .then(response => response.text())
+               .then(text => {
+                   let data;
+                   try { data = text ? JSON.parse(text) : {}; } catch (e) { console.error('JSON parse hatası:', e, text); data = {}; }
                    if (data.success && data.tags && data.tags.length > 0) {
                        let html = '';
-
                        data.tags.forEach(tag => {
                            const tagEmoji = getTagEmoji(tag.tag);
-                           html += `
-                           <div class="tag-stat-item">
-                               <div class="tag-name">
-                                   <span class="tag-emoji">${tagEmoji}</span>
-                                   ${getTagName(tag.tag)}
-                               </div>
-                               <div class="tag-bar-container">
-                                   <div class="tag-bar ${tag.tag}" style="width: ${tag.percentage}%"></div>
-                               </div>
-                               <div class="tag-count">${tag.count}</div>
-                               <div class="tag-percentage">${tag.percentage}%</div>
-                           </div>`;
+                           html += `\n<div class="tag-stat-item">\n<div class="tag-name">\n<span class="tag-emoji">${tagEmoji}</span>\n${getTagName(tag.tag)}\n</div>\n<div class="tag-bar-container">\n<div class="tag-bar ${tag.tag}" style="width: ${tag.percentage}%"></div>\n</div>\n<div class="tag-count">${tag.count}</div>\n<div class="tag-percentage">${tag.percentage}%</div>\n</div>`;
                        });
-
                        container.innerHTML = html;
                    } else {
                        container.innerHTML = '<div class="no-tags-message">This song has not been tagged yet.</div>';
@@ -2006,130 +2053,258 @@
             const aiTagResult = document.getElementById('aiTagResult');
             const aiTagConfidence = document.getElementById('aiTagConfidence');
             const aiSummary = document.getElementById('aiSummary');
-            const aiTranscription = document.getElementById('aiTranscription');
             const aiUserFeedback = document.getElementById('aiUserFeedback');
             const aiAnalyzedSongInfo = document.getElementById('aiAnalyzedSongInfo');
             const aiFeedbackSendBtn = document.getElementById('aiFeedbackSendBtn');
 
-            // Paneli kapatmak için X butonu ekle (bir kere eklenir)
-            if (aiPanel && !document.getElementById('aiPanelCloseBtn')) {
-                const closeBtn = document.createElement('button');
-                closeBtn.id = 'aiPanelCloseBtn';
-                closeBtn.innerHTML = '&times;';
-                closeBtn.style.position = 'absolute';
-                closeBtn.style.top = '18px';
-                closeBtn.style.right = '24px';
-                closeBtn.style.fontSize = '28px';
-                closeBtn.style.background = 'none';
-                closeBtn.style.border = 'none';
-                closeBtn.style.cursor = 'pointer';
-                closeBtn.style.color = '#888';
-                closeBtn.title = 'Close';
-                closeBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    aiPanel.style.display = 'none';
-                };
-                aiPanel.style.position = 'relative';
-                aiPanel.appendChild(closeBtn);
+            // Gerçek zamanlı konuşma tanıma için değişkenler
+            let recognition = null;
+            let isListening = false;
+            let currentTranscription = '';
+
+            // Web Speech API'yi başlat
+            function initSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window) {
+                    recognition = new webkitSpeechRecognition();
+                    recognition.continuous = true;
+                    recognition.interimResults = true;
+                    recognition.lang = 'tr-TR';
+
+                    recognition.onresult = function(event) {
+                        let interimTranscript = '';
+                        let finalTranscript = '';
+
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const transcript = event.results[i][0].transcript;
+                            if (event.results[i].isFinal) {
+                                finalTranscript += transcript;
+                            } else {
+                                interimTranscript += transcript;
+                            }
+                        }
+
+                        if (finalTranscript) {
+                            currentTranscription += finalTranscript + ' ';
+                            aiTranscription.textContent = currentTranscription;
+                        }
+                    };
+
+                    recognition.onerror = function(event) {
+                        console.error('Speech recognition error:', event.error);
+                        if (event.error === 'no-speech') {
+                            // Sessizlik durumunda yeniden başlat
+                            if (isListening) {
+                                recognition.stop();
+                                setTimeout(() => recognition.start(), 1000);
+                            }
+                        }
+                    };
+
+                    recognition.onend = function() {
+                        if (isListening) {
+                            recognition.start();
+                        }
+                    };
+                }
             }
 
-            // Paneli açma
+            // Konuşma tanımayı başlat/durdur
+            function toggleSpeechRecognition() {
+                if (!recognition) {
+                    initSpeechRecognition();
+                }
+
+                if (isListening) {
+                    recognition.stop();
+                    isListening = false;
+                } else {
+                    currentTranscription = '';
+                    aiTranscription.textContent = 'Dinleniyor...';
+                    recognition.start();
+                    isListening = true;
+                }
+            }
+
+            // Şarkı çalma durumunu izle
+            const audioPlayer = document.getElementById('musicPlayer');
+            if (audioPlayer) {
+                audioPlayer.addEventListener('play', function() {
+                    if (aiPanel.style.display === 'flex') {
+                        toggleSpeechRecognition();
+                    }
+                });
+
+                audioPlayer.addEventListener('pause', function() {
+                    if (isListening) {
+                        toggleSpeechRecognition();
+                    }
+                });
+
+                audioPlayer.addEventListener('ended', function() {
+                    if (isListening) {
+                        toggleSpeechRecognition();
+                    }
+                });
+            }
+
+            // AI analiz paneli açıldığında konuşma tanımayı başlat
             if (aiBtn && aiPanel) {
                 aiBtn.addEventListener('click', async function(e) {
                     e.stopPropagation();
-                    // Şarkı bilgisini göster
-                    const songTitle = window.currentTrackTitle || '-';
-                    const songArtist = window.currentTrackArtist || '-';
-                    aiAnalyzedSongInfo.textContent = `Analyzing: ${songTitle} - ${songArtist}`;
+                    
+                    // Panel'i göster
                     aiPanel.style.display = 'flex';
-
-                    // Başlangıç değerleri
-                    aiProgressBar.setAttribute('stroke-dasharray', '0,100');
-                    aiProgressText.textContent = '0s';
-                    aiEstimatedTime.textContent = '5';
-                    aiTagResult.textContent = '-';
-                    aiTagConfidence.textContent = '-';
-                    aiSummary.textContent = '-';
-                    aiTranscription.textContent = '-';
-                    aiUserFeedback.value = '';
-
-                    // Şarkı dosyasının yolunu bul
-                    const musicId = window.currentMusicId;
-                    const audioUrl = `/music/${musicId}.mp3`;
-
-                    // Şarkı dosyasını fetch ile al
-                    let audioBlob;
-                    try {
-                        const response = await fetch(audioUrl);
-                        if (!response.ok) throw new Error("Audio file not found!");
-                        audioBlob = await response.blob();
-                    } catch (err) {
-                        aiSummary.textContent = "Audio file could not be loaded.";
+                    
+                    // İlerleme çubuğunu sıfırla ve başlat
+                    const aiProgressBar = document.getElementById('aiProgressBar');
+                    const aiProgressText = document.getElementById('aiProgressText');
+                    
+                    if (aiProgressBar && aiProgressText) {
+                        aiProgressBar.style.animation = 'none';
+                        aiProgressBar.offsetHeight; // Reflow
+                        aiProgressBar.style.animation = 'progress-animation 5s linear forwards';
+                        
+                        // İlerleme metnini güncelle
+                        let timeLeft = 5;
+                        aiProgressText.textContent = `${timeLeft}s`;
+                        
+                        // İlerleme sayacını başlat
+                        const progressInterval = setInterval(() => {
+                            timeLeft--;
+                            if (timeLeft >= 0) {
+                                aiProgressText.textContent = `${timeLeft}s`;
+                            } else {
+                                clearInterval(progressInterval);
+                            }
+                        }, 1000);
+                    }
+                    
+                    // Mevcut şarkı bilgilerini al
+                    const audioPlayer = document.getElementById('musicPlayer');
+                    if (!audioPlayer || !audioPlayer.src) {
+                        showToast('No music is currently playing!', 'error');
                         return;
                     }
-                    const file = new File([audioBlob], `${musicId}.mp3`, { type: audioBlob.type });
 
-                    // Backend'e gönderilecek form
-                    const formData = new FormData();
-                    formData.append('file', file);
+                    // Şarkı bilgilerini göster
+                    const songTitle = document.getElementById('songTitle').textContent;
+                    const songArtist = document.getElementById('songArtist').textContent;
+                    aiAnalyzedSongInfo.textContent = `Analyzing: ${songTitle} - ${songArtist}`;
 
-                    // Progress animasyonu başlat
-                    let duration = 5;
-                    let elapsed = 0;
-                    const interval = setInterval(() => {
-                        elapsed++;
-                        const percent = Math.min(100, (elapsed / duration) * 100);
-                        aiProgressBar.setAttribute('stroke-dasharray', `${percent},100`);
-                        aiProgressText.textContent = `${elapsed}s`;
-                        aiEstimatedTime.textContent = (duration - elapsed) > 0 ? (duration - elapsed) : 0;
-                    }, 1000);
+                    try {
+                        // Şarkı dosyasını al
+                        const response = await fetch(audioPlayer.src);
+                        const blob = await response.blob();
+                        
+                        // FormData oluştur
+                        const formData = new FormData();
+                        formData.append('file', blob, 'song.mp3');
+                        // musicId'yi ekle
+                        formData.append('musicId', window.currentMusicId || '');
+                        // Backend'e istek gönder
+                        const result = await fetch('http://localhost:8000/predict', {
+                            method: 'POST',
+                            body: formData
+                        });
 
-                    // Backend API'ye POST isteği at
-                    fetch('/Dashboard/PredictEmotion', {
-                        method: 'POST',
-                        body: formData,
-                        credentials: 'include'
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        clearInterval(interval);
-                        aiProgressBar.setAttribute('stroke-dasharray', `100,100`);
-                        aiProgressText.textContent = 'Done';
+                        if (!result.ok) {
+                            throw new Error('Analysis failed');
+                        }
 
-                        aiTagResult.textContent = data.tag || '-';
-                        aiTagConfidence.textContent = data.confidence ? Math.round(data.confidence * 100) + '%' : '-';
-                        aiSummary.textContent = `The AI detected a "${data.tag}" mood in this song.`;
-                        aiTranscription.textContent = data.transcription || '-';
-                    })
-                    .catch(err => {
-                        clearInterval(interval);
-                        aiSummary.textContent = 'Error: ' + err;
-                    });
+                        const text = await result.text();
+                        let data;
+                        try {
+                            data = text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            console.error('AI yanıtı JSON değil:', text);
+                            throw new Error('AI yanıtı JSON değil');
+                        }
+                        
+                        // Sonuçları göster
+                        aiTagResult.textContent = data.top_tag || '-';
+                        const confidence = data.top_confidence;
+                        const modelConfidence = data.model_confidence ? (data.model_confidence * 100).toFixed(1) : '-';
+                        const feedbackConfidence = (typeof data.feedback_confidence === 'number' && data.feedback_confidence > 0)
+                            ? (data.feedback_confidence * 100).toFixed(1)
+                            : '-';
+                        const tagMatchConfidence = data.tag_match_confidence ? (data.tag_match_confidence * 100).toFixed(1) : '-';
+                        const communityConfidence = data.community_confidence ? (data.community_confidence * 100).toFixed(1) : '-';
+                        aiTagConfidence.innerHTML = confidence
+                            ? `${(confidence * 100).toFixed(1)}%<br><span style='font-size:13px;color:#888;'>Model: ${modelConfidence}%<br>Feedback (Yes/No): ${feedbackConfidence === '-' ? '-' : feedbackConfidence + '%'}<br>Tag Match: ${tagMatchConfidence}%<br>Community: ${communityConfidence}%</span>`
+                            : '-';
+                        aiSummary.textContent = `AI detected a "${data.top_tag}" mood in this song with ${confidence ? (confidence * 100).toFixed(1) : '0'}% confidence.`;
+                        
+                        if (data.speech_text) {
+                            aiTranscription.textContent = data.speech_text;
+                        }
+
+                        // İlerleme sayacını durdur
+                        if (aiProgressText) {
+                            aiProgressText.textContent = 'Done!';
+                        }
+
+                        // Feedback istatistiklerini güncelle
+                        refreshFeedbackStatsAndVoteState();
+
+                    } catch (error) {
+                        console.error('Analysis error:', error);
+                        showToast('Failed to analyze the song. Please try again.', 'error');
+                        if (aiProgressText) {
+                            aiProgressText.textContent = 'Error';
+                        }
+                    }
                 });
             }
 
-            // Panelin dışına tıklayınca kapat
-
-
-            // Panel içindeyken tıklama eventinin dışarıya gitmesini engelle
+            // Panel kapandığında konuşma tanımayı durdur
             if (aiPanel) {
-                aiPanel.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
+                const closeBtn = document.getElementById('aiPanelCloseBtn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function() {
+                        if (isListening) {
+                            toggleSpeechRecognition();
+                        }
+                    });
+                }
             }
 
-            // Şarkı değişince paneli ve analiz sonuçlarını sıfırla
+            // Şarkı değiştiğinde konuşma tanımayı sıfırla
             document.addEventListener('songChanged', function(event) {
-                aiTagResult.textContent = '-';
-                aiTagConfidence.textContent = '-';
-                aiSummary.textContent = '-';
-                aiTranscription.textContent = '-';
-                aiUserFeedback.value = '';
-                aiAnalyzedSongInfo.textContent = '';
+                // Her seferinde DOM'dan güncel referansları al
+                const aiTagResult = document.getElementById('aiTagResult');
+                const aiTagConfidence = document.getElementById('aiTagConfidence');
+                const aiSummary = document.getElementById('aiSummary');
+                const aiAnalyzedSongInfo = document.getElementById('aiAnalyzedSongInfo');
+                const aiUserFeedback = document.getElementById('aiUserFeedback');
+                const aiProgressText = document.getElementById('aiProgressText');
+                const aiPanel = document.getElementById('aiAnalysisPanel');
+                const aiTranscription = document.getElementById('aiTranscription');
 
+                if (isListening) {
+                    toggleSpeechRecognition();
+                }
+                currentTranscription = '';
+                if (aiTranscription) aiTranscription.textContent = '-';
+                // --- AI analiz sonuçlarını temizle ---
+                if (aiTagResult) aiTagResult.textContent = '-';
+                if (aiTagConfidence) aiTagConfidence.textContent = '-';
+                if (aiSummary) aiSummary.textContent = '-';
+                if (aiAnalyzedSongInfo) aiAnalyzedSongInfo.textContent = '';
+                if (aiUserFeedback) aiUserFeedback.value = '';
+                if (aiProgressText) aiProgressText.textContent = '0s';
+                if (aiPanel) aiPanel.style.display = 'none';
+                const feedbackStats = document.getElementById('feedbackStats');
+                if (feedbackStats) {
+                    const yesCount = document.getElementById('yesCount');
+                    const noCount = document.getElementById('noCount');
+                    const totalCount = document.getElementById('totalCount');
+                    if (yesCount) yesCount.textContent = '0';
+                    if (noCount) noCount.textContent = '0';
+                    if (totalCount) totalCount.textContent = '0';
+                    const alreadyVotedMsg = document.getElementById('alreadyVotedMsg');
+                    if (alreadyVotedMsg) alreadyVotedMsg.style.display = 'none';
+                }
             });
-
-
         });
     </script>
 
@@ -2149,11 +2324,46 @@
             const aiFeedbackSendBtn = document.getElementById('aiFeedbackSendBtn');
             const aiTagResult = document.getElementById('aiTagResult');
             const aiUserFeedback = document.getElementById('aiUserFeedback');
+
+            // Login durumuna göre buton stilini güncelle
+            function updateButtonStyle() {
+                if (!currentUserId) {
+                    aiFeedbackSendBtn.style.backgroundColor = '#cccccc';
+                    aiFeedbackSendBtn.style.cursor = 'not-allowed';
+                    aiFeedbackSendBtn.disabled = true;
+                } else {
+                    aiFeedbackSendBtn.style.backgroundColor = '#6a5acd';
+                    aiFeedbackSendBtn.style.cursor = 'pointer';
+                    aiFeedbackSendBtn.disabled = false;
+                }
+            }
+
+            // Sayfa yüklendiğinde buton stilini güncelle
+            updateButtonStyle();
+
+            // Login durumu değiştiğinde buton stilini güncelle
+            fetch('/Dashboard/CheckSession')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.isLoggedIn && data.userId) {
+                        currentUserId = data.userId;
+                    } else {
+                        currentUserId = null;
+                    }
+                    updateButtonStyle();
+                });
+
             if (aiFeedbackSendBtn) {
                 aiFeedbackSendBtn.addEventListener('click', function() {
+                    // Login kontrolü
+                    if (!currentUserId) {
+                        showToast("Please login to send feedback!", 'error');
+                        return;
+                    }
+
                     const feedback = aiUserFeedback.value;
                     if (!feedback) {
-                        alert("Please select Yes or No before sending.");
+                        showToast("Please select Yes or No before sending.", 'error');
                         return;
                     }
                     // AI tag yoksa gönderme!
@@ -2168,24 +2378,254 @@
                             musicId: window.currentMusicId,
                             tag: aiTagResult.textContent,
                             feedback: feedback,
-                            userId: currentUserId // <-- EKLENDİ
+                            userId: currentUserId
                         }),
                         credentials: 'include'
                     })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
-                            showToast("Feedback sent successfully!", 'success');
+                            showToast(data.message || "Feedback sent successfully!", 'success');
+                            refreshFeedbackStatsAndVoteState();
+                            // SADECE NO ise ve başarılıysa teşekkür mesajını göster
+                            let thankYouMsg = document.getElementById('aiNoThankYouMsg');
+                            if (feedback === 'no' && thankYouMsg) {
+                                thankYouMsg.style.display = 'block';
+                            } else if (thankYouMsg) {
+                                thankYouMsg.style.display = 'none';
+                            }
                         } else {
                             showToast(data.message || "Failed to send feedback.", 'error');
+                            if (data.error === 'Already voted') {
+                                refreshFeedbackStatsAndVoteState();
+                            }
                         }
                     })
                     .catch(() => showToast("Connection error!", 'error'));
                 });
             }
         });
+
+        // Feedback istatistiklerini güncelleme fonksiyonu
+        function updateFeedbackStats(stats) {
+            const feedbackStats = document.getElementById('feedbackStats');
+            const yesCount = document.getElementById('yesCount');
+            const noCount = document.getElementById('noCount');
+            const totalCount = document.getElementById('totalCount');
+            
+            if (feedbackStats && yesCount && noCount && totalCount) {
+                feedbackStats.style.display = 'block';
+                yesCount.textContent = stats.yes;
+                noCount.textContent = stats.no;
+                totalCount.textContent = stats.total;
+            }
+        }
+
+        // AI analiz sonucu geldiğinde feedback istatistiklerini getir
+        document.addEventListener('DOMContentLoaded', function() {
+            const aiBtn = document.getElementById('aiAnalyzeBtn');
+            if (aiBtn) {
+                aiBtn.addEventListener('click', function() {
+                    // Mevcut şarkı için feedback istatistiklerini getir
+                    if (window.currentMusicId) {
+                        fetch(`http://localhost:8000/get_ai_feedback_stats?musicId=${window.currentMusicId}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success && data.stats) {
+                                    updateFeedbackStats(data.stats);
+                                }
+                            })
+                            .catch(err => console.error('Feedback stats error:', err));
+                    }
+                });
+            }
+        });
+
+        // Kullanıcı daha önce oy verdi mi kontrolü
+        function checkAlreadyVoted(musicId) {
+            if (!currentUserId || !musicId) return Promise.resolve(false);
+            return fetch(`http://localhost:8000/get_feedback_stats?musicId=${musicId}&userId=${currentUserId}`)
+                .then(async res => {
+                    const text = await res.text();
+                    try {
+                        const data = JSON.parse(text);
+                        console.log('checkAlreadyVoted yanıtı:', data);
+                        return data.alreadyVoted || false;
+                    } catch (e) {
+                        console.error('checkAlreadyVoted JSON parse hatası:', e, 'Raw yanıt:', text);
+                        return false;
+                    }
+                })
+                .catch(err => {
+                    console.error('checkAlreadyVoted fetch hatası:', err);
+                    return false;
+                });
+        }
+
+        // Şarkı değiştiğinde veya analiz yapıldığında istatistikleri ve oy durumunu güncelle
+        function refreshFeedbackStatsAndVoteState() {
+            let musicId = window.currentMusicId;
+            const aiFeedbackSendBtn = document.getElementById('aiFeedbackSendBtn');
+            const alreadyVotedMsg = document.getElementById('alreadyVotedMsg');
+            // musicId kontrolü
+            if (!musicId || isNaN(parseInt(musicId))) {
+                console.error("musicId yok veya geçersiz, feedback stats çekilemiyor!", musicId);
+                return;
+            }
+            musicId = parseInt(musicId);
+            fetch(`http://localhost:8000/get_ai_feedback_stats?musicId=${musicId}${currentUserId ? `&userId=${currentUserId}` : ''}`)
+                .then(async res => {
+                    const text = await res.text();
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            // İstatistikleri güncelle
+                            const yesCount = document.getElementById('yesCount');
+                            const noCount = document.getElementById('noCount');
+                            const totalCount = document.getElementById('totalCount');
+                            
+                            if (yesCount) yesCount.textContent = data.yesCount;
+                            if (noCount) noCount.textContent = data.noCount;
+                            if (totalCount) totalCount.textContent = data.totalCount;
+
+                            // Kullanıcının oy durumunu kontrol et
+                            if (data.userVote) {
+                                aiFeedbackSendBtn.disabled = true;
+                                aiFeedbackSendBtn.style.backgroundColor = '#cccccc';
+                                aiFeedbackSendBtn.style.cursor = 'not-allowed';
+                                alreadyVotedMsg.style.display = 'block';
+                            } else {
+                                aiFeedbackSendBtn.disabled = false;
+                                aiFeedbackSendBtn.style.backgroundColor = '#6a5acd';
+                                aiFeedbackSendBtn.style.cursor = 'pointer';
+                                alreadyVotedMsg.style.display = 'none';
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Feedback stats JSON parse hatası:', e, 'Raw yanıt:', text);
+                    }
+                })
+                .catch(err => {
+                    console.error('Feedback stats fetch hatası:', err);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... mevcut kodlar ...
+            // Şarkı değiştiğinde istatistikleri ve oy durumunu güncelle
+            document.addEventListener('songChanged', function() {
+                setTimeout(refreshFeedbackStatsAndVoteState, 200);
+            });
+            // Sayfa ilk açıldığında da güncelle
+            setTimeout(refreshFeedbackStatsAndVoteState, 300);
+        });
     </script>
 
+    <script>
+// --- AI cevabını topluluk feedback'ine göre güncelle ---
+let lastCommunityTags = [];
 
+// Community Tags verisini yakala
+function loadTagStatsWithMemory(musicId) {
+    if (!musicId) return;
+    const container = document.getElementById('tagStatsContainer');
+    if (!container) return;
+    container.innerHTML = '<div class="loading-stats">Etiket istatistikleri yükleniyor...</div>';
+    fetch(`/Tag/GetPopularTags?musicId=${musicId}`)
+        .then(response => response.text())
+        .then(text => {
+            let data;
+            try { data = text ? JSON.parse(text) : {}; } catch (e) { console.error('JSON parse hatası:', e, text); data = {}; }
+            if (data.success && data.tags && data.tags.length > 0) {
+                lastCommunityTags = data.tags; // Son community tags'ı kaydet
+                let html = '';
+                data.tags.forEach(tag => {
+                    const tagEmoji = getTagEmoji(tag.tag);
+                    html += `
+                    <div class="tag-stat-item">
+                        <div class="tag-name">
+                            <span class="tag-emoji">${tagEmoji}</span>
+                            ${getTagName(tag.tag)}
+                        </div>
+                        <div class="tag-bar-container">
+                            <div class="tag-bar ${tag.tag}" style="width: ${tag.percentage}%"></div>
+                        </div>
+                        <div class="tag-count">${tag.count}</div>
+                        <div class="tag-percentage">${tag.percentage}%</div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                lastCommunityTags = [];
+                container.innerHTML = '<div class="no-tags-message">This song has not been tagged yet.</div>';
+            }
+            // Feedback ile AI güncellemesini tetikle
+            updateAICategoryIfNeeded();
+        })
+        .catch(error => {
+            lastCommunityTags = [];
+            console.error('Etiket istatistikleri alınırken hata:', error);
+            container.innerHTML = '<div class="no-tags-message">Etiket istatistikleri yüklenirken hata oluştu.</div>';
+        });
+}
+
+// Feedback stats güncellendiğinde AI cevabını topluluğa göre güncelle
+let lastFeedbackStats = null;
+function updateFeedbackStats(stats) {
+    const feedbackStats = document.getElementById('feedbackStats');
+    const yesCount = document.getElementById('yesCount');
+    const noCount = document.getElementById('noCount');
+    const totalCount = document.getElementById('totalCount');
+    if (feedbackStats && yesCount && noCount && totalCount) {
+        feedbackStats.style.display = 'block';
+        yesCount.textContent = stats.yes;
+        noCount.textContent = stats.no;
+        totalCount.textContent = stats.total;
+    }
+    lastFeedbackStats = stats;
+    updateAICategoryIfNeeded();
+}
+
+// AI cevabını topluluk feedback'ine göre güncelle
+function updateAICategoryIfNeeded() {
+    // Bu fonksiyonu boş bırakıyoruz, böylece AI cevabı değişmeyecek
+    return;
+}
+
+// loadTagStats fonksiyonunu override et
+window.loadTagStats = loadTagStatsWithMemory;
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const aiUserFeedback = document.getElementById('aiUserFeedback');
+    const aiFeedbackSendBtn = document.getElementById('aiFeedbackSendBtn');
+    if (!aiUserFeedback || !aiFeedbackSendBtn) return;
+
+    // Mesajı göstereceğimiz alanı ekle
+    let thankYouMsg = document.getElementById('aiNoThankYouMsg');
+    if (!thankYouMsg) {
+        thankYouMsg = document.createElement('div');
+        thankYouMsg.id = 'aiNoThankYouMsg';
+        thankYouMsg.style.color = '#6a5acd';
+        thankYouMsg.style.fontWeight = 'bold';
+        thankYouMsg.style.marginTop = '8px';
+        thankYouMsg.style.display = 'none';
+        thankYouMsg.textContent = 'Thank you! The model will be retrained accordingly.';
+        aiFeedbackSendBtn.parentNode.insertBefore(thankYouMsg, aiFeedbackSendBtn.nextSibling);
+    }
+
+    // Panel kapanınca veya şarkı değişince mesajı gizle
+    document.addEventListener('songChanged', function() {
+        thankYouMsg.style.display = 'none';
+    });
+
+    // Artık aiUserFeedback change eventinde mesajı gösterme!
+    // Sadece feedback gönderildikten sonra gösterilecek
+});
+</script>
+
+    <!-- Friend Search Elements -->
+ 
 </body>
 </html>

@@ -5,6 +5,7 @@
 
     var profileImage = Context.Session.GetString("UserProfileImage") ?? "/assets/images/default-profile.png";
 }
+<link rel="stylesheet" href="~/css/layout.css">
 <link rel="stylesheet" href="~/css/friend-search.css">
 <!doctype html>
 <html lang="en" dir="ltr">
@@ -128,7 +129,7 @@
         .iq-float-menu {
             position: fixed !important;
             bottom: auto !important;
-            top: 85% !important;
+            top: 75% !important;
             right: 5px !important;
             z-index: 9999 !important; /* Daha yüksek z-index değeri */
         }
@@ -761,6 +762,7 @@
             <li class="nav-item">
                 <a asp-controller="Dashboard" asp-action="Messages" class="nav-link">
                     💬 <span class="item-name">Messages</span>
+                    <span id="menu-unread-badge" class="badge bg-danger ms-2" style="display:none;">0</span>
                 </a>
             </li>
             @{
@@ -939,6 +941,7 @@
         </div>
 
     </main>
+
 
 
 

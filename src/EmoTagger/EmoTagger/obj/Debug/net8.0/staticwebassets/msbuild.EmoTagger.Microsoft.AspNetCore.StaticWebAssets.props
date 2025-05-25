@@ -8310,8 +8310,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>15py0v8iqw</Fingerprint>
-      <Integrity>xY+18pWcsTIm+zV17Wt97j6lga0qjPC2biUDO34winI=</Integrity>
+      <Fingerprint>dmdl9kxhrw</Fingerprint>
+      <Integrity>y/6GNsAINlazMLLz1hV7OKP2Y4qllodMmJq0DONKAz0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\listenmixed.css'))</OriginalItemSpec>
@@ -8328,8 +8328,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>1cb42rng2z</Fingerprint>
-      <Integrity>n+/dQsoMk9bSalcX/EF7kZZoIgz1NEN84VhoyWdIbLI=</Integrity>
+      <Fingerprint>i6u4zkftvc</Fingerprint>
+      <Integrity>NosoTG1+iPjYTYmjhB4rOjLskRmntcMXzVzAmgnNfQ0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\listentag.css'))</OriginalItemSpec>
@@ -12198,8 +12198,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>ojoybm1oyk</Fingerprint>
-      <Integrity>PDycqsZX9ULw4wnnc+9MsIjXxLjwxvoPgeA27o+YtXA=</Integrity>
+      <Fingerprint>0qmg222fcs</Fingerprint>
+      <Integrity>CEHUKNLjjq5ERS5mkUrIVcMte9oIxnTWzy3KZ94aoA4=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\friend-search.js'))</OriginalItemSpec>

@@ -41,3 +41,121 @@
     font-weight: bold !important;
 }
 
+/* Mobilde footer player düzeltmesi */
+@media (max-width: 600px) {
+    .footer {
+        padding: 0 !important;
+    }
+
+        .footer .footer-bottom {
+            padding: 0 !important;
+        }
+
+        .footer .details {
+            width: 100vw !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: fixed !important;
+            z-index: 9999;
+            background: #181818;
+            border-radius: 12px 12px 0 0;
+            min-height: 64px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 -2px 8px #0002;
+        }
+
+            .footer .details .now-playing {
+                flex-wrap: nowrap !important;
+                flex-direction: row !important;
+                width: 100vw !important;
+                overflow-x: auto;
+                gap: 6px;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                padding: 0 4px;
+            }
+
+            .footer .details .track-info {
+                min-width: 0;
+                max-width: 40vw;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-size: 13px;
+            }
+
+            .footer .details .player-controls {
+                flex: 1 1 0;
+                min-width: 0;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                gap: 2px;
+            }
+
+            .footer .details .btn,
+            .footer .details button {
+                min-width: 32px;
+                min-height: 32px;
+                font-size: 16px;
+                padding: 0;
+                margin: 0 1px;
+            }
+
+            .footer .details .progress-wrapper,
+            .footer .details .volume-control,
+            .footer .details .preview-timer {
+                display: none !important;
+            }
+
+            .footer .details .time-display {
+                font-size: 12px;
+                min-width: 32px;
+                text-align: center;
+ 
+                
+                }
+}
+.marquee-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 60vw; /* Mobilde daha kısa tutmak için */
+    height: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.marquee-content {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee-scroll 8s linear infinite;
+    font-size: 1em;
+    min-width: 100%;
+}
+
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Mobil için daha kısa ve hızlı kaydırma */
+@media (max-width: 600px) {
+    .marquee-container {
+        max-width: 45vw;
+        height: 22px;
+    }
+
+    .marquee-content {
+        font-size: 0.95em;
+        animation-duration: 6s;
+    }
+}

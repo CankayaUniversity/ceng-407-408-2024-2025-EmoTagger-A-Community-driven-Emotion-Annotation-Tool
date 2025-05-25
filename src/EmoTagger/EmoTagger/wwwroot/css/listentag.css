@@ -42,7 +42,16 @@
     .comment-item:hover {
         background-color: rgba(255, 255, 255, 0.9);
     }
+/* AI Analysis Progress Bar Styles */
+@keyframes progress-animation {
+    from {
+        stroke-dasharray: 0, 100;
+    }
 
+    to {
+        stroke-dasharray: 100, 100;
+    }
+}
 /* Daha fazla göster butonu */
 .load-more-btn {
     background-color: #f8f9fa;

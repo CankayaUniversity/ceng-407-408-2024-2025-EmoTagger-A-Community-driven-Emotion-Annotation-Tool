@@ -2,9 +2,11 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    // Ekstra sıralama veya sayfalama yapılmıyor!
+    
 }
 <link rel="stylesheet" href="~/css/listenmixed.css">
+
+
 
 <div class="container-fluid py-4">
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -22,7 +24,6 @@
                         <th>#</th>
                         <th>Song Title</th>
                         <th>Artist</th>
-                        <th>🎧 Plays</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +38,6 @@
                             <td>@item.MusicId</td>
                             <td>@item.Title</td>
                             <td>@item.Artist</td>
-                            <td>🎧 @item.PlayCount</td>
                         </tr>
                     }
                 </tbody>
@@ -70,6 +70,19 @@
 </div>
 @section Scripts {
     <script>
+        // Kullanıcı login değilse tıklamayı engelle
+        var isLoggedIn = @(Context.Session.GetInt32("UserId") != null ? "true" : "false");
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isLoggedIn === "false") {
+                document.querySelectorAll('.music-row').forEach(row => {
+                    row.onclick = function(e) {
+                        e.preventDefault();
+                        alert('Müzik dinlemek için giriş yapmalısınız!');
+                    };
+                });
+            }
+        });
+
         // Sayfa yüklendiğinde tüm müzikleri footer player'a yükle
         document.addEventListener('DOMContentLoaded', function() {
             // Tüm müzikleri al
@@ -90,9 +103,13 @@
                 const newMusicId = event.detail ? (event.detail.id || event.detail.musicId) : null;
                 updatePlayingNowClass(newMusicId);
 
+                // Şarkı çalmaya başladığında dinleme sayısını güncelle
+                if (newMusicId) {
+                    updatePlayCountForSong(newMusicId);
+                }
+
                 // Efekt ekle
                 if (newMusicId) {
-                    // Hem string hem number karşılaştırması için == kullan!
                     const row = Array.from(document.querySelectorAll('.music-row')).find(
                         r => r.dataset.musicId == newMusicId
                     );
@@ -101,16 +118,103 @@
                         setTimeout(() => row.classList.remove('row-flash-effect'), 700);
                     }
                 }
+            });
 
-                // Eğer ana player'dan gelen şarkı, mixedPlaylist'te varsa, mixedPlaylistIndex'i de güncelle
-                if (window.mixedPlaylist && newMusicId) {
-                    const newIndexInMixed = window.mixedPlaylist.findIndex(track => track.id == newMusicId);
-                    if (newIndexInMixed !== -1) {
-                        window.mixedPlaylistIndex = newIndexInMixed;
-                    }
+            // Sayfa yüklendiğinde tüm dinleme sayılarını yükle
+            loadAllPlayCounts();
+
+            // Her 3 saniyede bir tüm dinleme sayılarını güncelle
+            setInterval(loadAllPlayCounts, 3000);
+
+            // ListenTag'den localStorage ile play count güncelleme event'i gelirse plays sütununu güncelle
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'playCountUpdated') {
+                    loadAllPlayCounts();
                 }
             });
+
+            // WebSocket bağlantısı kur (eğer sunucu destekliyorsa)
+            setupWebSocketConnection();
         });
+
+        // WebSocket bağlantısı kur
+        function setupWebSocketConnection() {
+            try {
+                const ws = new WebSocket(`ws://${window.location.host}/ws/playcounts`);
+                
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    if (data.musicId && data.count) {
+                        updatePlayCountForSong(data.musicId, data.count);
+                    }
+                };
+
+                ws.onclose = function() {
+                    // Bağlantı koptuğunda 5 saniye sonra tekrar dene
+                    setTimeout(setupWebSocketConnection, 5000);
+                };
+            } catch (e) {
+                console.log('WebSocket bağlantısı kurulamadı, polling kullanılacak');
+            }
+        }
+
+        // Tek bir şarkının dinleme sayısını güncelle
+        function updatePlayCountForSong(musicId, forceCount = null) {
+            if (forceCount !== null) {
+                updatePlayCount(musicId, forceCount);
+                return;
+            }
+
+            fetch(`/PlayCounts/GetCounts?musicId=${musicId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updatePlayCount(musicId, data.totalPlayCount);
+                    }
+                })
+                .catch(error => console.error('Dinleme sayısı alınırken hata:', error));
+        }
+
+        // Tüm dinleme sayılarını yükle
+        function loadAllPlayCounts() {
+            const rows = document.querySelectorAll('.music-row');
+            const musicIds = Array.from(rows).map(row => row.dataset.musicId).filter(id => id);
+
+            if (musicIds.length === 0) return;
+
+            // Toplu istek için tüm ID'leri birleştir
+            const queryString = musicIds.map(id => `ids=${id}`).join('&');
+            
+            fetch(`/PlayCounts/GetBulkCounts?${queryString}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.counts) {
+                        Object.entries(data.counts).forEach(([musicId, count]) => {
+                            updatePlayCount(musicId, count);
+                        });
+                    }
+                })
+                .catch(error => console.error('Toplu dinleme sayısı alınırken hata:', error));
+        }
+
+        // Belirli bir şarkının dinleme sayısını güncelle
+        function updatePlayCount(musicId, newCount) {
+            const row = document.querySelector(`.music-row[data-music-id="${musicId}"]`);
+            if (row) {
+                const countValue = row.querySelector('.count-value');
+                if (countValue) {
+                    const currentCount = parseInt(countValue.textContent) || 0;
+                    if (currentCount !== newCount) {
+                        // Animasyon efekti için
+                        countValue.classList.add('count-update-effect');
+                        setTimeout(() => countValue.classList.remove('count-update-effect'), 1000);
+                        
+                        // Sayacı güncelle
+                        countValue.textContent = newCount;
+                    }
+                }
+            }
+        }
 
         function navigateToPage(page) {
             if (page < 1 || page > @Model.TotalPages) return;
@@ -192,15 +296,18 @@
                                 <td>${item.musicId}</td>
                                 <td>${item.title}</td>
                                 <td>${item.artist}</td>
-                                <td>🎧 ${item.playCount}</td>
                             </tr>`;
                         });
                         musicTableBody.innerHTML = html;
-                        // Pagination'ı her seferinde tekrar bul ve güncelle
+                        
+                        // Yeni eklenen satırlar için dinleme sayılarını hemen yükle
+                        loadAllPlayCounts();
+                        
+                        // Pagination'ı güncelle
                         const newPaginationNav = document.querySelector('.pagination') ? document.querySelector('.pagination').closest('nav, div') : null;
                         if (newPaginationNav) newPaginationNav.innerHTML = renderPagination(data.totalPages, data.currentPage, query);
                     } else {
-                        musicTableBody.innerHTML = `<tr><td colspan=\"4\" class=\"text-center text-muted\">No music found.</td></tr>`;
+                        musicTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No music found.</td></tr>`;
                         const newPaginationNav = document.querySelector('.pagination') ? document.querySelector('.pagination').closest('nav, div') : null;
                         if (newPaginationNav) newPaginationNav.innerHTML = '';
                     }
@@ -233,5 +340,5 @@
         }
     </script>
 
-    
+  
 }

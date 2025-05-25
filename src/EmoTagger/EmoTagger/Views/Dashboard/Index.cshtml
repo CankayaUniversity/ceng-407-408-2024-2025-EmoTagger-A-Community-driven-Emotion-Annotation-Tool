@@ -1,6 +1,7 @@
 @model EmoTagger.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Ana Sayfa";
+    var isLoggedIn = Context.Session.GetInt32("UserId") != null;
 }
 
 <link rel="stylesheet" href="~/css/home.css">
@@ -84,6 +85,19 @@
 
 @section Scripts {
     <script>
+        // Kullanıcı login değilse müzik kartlarına ve oynat butonlarına tıklamayı engelle
+        var isLoggedIn = @(Context.Session.GetInt32("UserId") != null ? "true" : "false");
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isLoggedIn === "false") {
+                // Tüm şarkı kartları ve oynat butonları
+                document.querySelectorAll('.track-card, .song-card, .play-btn, .play-mixed-btn').forEach(function(btn) {
+                    btn.onclick = function(e) {
+                        e.preventDefault();
+                        alert('Müzik dinlemek için giriş yapmalısınız!');
+                    };
+                });
+            }
+        });
 
              // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
@@ -226,6 +240,12 @@
 
         // Şarkı çalma fonksiyonu
         function playMusic(src, title, element) {
+            // Login kontrolü
+            if (!@isLoggedIn.ToString().ToLower()) {
+                alert('Müzik dinlemek için giriş yapmalısınız!');
+                return;
+            }
+
             const audio = document.getElementById("musicPlayer");
             if (!audio) return;
 

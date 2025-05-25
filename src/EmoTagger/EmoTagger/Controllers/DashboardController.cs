@@ -498,6 +498,15 @@ namespace EmoTagger.Controllers
 
         public IActionResult ListenMixed(int page = 1)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                // AJAX ise JSON, değilse login sayfasına yönlendir
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return Json(new { success = false, message = "Giriş yapmalısınız." });
+                return RedirectToAction("Login", "Dashboard");
+            }
+
             int pageSize = 15;
             var sortedMusics = _context.Musics.OrderBy(m => m.musicid).ToList();
 
@@ -602,8 +611,6 @@ namespace EmoTagger.Controllers
 
             var totalPlayedMusic = await _context.RecentlyPlayed
                 .Where(p => p.UserId == userId.Value)
-                .Select(p => p.MusicId)
-                .Distinct()
                 .CountAsync();
 
             var favoriteCount = await _context.Favorites
@@ -638,7 +645,8 @@ namespace EmoTagger.Controllers
                     Id = u.Id,
                     Name = u.FirstName + " " + u.LastName,
                     ProfileImageUrl = u.ProfileImageUrl,
-                    IsOnline = u.IsOnline
+                    IsOnline = u.IsOnline,
+                    UnreadCount = _context.Messages.Count(m => m.SenderId == u.Id && m.ReceiverId == userId.Value && !m.IsRead)
                 }).ToList();
 
             // Friend requests
@@ -931,8 +939,6 @@ namespace EmoTagger.Controllers
 
             var totalPlayedMusic = await _context.RecentlyPlayed
                 .Where(p => p.UserId == userId.Value)
-                .Select(p => p.MusicId)
-                .Distinct()
                 .CountAsync();
 
             var favoriteCount = await _context.Favorites
@@ -967,7 +973,8 @@ namespace EmoTagger.Controllers
                     Id = u.Id,
                     Name = u.FirstName + " " + u.LastName,
                     ProfileImageUrl = u.ProfileImageUrl,
-                    IsOnline = u.IsOnline
+                    IsOnline = u.IsOnline,
+                    UnreadCount = _context.Messages.Count(m => m.SenderId == u.Id && m.ReceiverId == userId.Value && !m.IsRead)
                 }).ToList();
 
             // 1. Adım: Sorguyu veritabanından çek
@@ -1339,7 +1346,11 @@ namespace EmoTagger.Controllers
                         _logger.LogInformation($"LogPlayed: Zaten var - UserId: {userId}, MusicId: {request.MusicId}");
                     }
 
-                    return Json(new { success = true });
+                    // --- YENİ: Toplam play count'u Musics tablosundan al ve dön ---
+                    var musicEntity = _context.Musics.FirstOrDefault(m => m.musicid == request.MusicId);
+                    int totalPlayCount = musicEntity?.playcount ?? 0;
+
+                    return Json(new { success = true, totalPlayCount });
                 }
                 catch (Exception dbEx)
                 {
@@ -1582,6 +1593,7 @@ namespace EmoTagger.Controllers
             return Json(new { success = true, users });
         }
 
+
         [HttpPost]
         public IActionResult AddFriend([FromBody] System.Text.Json.JsonElement data)
         {
@@ -1750,7 +1762,7 @@ namespace EmoTagger.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetUserMusicStats()
+        public async Task<IActionResult> GetUserMusicStats()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -1769,11 +1781,9 @@ namespace EmoTagger.Controllers
             var totalTagCount = tagStats.Sum(x => x.Count);
 
             // Toplam dinlenen müzik (recently_played tablosundan, farklı music_id sayısı)
-            var totalPlayedMusic = _context.RecentlyPlayed
-                .Where(rp => rp.UserId == userId)
-                .Select(rp => rp.MusicId)
-                .Distinct()
-                .Count();
+            var totalPlayedMusic = await _context.RecentlyPlayed
+                .Where(p => p.UserId == userId.Value)
+                .CountAsync();
 
             // Favoriler (Favorites tablosu)
             int favoriteCount = 0;
@@ -1809,67 +1819,53 @@ namespace EmoTagger.Controllers
         }
 
         [HttpPost]
-        public IActionResult UzatLogPlayed([FromBody] LogPlayedRequest request)
+        public async Task<IActionResult> UpdatePlayCount([FromBody] PlayCountRequest request)
         {
             try
             {
-                if (request == null)
-                {
-                    _logger.LogWarning("UzatLogPlayed: Geçersiz istek - null");
-                    return BadRequest(new { success = false, message = "Geçersiz istek" });
-                }
-                if (request.MusicId <= 0)
-                {
-                    _logger.LogWarning($"UzatLogPlayed: Geçersiz MusicId - {request.MusicId}");
-                    return BadRequest(new { success = false, message = "Geçersiz müzik ID" });
-                }
-                _logger.LogInformation($"UzatLogPlayed: MusicId = {request.MusicId}");
                 var userId = HttpContext.Session.GetInt32("UserId");
                 if (userId == null)
-                {
-                    _logger.LogWarning("UzatLogPlayed: Oturum bulunamadı");
                     return Json(new { success = false, message = "Oturum açmanız gerekiyor" });
-                }
-                var music = _context.Musics.FirstOrDefault(m => m.musicid == request.MusicId);
-                if (music == null)
+
+                // 1 dakika içinde aynı şarkı tekrar eklenmesin
+                var oneMinuteAgo = DateTime.UtcNow.AddMinutes(-1);
+                var exists = await _context.RecentlyPlayed
+                    .AnyAsync(r => r.UserId == userId && r.MusicId == request.MusicId && r.PlayedAt >= oneMinuteAgo);
+
+                if (!exists)
                 {
-                    _logger.LogWarning($"UzatLogPlayed: Müzik bulunamadı - ID: {request.MusicId}");
-                    return Json(new { success = false, message = "Müzik bulunamadı" });
-                }
-                try
-                {
-                    var oneMinuteAgo = DateTime.UtcNow.AddMinutes(-1);
-                    var exists = _context.RecentlyPlayed
-                        .Any(r => r.UserId == userId && r.MusicId == request.MusicId && r.PlayedAt >= oneMinuteAgo);
-                    if (!exists)
+                    // RecentlyPlayed tablosuna ekle
+                    var recentlyPlayed = new RecentlyPlayed
                     {
-                        var recentlyPlayed = new RecentlyPlayed
-                        {
-                            UserId = userId.Value,
-                            MusicId = request.MusicId,
-                            PlayedAt = DateTime.UtcNow
-                        };
-                        _context.RecentlyPlayed.Add(recentlyPlayed);
-                        _context.SaveChanges();
-                        _logger.LogInformation($"UzatLogPlayed: Başarılı - UserId: {userId}, MusicId: {request.MusicId}");
-                    }
-                    else
+                        UserId = userId.Value,
+                        MusicId = request.MusicId,
+                        PlayedAt = DateTime.UtcNow
+                    };
+                    _context.RecentlyPlayed.Add(recentlyPlayed);
+
+                    // Musics tablosundaki playcount'u güncelle
+                    var music = await _context.Musics.FindAsync(request.MusicId);
+                    if (music != null)
                     {
-                        _logger.LogInformation($"UzatLogPlayed: Zaten var - UserId: {userId}, MusicId: {request.MusicId}");
+                        music.playcount++;
+                        await _context.SaveChangesAsync();
                     }
-                    return Json(new { success = true });
                 }
-                catch (Exception dbEx)
-                {
-                    _logger.LogError(dbEx, $"UzatLogPlayed: DB hatası - UserId: {userId}, MusicId: {request.MusicId}");
-                    return Json(new { success = false, message = "Veritabanı hatası" });
-                }
+
+                // Güncel playcount'u döndür
+                var updatedMusic = await _context.Musics.FindAsync(request.MusicId);
+                return Json(new { success = true, playCount = updatedMusic?.playcount ?? 0 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "UzatLogPlayed: Genel hata");
-                return Json(new { success = false, message = "Sunucu hatası" });
+                _logger.LogError(ex, "UpdatePlayCount hatası");
+                return Json(new { success = false, message = "Bir hata oluştu" });
             }
+        }
+
+        public class PlayCountRequest
+        {
+            public int MusicId { get; set; }
         }
 
         [HttpGet]

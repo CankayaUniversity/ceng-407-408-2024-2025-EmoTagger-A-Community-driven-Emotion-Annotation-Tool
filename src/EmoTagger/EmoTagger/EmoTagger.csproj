@@ -45,6 +45,7 @@
     <Compile Remove="Models\TrackTag.cs" />
     <Compile Remove="Views\Admin\EditMusic.cshtml.cs" />
     <Compile Remove="Views\Dashboard\ListenTagg.cshtml.cs" />
+    <Compile Remove="Views\Dashboard\Settings.cshtml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +55,7 @@
     <Content Remove="Views\Dashboard\ListenTagg.cshtml" />
     <Content Remove="Views\Dashboard\music-player.cshtml" />
     <Content Remove="Views\Dashboard\release.cshtml" />
+    <Content Remove="Views\Dashboard\Settings.cshtml" />
     <Content Remove="Views\Shared\_NowPlayingPartial.cshtml" />
     <Content Remove="wwwroot\css\index.css" />
     <Content Remove="wwwroot\css\leaderboard.cs" />
